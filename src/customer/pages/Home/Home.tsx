@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import Banner from "./Banner/Banner";
-import HomeCategory from "./HomeCategory/HomeCategory";
+import HomeCategory from "./HomeCategory/HomeCategory"; // this is the new dark component
 import TopBrand from "./TopBrands/Grid";
 import ElectronicCategory from "./Electronic Category/ElectronicCategory";
-import MainCarousel from "./Main Carousel/MainCarousel"; // 
+import MainCarousel from "./Main Carousel/MainCarousel";
 import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import { Backdrop, Button, CircularProgress } from "@mui/material";
 import ChatBot from "../ChatBot/ChatBot";
@@ -33,22 +33,12 @@ const Home = () => {
           {/* Today's Deals */}
           {homePage.homePageData?.deals && (
             <section className="pt-10">
-              <h1 className="text-center text-lg lg:text-4xl font-bold text-[#2563EB] pb-5 lg:pb-10">
-                Today's Deals
-              </h1>
               <DealSlider />
             </section>
           )}
 
-          {/* Shop By Category */}
-          {homePage.homePageData?.shopByCategories && (
-            <section className="flex flex-col justify-center items-center py-20 px-5 lg:px-20">
-              <h1 className="text-lg lg:text-4xl font-bold text-[#2563EB] pb-5 lg:pb-20">
-                SHOP BY CATEGORY
-              </h1>
-              <HomeCategory />
-            </section>
-          )}
+          {/* Shop By Category - replaced with new dark full-width component */}
+          {homePage.homePageData?.shopByCategories && <HomeCategory />}
 
           {/* Chat Button */}
           <section className="fixed bottom-10 right-10">

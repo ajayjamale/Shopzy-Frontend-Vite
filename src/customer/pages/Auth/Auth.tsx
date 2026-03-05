@@ -1,77 +1,99 @@
 import React, { useEffect, useState } from 'react';
-import LoginForm from './LoginForm';
-import SignupForm from './SignupForm';
+import { useNavigate } from 'react-router-dom';
 import { Alert, Snackbar } from '@mui/material';
 import { useAppSelector } from '../../../Redux Toolkit/Store';
-import StorefrontIcon from '@mui/icons-material/Storefront';
-import { useNavigate } from 'react-router-dom';
+import LoginForm from './LoginForm';
+import SignupForm from './SignupForm';
 import './Auth.css';
 
 const Auth = () => {
   const [isLoginPage, setIsLoginPage] = useState(true);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const { auth } = useAppSelector((store) => store);
   const navigate = useNavigate();
+
+  // ✅ Select only the primitive fields needed — never select the whole slice object
+  const jwt      = useAppSelector((state) => state.auth.jwt);
+  const otpSent  = useAppSelector((state) => state.auth.otpSent);
+  const error    = useAppSelector((state) => state.auth.error);
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (jwt) navigate('/');
+  }, [jwt, navigate]);
+
+  // Show toast on OTP sent or error
+  useEffect(() => {
+    if (otpSent || error) setSnackbarOpen(true);
+  }, [otpSent, error]);
 
   const handleCloseSnackbar = () => setSnackbarOpen(false);
 
-  useEffect(() => {
-    if (auth.otpSent || auth.error) {
-      setSnackbarOpen(true);
-    }
-  }, [auth.otpSent, auth.error]);
-
   return (
     <div className="auth-horizontal-container">
-   
-      {/* Right Side - Form */}
+
+      {/* Logo */}
+      <div className="auth-brand-logo" onClick={() => navigate('/')}>
+        <span className="auth-brand-logo-text">
+          shop<span>.</span>in
+        </span>
+      </div>
+
+      {/* Form Card */}
       <div className="auth-form-section-horizontal">
         <div className="auth-form-header">
-          <h2>{isLoginPage ? 'Sign In' : 'Sign Up'}</h2>
+          <h2>{isLoginPage ? 'Sign in' : 'Create account'}</h2>
           <p>
             {isLoginPage
-              ? 'Enter your credentials to access your account'
-              : 'Fill in your details to create an account'}
+              ? 'Enter your email to receive a one-time password'
+              : 'Fill in your details to get started'}
           </p>
         </div>
 
         {isLoginPage ? <LoginForm /> : <SignupForm />}
 
         <div className="auth-toggle-horizontal">
-          <span>
-            {isLoginPage ? "Don't have an account?" : 'Already have an account?'}
-          </span>
+          <span>{isLoginPage ? 'New to shop.in?' : 'Already have an account?'}</span>
           <button
-            onClick={() => setIsLoginPage(!isLoginPage)}
+            onClick={() => setIsLoginPage((prev) => !prev)}
             className="auth-toggle-button-horizontal"
           >
-            {isLoginPage ? 'Sign Up' : 'Sign In'}
+            {isLoginPage ? 'Create your account' : 'Sign in'}
           </button>
         </div>
       </div>
 
+      {/* Legal footer */}
+      <div className="auth-below-card">
+        <div className="auth-below-divider">
+          <span>Conditions of Use &nbsp;|&nbsp; Privacy Notice &nbsp;|&nbsp; Help</span>
+        </div>
+        <p>© 1996–2025, shop.in, Inc. or its affiliates</p>
+      </div>
+
+      {/* Toast */}
       <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
         open={snackbarOpen}
         autoHideDuration={4000}
         onClose={handleCloseSnackbar}
       >
         <Alert
           onClose={handleCloseSnackbar}
-          severity={auth.error ? 'error' : 'success'}
+          severity={error ? 'error' : 'success'}
           variant="filled"
           sx={{
-            borderRadius: 0,
-            border: '2px solid #000000',
-            backgroundColor: auth.error ? '#dc2626' : '#000000',
+            borderRadius: '3px',
+            backgroundColor: error ? '#c40000' : '#067d62',
             color: '#ffffff',
             fontWeight: 500,
-            '& .MuiAlert-icon': {
-              color: '#ffffff',
-            },
+            fontSize: '0.875rem',
+            fontFamily: "'Amazon Ember', 'Helvetica Neue', Arial, sans-serif",
+            '& .MuiAlert-icon': { color: '#ffffff' },
           }}
         >
-          {auth.error ? auth.error : 'OTP sent to your email!'}
+          {error
+            ? typeof error === 'string' ? error : 'Something went wrong. Please try again.'
+            : 'Verification code sent to your email!'}
         </Alert>
       </Snackbar>
     </div>

@@ -1,45 +1,36 @@
-import React from 'react';
-import AddCardIcon from '@mui/icons-material/AddCard';
-import { teal } from '@mui/material/colors';
-import { Button } from '@mui/material';
+import React from "react";
+import AddCardIcon from "@mui/icons-material/AddCard";
+import LockIcon from "@mui/icons-material/Lock";
+import "./Profile.css";
 
-const SavedCards = () => {
-  return (
-    <div className="flex flex-col justify-center items-center lg:min-h-[60vh] gap-10 p-6 bg-teal-50 rounded-3xl shadow-lg">
-
-      {/* Icon */}
-      <div className="bg-teal-100 p-6 rounded-full shadow-md animate-bounce">
-        <AddCardIcon sx={{ color: teal[600], fontSize: "120px" }} />
-      </div>
-
-      {/* Text Section */}
-      <div className="text-center w-full lg:w-[70%] space-y-4">
-        <h1 className="font-extrabold text-2xl text-teal-700 uppercase tracking-wide">
-          Save Your Credit / Debit Cards
-        </h1>
-        <p className="text-gray-700 text-sm">
-          Make payments faster and more secure. Your card information is protected with 128-bit encryption.
-        </p>
-
-        {/* Add Card Button */}
-        <div className="mt-4">
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: teal[600],
-              "&:hover": { backgroundColor: teal[700] },
-              px: 6,
-              py: 1.5,
-              fontWeight: "bold",
-            }}
-          >
-            Add New Card
-          </Button>
-        </div>
-      </div>
-
+const SavedCards = () => (
+  <div>
+    <div className="amz-card" style={{ marginBottom: 16 }}>
+      <div className="amz-card-header">Saved Payment Methods</div>
     </div>
-  );
-};
+
+    <div className="amz-card">
+      <div className="amz-saved-cards-empty">
+        <div className="amz-saved-cards-icon">
+          <AddCardIcon />
+        </div>
+        <div className="amz-saved-cards-title">No saved cards</div>
+        <div className="amz-saved-cards-desc">
+          Save your credit or debit card for faster checkout.
+          Your payment info is protected with 128-bit SSL encryption.
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8125rem", color: "#565959" }}>
+          <LockIcon style={{ fontSize: "0.875rem" }} />
+          Secured by shop.in
+        </div>
+
+        <button className="amz-btn-primary" style={{ marginTop: 8, padding: "8px 24px" }}>
+          Add a credit or debit card
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 export default SavedCards;

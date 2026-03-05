@@ -9,17 +9,20 @@ import './Auth.css';
 
 const validationSchema = Yup.object({
   email: Yup.string()
-    .email('Invalid email address')
-    .required('Email is required'),
+    .email('Enter a valid email address')
+    .required('Enter your email address'),
 });
 
 const LoginForm = () => {
-  const navigate = useNavigate();
-  const dispatch = useAppDispatch();
-  const { auth } = useAppSelector((store) => store);
-  
-  const [otp, setOtp] = useState('');
-  const [timer, setTimer] = useState(30);
+  const navigate   = useNavigate();
+  const dispatch   = useAppDispatch();
+
+  // ✅ Select only primitives — prevents "returned root state" warning
+  const loading  = useAppSelector((state) => state.auth.loading);
+  const otpSent  = useAppSelector((state) => state.auth.otpSent);
+
+  const [otp, setOtp]                   = useState('');
+  const [timer, setTimer]               = useState(30);
   const [isTimerActive, setIsTimerActive] = useState(false);
 
   const formik = useFormik({
@@ -28,10 +31,10 @@ const LoginForm = () => {
     onSubmit: () => {},
   });
 
-  const handleOtpChange = (value: string) => setOtp(value);
-
   const handleSendOtp = async () => {
-    if (formik.isValid && formik.values.email) {
+    const errors = await formik.validateForm();
+    formik.setTouched({ email: true });
+    if (Object.keys(errors).length === 0 && formik.values.email) {
       await dispatch(sendLoginSignupOtp({ email: formik.values.email }));
       setIsTimerActive(true);
       setTimer(30);
@@ -51,21 +54,20 @@ const LoginForm = () => {
   };
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isTimerActive && timer > 0) {
-      interval = setInterval(() => {
-        setTimer((prev) => prev - 1);
-      }, 1000);
-    } else if (timer === 0) {
+    if (!isTimerActive || timer === 0) {
       setIsTimerActive(false);
+      return;
     }
+    const interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
     return () => clearInterval(interval);
   }, [isTimerActive, timer]);
 
   return (
     <div className="auth-form-horizontal">
+
+      {/* Email */}
       <div className="auth-form-group-horizontal">
-        <label className="auth-label-horizontal">Email Address</label>
+        <label className="auth-label-horizontal">Email or mobile phone number</label>
         <div className="auth-input-wrapper-horizontal">
           <input
             type="email"
@@ -73,11 +75,12 @@ const LoginForm = () => {
             value={formik.values.email}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            placeholder="Enter your email address"
+            autoComplete="email"
+            autoFocus
+            disabled={otpSent}
             className={`auth-input-horizontal ${
               formik.touched.email && formik.errors.email ? 'error' : ''
             }`}
-            disabled={auth.otpSent}
           />
           {formik.values.email && !formik.errors.email && (
             <span className="auth-input-valid-horizontal">✓</span>
@@ -88,30 +91,28 @@ const LoginForm = () => {
         )}
       </div>
 
-      {auth.otpSent && (
+      {/* OTP Section */}
+      {otpSent && (
         <div className="auth-otp-section-horizontal">
           <div className="auth-otp-box-horizontal">
-            <p className="auth-otp-title-horizontal">Verification Code</p>
+            <p className="auth-otp-title-horizontal">Enter OTP</p>
             <p className="auth-otp-subtitle-horizontal">
-              Enter the 6-digit code sent to <strong>{formik.values.email}</strong>
+              We've sent a One Time Password to{' '}
+              <strong>{formik.values.email}</strong>
             </p>
-
             <div className="auth-otp-container-horizontal">
-              <OTPInput length={6} onChange={handleOtpChange} error={false} />
+              <OTPInput length={6} onChange={setOtp} error={false} />
             </div>
-
             <div className="auth-timer-container-horizontal">
               {isTimerActive ? (
                 <p className="auth-timer-text-horizontal">
-                  <span>⏱️</span>
-                  Resend code in <span className="auth-timer-bold-horizontal">{timer}s</span>
+                  Resend OTP in <span className="auth-timer-bold-horizontal">{timer}s</span>
                 </p>
               ) : (
                 <p className="auth-timer-text-horizontal">
-                  <span>📧</span>
-                  Didn't receive the code?{' '}
-                  <button onClick={handleResendOtp} className="auth-resend-button-horizontal">
-                    Resend
+                  Didn't receive it?{' '}
+                  <button type="button" onClick={handleResendOtp} className="auth-resend-button-horizontal">
+                    Resend OTP
                   </button>
                 </p>
               )}
@@ -119,40 +120,37 @@ const LoginForm = () => {
           </div>
 
           <button
+            type="button"
             onClick={handleSignIn}
-            disabled={auth.loading || otp.length !== 6}
-            className="auth-button-horizontal auth-button-primary-horizontal"
+            disabled={loading || otp.length !== 6}
+            className="auth-button-horizontal"
           >
-            {auth.loading ? (
-              <span className="auth-loading-container-horizontal">
-                <span className="auth-loading-horizontal"></span>
-                Verifying...
-              </span>
-            ) : (
-              'Sign In'
-            )}
+            {loading
+              ? <span className="auth-loading-container-horizontal"><span className="auth-loading-horizontal" />Verifying...</span>
+              : 'Sign in'}
           </button>
         </div>
       )}
 
-      {!auth.otpSent && (
+      {/* Continue button */}
+      {!otpSent && (
         <>
           <button
+            type="button"
             onClick={handleSendOtp}
-            disabled={auth.loading || !formik.values.email || !!formik.errors.email}
-            className="auth-button-horizontal auth-button-primary-horizontal"
+            disabled={loading || !formik.values.email || !!formik.errors.email}
+            className="auth-button-horizontal"
           >
-            {auth.loading ? (
-              <span className="auth-loading-container-horizontal">
-                <span className="auth-loading-horizontal"></span>
-                Sending code...
-              </span>
-            ) : (
-              'Continue with Email'
-            )}
+            {loading
+              ? <span className="auth-loading-container-horizontal"><span className="auth-loading-horizontal" />Sending OTP...</span>
+              : 'Continue'}
           </button>
 
-           
+          <p className="auth-footer-horizontal" style={{ marginTop: '1rem' }}>
+            By continuing, you agree to shop.in's{' '}
+            <a href="/conditions">Conditions of Use</a> and{' '}
+            <a href="/privacy">Privacy Notice</a>.
+          </p>
         </>
       )}
     </div>

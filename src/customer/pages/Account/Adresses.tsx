@@ -1,61 +1,48 @@
 import React from "react";
 import { useAppSelector } from "../../../Redux Toolkit/Store";
 import UserAddressCard from "./UserAddressCard";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import AddIcon from "@mui/icons-material/Add";
+import "./Profile.css";
 
 const Addresses = () => {
-  const { user } = useAppSelector((store) => store);
+  // ✅ Granular selector
+  const addresses = useAppSelector((s) => s.user.user?.addresses ?? []);
 
-  const addresses = user.user?.addresses || [];
-return (
-  <div className="w-full">
-
-    {/* Section Header */}
-    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 
-                    text-white rounded-3xl shadow-lg p-8 mb-10">
-
-      <h2 className="text-2xl font-bold tracking-wide">
-        Saved Addresses
-      </h2>
-      <p className="text-indigo-100 mt-2 text-sm">
-        Manage your delivery locations
-      </p>
-    </div>
-
-    {/* Address Grid */}
-    {addresses.length > 0 ? (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {addresses.map((item) => (
-          <div
-            key={item.id}
-            className="bg-white rounded-3xl shadow-lg p-6 
-                       hover:shadow-2xl transition-all duration-300"
-          >
-            <UserAddressCard item={item} />
-          </div>
-        ))}
-      </div>
-    ) : (
-      /* Empty State */
-      <div className="bg-white rounded-3xl shadow-lg p-12 text-center">
-        <div className="w-16 h-16 mx-auto mb-4 rounded-full 
-                        bg-indigo-100 flex items-center justify-center">
-          <span className="text-indigo-600 text-xl font-bold">
-            📍
-          </span>
+  return (
+    <div>
+      <div className="amz-card" style={{ marginBottom: 16 }}>
+        <div className="amz-card-header">
+          <span>Manage Addresses</span>
+          <button className="amz-btn-primary" style={{ fontSize: "0.8125rem", padding: "4px 12px" }}>
+            <AddIcon style={{ fontSize: "0.875rem" }} />
+            Add New Address
+          </button>
         </div>
-
-        <h3 className="text-lg font-semibold text-gray-800">
-          No Addresses Found
-        </h3>
-        <p className="text-sm text-gray-500 mt-2">
-          You have not added any delivery address yet.
-        </p>
       </div>
-    )}
 
-  </div>
-);
-
+      {addresses.length === 0 ? (
+        <div className="amz-card">
+          <div className="amz-empty-state">
+            <LocationOnIcon style={{ fontSize: "3rem", color: "#d5d9d9" }} />
+            <div className="amz-empty-title">No addresses saved</div>
+            <div className="amz-empty-desc">
+              Add a delivery address to make checkout faster.
+            </div>
+            <button className="amz-btn-primary" style={{ marginTop: 8 }}>
+              Add Address
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16 }}>
+          {addresses.map((item) => (
+            <UserAddressCard key={item.id} item={item} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Addresses;

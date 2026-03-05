@@ -1,155 +1,78 @@
-import { Avatar, Box, Grid, LinearProgress, Rating } from '@mui/material'
-import React from 'react'
-import type { Review } from '../../../types/reviewTypes';
+import React from "react";
+import StarIcon from "@mui/icons-material/Star";
+import "./Reviews.css";
 
-
-
-const RatingCard = ({totalReview}:any) => {
-    return (
-        <div className="border p-5 rounded-md">
-
-
-            <div className="flex items-center space-x-3 pb-10">
-                <Rating
-                    name="read-only"
-                    value={4.6}
-                    precision={0.5}
-                    readOnly
-                />
-
-                <p className="opacity-60">{totalReview} Ratings</p>
-            </div>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Excellent</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className=""
-                            sx={{ bgcolor: "#d0d0d0", borderRadius: 4, height: 7 }}
-                            variant="determinate"
-                            value={40}
-                            color="success"
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Very Good</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className=""
-                            sx={{ bgcolor: "#d0d0d0", borderRadius: 4, height: 7 }}
-                            variant="determinate"
-                            value={30}
-                            color="success"
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Good</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className="bg-[#885c0a]"
-                            sx={{ bgcolor: "#d0d0d0", borderRadius: 4, height: 7 }}
-                            variant="determinate"
-                            value={25}
-
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Avarage</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className=""
-                            sx={{
-                                bgcolor: "#d0d0d0",
-                                borderRadius: 4,
-                                height: 7,
-                                "& .MuiLinearProgress-bar": {
-                                    bgcolor: "#885c0a", // stroke color
-                                },
-                            }}
-                            variant="determinate"
-                            value={21}
-                            color="success"
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-            <Box>
-                <Grid
-                    container
-                    justifyContent="center"
-                    alignItems="center"
-                    gap={2}
-                >
-                    <Grid xs={2}>
-                        <p className="p-0">Poor</p>
-                    </Grid>
-                    <Grid xs={7}>
-                        <LinearProgress
-                            className=""
-                            sx={{ bgcolor: "#d0d0d0", borderRadius: 4, height: 7 }}
-                            variant="determinate"
-                            value={10}
-                            color="error"
-                        />
-                    </Grid>
-                    <Grid xs={2}>
-                        <p className="opacity-50 p-2">19259</p>
-                    </Grid>
-                </Grid>
-            </Box>
-
-
-        </div>
-    )
+interface RatingCardProps {
+  reviews: { rating: number }[];
 }
 
-export default RatingCard
+const LABELS = ["Poor", "Average", "Good", "Very Good", "Excellent"] as const;
+
+const RatingCard: React.FC<RatingCardProps> = ({ reviews }) => {
+  const total = reviews.length;
+
+  // Count per star 1–5
+  const counts = [1, 2, 3, 4, 5].map(
+    (star) => reviews.filter((r) => Math.round(r.rating) === star).length
+  );
+
+  const avg =
+    total > 0
+      ? (reviews.reduce((s, r) => s + r.rating, 0) / total).toFixed(1)
+      : "0.0";
+
+  const StarDisplay = ({ value }: { value: number }) => (
+    <div className="amz-rv-stars" style={{ marginBottom: 6 }}>
+      {[1, 2, 3, 4, 5].map((s) => (
+        <span key={s} className={`amz-rv-star ${s <= Math.round(value) ? "" : "empty"}`}>
+          <StarIcon style={{ fontSize: "1rem" }} />
+        </span>
+      ))}
+    </div>
+  );
+
+  return (
+    <div className="amz-rv-card">
+      <div className="amz-rv-card-header">Customer Reviews</div>
+      <div className="amz-rv-card-body">
+        <div className="amz-rv-summary">
+
+          {/* Big score */}
+          <div className="amz-rv-big-score">
+            <span className="amz-rv-score-num">{avg}</span>
+            <StarDisplay value={Number(avg)} />
+            <span className="amz-rv-score-label">out of 5</span>
+          </div>
+
+          {/* Bar breakdown — 5 down to 1 */}
+          <div className="amz-rv-bars">
+            {[5, 4, 3, 2, 1].map((star) => {
+              const count = counts[star - 1];
+              const pct   = total > 0 ? (count / total) * 100 : 0;
+              const fillCls = star <= 2 ? (star === 1 ? "vlow" : "low") : "";
+              return (
+                <div key={star} className="amz-rv-bar-row">
+                  <span className="amz-rv-bar-label">{LABELS[star - 1]}</span>
+                  <div className="amz-rv-bar-track">
+                    <div
+                      className={`amz-rv-bar-fill ${fillCls}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
+                  <span className="amz-rv-bar-count">{count}</span>
+                </div>
+              );
+            })}
+          </div>
+
+        </div>
+
+        <div style={{ fontSize: "0.8125rem", color: "#565959" }}>
+          {total} global rating{total !== 1 ? "s" : ""}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default RatingCard;

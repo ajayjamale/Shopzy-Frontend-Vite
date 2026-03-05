@@ -13,157 +13,147 @@ import PersonIcon from "@mui/icons-material/Person";
 import CreditCardIcon from "@mui/icons-material/CreditCard";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import LogoutIcon from "@mui/icons-material/Logout";
+import "./Profile.css";
 
 const menu = [
-  { name: "Orders", path: "/account/orders", icon: <ShoppingBagIcon /> },
-  { name: "Profile", path: "/account/profile", icon: <PersonIcon /> },
+  { name: "Orders",      path: "/account/orders",     icon: <ShoppingBagIcon /> },
+  { name: "Profile",     path: "/account/profile",    icon: <PersonIcon /> },
   { name: "Saved Cards", path: "/account/saved-card", icon: <CreditCardIcon /> },
-  { name: "Addresses", path: "/account/addresses", icon: <LocationOnIcon /> },
-  { name: "Logout", path: "/", icon: <LogoutIcon /> },
+  { name: "Addresses",   path: "/account/addresses",  icon: <LocationOnIcon /> },
+  { name: "Logout",      path: "/",                   icon: <LogoutIcon /> },
 ];
 
 const Profile = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const dispatch = useAppDispatch();
-  const { user, orders } = useAppSelector((store) => store);
-  const [snackbarOpen, setOpenSnackbar] = useState(false);
+  const navigate  = useNavigate();
+  const location  = useLocation();
+  const dispatch  = useAppDispatch();
 
-  const handleLogout = () => {
-    dispatch(performLogout());
-    navigate("/");
-  };
+  // ✅ Granular selectors — no whole-slice returns
+  const fullName      = useAppSelector((s) => s.user.user?.fullName);
+  const email         = useAppSelector((s) => s.user.user?.email);
+  const profileUpdated = useAppSelector((s) => s.user.profileUpdated);
+  const orderCanceled  = useAppSelector((s) => s.orders.orderCanceled);
+  const userError      = useAppSelector((s) => s.user.error);
+  const ordersCount    = useAppSelector((s) => s.orders.orders?.length ?? 0);
+
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
+  const handleLogout = () => { dispatch(performLogout()); navigate("/"); };
 
   const handleClick = (item: any) => {
     if (item.name === "Logout") handleLogout();
     else navigate(item.path);
   };
 
-  const handleCloseSnackbar = () => setOpenSnackbar(false);
-
   useEffect(() => {
-    if (user.profileUpdated || orders.orderCanceled || user.error) {
-      setOpenSnackbar(true);
-    }
-  }, [user.profileUpdated, orders.orderCanceled, user.error]);
+    if (profileUpdated || orderCanceled || userError) setSnackbarOpen(true);
+  }, [profileUpdated, orderCanceled, userError]);
 
-  const getUserInitials = () => {
-    if (!user.user?.fullName) return "U";
-    return user.user.fullName
-      .split(" ")
-      .map((w) => w[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
+  const getInitials = () => {
+    if (!fullName) return "U";
+    return fullName.split(" ").map((w: string) => w[0]).join("").toUpperCase().slice(0, 2);
   };
-return (
-  <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 px-6 md:px-16 py-10">
 
-    {/* Profile Header */}
-    <div className="bg-gradient-to-r from-indigo-600 to-purple-600 
-                    text-white rounded-3xl shadow-xl p-8 mb-10">
+  const snackbarMsg = userError
+    ? typeof userError === "string" ? userError : "Something went wrong."
+    : orderCanceled
+    ? "Order cancelled successfully"
+    : "Profile updated successfully";
 
-      <div className="flex flex-col md:flex-row md:items-center gap-6">
+  return (
+    <div className="amz-profile-page">
 
-        {/* Avatar */}
-        <div className="w-20 h-20 rounded-2xl bg-white text-indigo-700
-                        flex items-center justify-center text-2xl font-extrabold shadow-md">
-          {getUserInitials()}
-        </div>
-
-        {/* User Info */}
-        <div className="flex-1">
-          <h2 className="text-2xl font-bold tracking-wide">
-            {user.user?.fullName || "User"}
-          </h2>
-          <p className="text-sm text-indigo-100 mt-1">
-            {user.user?.email}
-          </p>
-
-          {/* Stats */}
-          <div className="flex gap-10 mt-6 text-sm">
-            <div>
-              <p className="text-xl font-bold">
-                {orders.orders?.length || 0}
-              </p>
-              <p className="text-indigo-200">Orders</p>
-            </div>
-            <div>
-              <p className="text-xl font-bold">2</p>
-              <p className="text-indigo-200">Cards</p>
-            </div>
-            <div>
-              <p className="text-xl font-bold">1</p>
-              <p className="text-indigo-200">Addresses</p>
-            </div>
-          </div>
-        </div>
-
+      {/* Top bar */}
+      <div className="amz-profile-topbar" onClick={() => navigate("/")}>
+        <span className="amz-profile-topbar-logo">shop<span>.</span>in</span>
       </div>
-    </div>
 
-    {/* Navigation */}
-    <div className="flex flex-wrap gap-4 mb-10">
+      <div className="amz-profile-wrapper">
 
-      {menu.map((item) => (
-        <div
-          key={item.name}
-          onClick={() => handleClick(item)}
-          className={`
-            flex items-center gap-2 px-6 py-3
-            rounded-xl cursor-pointer
-            font-medium text-sm transition-all duration-200 shadow-sm
-            ${
-              location.pathname === item.path
-                ? "bg-indigo-600 text-white shadow-lg"
-                : "bg-white text-gray-700 hover:bg-indigo-100"
-            }
-          `}
-        >
-          {item.icon}
-          {item.name}
+        {/* Breadcrumb */}
+        <div className="amz-breadcrumb">
+          <a href="/">shop.in</a>
+          <span>›</span>
+          <span>Your Account</span>
         </div>
-      ))}
 
-    </div>
+        <h1 className="amz-page-title">Your Account</h1>
 
-    {/* Content Area */}
-    <div className="bg-white rounded-3xl shadow-xl p-8 min-h-[450px]">
+        <div className="amz-profile-layout">
 
-      <Routes>
-        <Route path="/" element={<UserDetails />} />
-        <Route path="/orders" element={<Order />} />
-        <Route path="/orders/:orderId/:orderItemId" element={<OrderDetails />} />
-        <Route path="/profile" element={<UserDetails />} />
-        <Route path="/saved-card" element={<SavedCards />} />
-        <Route path="/addresses" element={<Addresses />} />
-      </Routes>
+          {/* ── Sidebar ── */}
+          <aside className="amz-sidebar">
+            <div className="amz-sidebar-header">Account</div>
 
-    </div>
+            <div className="amz-sidebar-user">
+              <div className="amz-sidebar-avatar">{getInitials()}</div>
+              <div>
+                <div className="amz-sidebar-user-name">{fullName || "User"}</div>
+                <div className="amz-sidebar-user-email">{email}</div>
+              </div>
+            </div>
 
-    {/* Snackbar */}
-    <Snackbar
-      anchorOrigin={{ vertical: "top", horizontal: "right" }}
-      open={snackbarOpen}
-      autoHideDuration={6000}
-      onClose={handleCloseSnackbar}
-    >
-      <Alert
-        onClose={handleCloseSnackbar}
-        severity={user.error ? "error" : "success"}
-        variant="filled"
+            <nav className="amz-sidebar-nav">
+              {menu.map((item, i) => (
+                <React.Fragment key={item.name}>
+                  {item.name === "Logout" && <div className="amz-sidebar-divider" />}
+                  <div
+                    className={`amz-sidebar-item ${location.pathname === item.path ? "active" : ""}`}
+                    onClick={() => handleClick(item)}
+                  >
+                    {item.icon}
+                    {item.name}
+                  </div>
+                </React.Fragment>
+              ))}
+            </nav>
+
+            {/* Order count stat */}
+            <div style={{ padding: "12px 16px", borderTop: "1px solid #f0f2f2" }}>
+              <div style={{ fontSize: "0.75rem", color: "#565959" }}>Total Orders</div>
+              <div style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f1111" }}>{ordersCount}</div>
+            </div>
+          </aside>
+
+          {/* ── Main content ── */}
+          <main>
+            <Routes>
+              <Route path="/"              element={<UserDetails />} />
+              <Route path="/orders"        element={<Order />} />
+              <Route path="/orders/:orderId/:orderItemId" element={<OrderDetails />} />
+              <Route path="/profile"       element={<UserDetails />} />
+              <Route path="/saved-card"    element={<SavedCards />} />
+              <Route path="/addresses"     element={<Addresses />} />
+            </Routes>
+          </main>
+
+        </div>
+      </div>
+
+      {/* Snackbar */}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={() => setSnackbarOpen(false)}
       >
-        {user.error
-          ? user.error
-          : orders.orderCanceled
-          ? "Order cancelled successfully"
-          : "Profile updated successfully"}
-      </Alert>
-    </Snackbar>
-
-  </div>
-);
-
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={userError ? "error" : "success"}
+          variant="filled"
+          sx={{
+            borderRadius: "3px",
+            backgroundColor: userError ? "#c40000" : "#067d62",
+            color: "#fff",
+            fontFamily: "'Amazon Ember','Helvetica Neue',Arial,sans-serif",
+            "& .MuiAlert-icon": { color: "#fff" },
+          }}
+        >
+          {snackbarMsg}
+        </Alert>
+      </Snackbar>
+    </div>
+  );
 };
 
 export default Profile;
