@@ -43,9 +43,8 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt }) => {
   };
 
   const toggleZoom = () => {
-    setIsZoomed(!isZoomed);
+    setIsZoomed(prev => !prev);
     setOffset({ x: 0, y: 0 });
-    console.log("toggle zoom ----- ",isZoomed)
   };
 
   useEffect(() => {
@@ -58,29 +57,52 @@ const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt }) => {
     <div
       style={{
         overflow: 'hidden',
-        cursor: isZoomed ? 'zoom-out' : 'zoom-in',
-        width: isZoomed ? '100%' : '100%',
-        height: 'auto',
+        cursor: isZoomed ? (isDragging ? 'grabbing' : 'zoom-out') : 'zoom-in',
+        width: '100%',
+        height: '100%',
         position: 'relative',
-        
+        background: '#f5f5f5',
+        borderRadius: '8px',
       }}
-      onClick={toggleZoom}
+      onClick={!isDragging ? toggleZoom : undefined}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onContextMenu={handleContextMenu}
     >
+      {/* Zoom hint badge */}
+      {!isZoomed && (
+        <div style={{
+          position: 'absolute',
+          bottom: 12,
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: 'rgba(0,0,0,0.55)',
+          color: '#fff',
+          fontSize: 11,
+          padding: '4px 10px',
+          borderRadius: 20,
+          pointerEvents: 'none',
+          zIndex: 10,
+          letterSpacing: 0.3,
+        }}>
+          🔍 Click to zoom
+        </div>
+      )}
+
       <img
         ref={imgRef}
         src={src}
         alt={alt}
+        draggable={false}
         style={{
-          width: isZoomed ? '200%' : '200%',
-          height: isZoomed ? '200%' : 'auto',
+          width: isZoomed ? '220%' : '100%',
+          height: isZoomed ? '220%' : 'auto',
           transform: `translate(${offset.x}px, ${offset.y}px)`,
-          transition: isDragging ? 'none' : 'transform 0.3s',
+          transition: isDragging ? 'none' : 'width 0.3s ease, height 0.3s ease, transform 0.3s ease',
           userSelect: 'none',
+          display: 'block',
         }}
       />
     </div>
