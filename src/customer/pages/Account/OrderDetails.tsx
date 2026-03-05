@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import {
   cancelOrder,
@@ -6,6 +8,7 @@ import {
   fetchOrderItemById,
 } from "../../../Redux Toolkit/Customer/OrderSlice";
 import { createReview } from "../../../Redux Toolkit/Customer/ReviewSlice";
+import { uploadToCloudinary } from "../../../util/uploadToCloudnary";
 import { useNavigate, useParams } from "react-router-dom";
 import OrderStepper from "./OrderStepper";
 import PaymentsIcon from "@mui/icons-material/Payments";
@@ -15,10 +18,11 @@ import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import CloseIcon from "@mui/icons-material/Close";
 import RateReviewIcon from "@mui/icons-material/RateReview";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import "./Profile.css";
 
 /* ══════════════════════════════════════════════════════
-   Inline Review Modal — no extra file needed
+   Inline Review Modal — Formik + Image support
    ══════════════════════════════════════════════════════ */
 
 interface ReviewModalProps {
@@ -28,6 +32,12 @@ interface ReviewModalProps {
   productTitle: string;
   productImage: string;
   sellerName?: string;
+}
+
+interface FormValues {
+  reviewText: string;
+  reviewRating: number;
+  productImages: string[];
 }
 
 const RATING_LABELS: Record<number, string> = {
@@ -45,54 +55,104 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
   const reviewLoading = useAppSelector((s) => s.review.loading);
   const reviewSuccess = useAppSelector((s) => s.review.success);
 
-  const [rating, setRating]       = useState(0);
-  const [hovered, setHovered]     = useState(0);
-  const [headline, setHeadline]   = useState("");
-  const [body, setBody]           = useState("");
+  const [hovered, setHovered] = useState(0);
+  const [uploadingImg, setUploadingImg] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [errors, setErrors]       = useState<{ rating?: string; headline?: string; body?: string }>({});
+
+  // ── Formik — unified form state ──
+  const formik = useFormik<FormValues>({
+    initialValues: { reviewText: "", reviewRating: 0, productImages: [] },
+    validationSchema: Yup.object({
+      reviewText: Yup.string()
+        .required("Review text is required")
+        .min(10, "Review must be at least 10 characters long"),
+      reviewRating: Yup.number()
+        .required("Rating is required")
+        .min(1, "Please select a rating")
+        .max(5),
+    }),
+    onSubmit: (values) => {
+      setSubmitted(true);
+      // ✅ Unified dispatch shape — matches ReviewForm.tsx
+      dispatch(createReview({
+        productId,
+        review: values,
+        jwt: localStorage.getItem("jwt") || "",
+      }));
+    },
+  });
 
   // Reset when modal opens
   useEffect(() => {
     if (open) {
-      setRating(0); setHovered(0); setHeadline(""); setBody("");
-      setSubmitted(false); setErrors({});
+      formik.resetForm();
+      setHovered(0);
+      setSubmitted(false);
     }
   }, [open]);
 
-  // Close on success
+  // Auto-close 2s after success
   useEffect(() => {
     if (reviewSuccess && submitted) {
-      const t = setTimeout(() => { onClose(); }, 1800);
+      const t = setTimeout(onClose, 2000);
       return () => clearTimeout(t);
     }
   }, [reviewSuccess, submitted]);
 
   if (!open) return null;
 
-  const validate = () => {
-    const e: typeof errors = {};
-    if (!rating)              e.rating   = "Please select a star rating.";
-    if (!headline.trim())     e.headline = "Please add a headline.";
-    if (body.trim().length < 10) e.body  = "Review must be at least 10 characters.";
-    setErrors(e);
-    return Object.keys(e).length === 0;
+  // ── Image upload ──
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImg(true);
+    try {
+      const url = await uploadToCloudinary(file);
+      formik.setFieldValue("productImages", [...formik.values.productImages, url]);
+    } finally {
+      setUploadingImg(false);
+      e.target.value = "";
+    }
   };
 
-  const handleSubmit = () => {
-    if (!validate()) return;
-    setSubmitted(true);
-    dispatch(createReview({
-      productId,
-      reviewData: { rating, reviewTitle: headline, reviewBody: body },
-      jwt: localStorage.getItem("jwt") || "",
-    }));
+  const handleRemoveImage = (index: number) => {
+    const updated = formik.values.productImages.filter((_, i) => i !== index);
+    formik.setFieldValue("productImages", updated);
   };
 
-  const activeRating = hovered || rating;
+  const activeRating = hovered || formik.values.reviewRating;
+
+  // ── Focus/blur handlers ──
+  const onFocus = (e: React.FocusEvent<HTMLTextAreaElement>) => {
+    e.target.style.borderColor = "#e77600";
+    e.target.style.boxShadow = "0 0 0 3px rgba(228,121,17,0.5)";
+  };
+
+  const onBlur = (hasErr: boolean) =>
+    (e: React.FocusEvent<HTMLTextAreaElement>) => {
+      e.target.style.borderColor = hasErr ? "#c40000" : "#888c8c";
+      e.target.style.boxShadow = hasErr ? "0 0 0 3px rgba(196,0,0,0.2)" : "none";
+    };
+
+  const textareaBase = (hasErr: boolean): React.CSSProperties => ({
+    width: "100%", padding: "8px 12px", resize: "vertical",
+    border: `1px solid ${hasErr ? "#c40000" : "#888c8c"}`,
+    borderRadius: 3, fontSize: "0.9375rem", outline: "none",
+    fontFamily: "inherit", color: "#0f1111",
+    boxShadow: hasErr ? "0 0 0 3px rgba(196,0,0,0.2)" : "none",
+    transition: "border-color 0.15s ease, box-shadow 0.15s ease",
+  });
+
+  const ErrMsg = ({ msg }: { msg?: string }) =>
+    msg ? (
+      <p style={{ color: "#c40000", fontSize: "0.8125rem", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
+        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, background: "#c40000", color: "#fff", borderRadius: "50%", fontSize: 10, fontWeight: "bold", flexShrink: 0 }}>!</span>
+        {msg}
+      </p>
+    ) : null;
 
   return (
-    /* Backdrop */
+    /* ── Backdrop ── */
     <div
       onClick={onClose}
       style={{
@@ -101,7 +161,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         padding: 16,
       }}
     >
-      {/* Modal panel */}
+      {/* ── Panel ── */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -111,7 +171,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
         }}
       >
-        {/* Header */}
+        {/* ── Header ── */}
         <div style={{
           background: "#232f3e", color: "#fff", padding: "14px 20px",
           display: "flex", alignItems: "center", justifyContent: "space-between",
@@ -128,164 +188,194 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 
         <div style={{ padding: "20px 24px" }}>
 
-          {/* Success state */}
+          {/* ════════════════ SUCCESS SCREEN ════════════════ */}
           {reviewSuccess && submitted ? (
             <div style={{
-              textAlign: "center", padding: "32px 0",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 12,
+              textAlign: "center", padding: "24px 0", display: "flex", flexDirection: "column", alignItems: "center", gap: 16,
             }}>
-              <CheckCircleIcon style={{ fontSize: "3rem", color: "#067d62" }} />
-              <div style={{ fontSize: "1.125rem", fontWeight: 700, color: "#0f1111" }}>
-                Thank you for your review!
+              <CheckCircleIcon style={{ fontSize: "4rem", color: "#067d62" }} />
+              <div>
+                <div style={{ fontSize: "1.125rem", fontWeight: 700, color: "#0f1111" }}>
+                  Thank you for your review!
+                </div>
+                <div style={{ fontSize: "0.875rem", color: "#565959", marginTop: 6 }}>
+                  Your feedback helps others make informed decisions.
+                </div>
               </div>
-              <div style={{ fontSize: "0.875rem", color: "#565959" }}>
-                Your feedback helps others make informed decisions.
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* Product info strip */}
+
+              {/* Product recap */}
               <div style={{
                 display: "flex", gap: 12, alignItems: "center",
                 background: "#f7f8f8", border: "1px solid #d5d9d9",
-                borderRadius: 3, padding: "12px 14px", marginBottom: 20,
+                borderRadius: 3, padding: "12px 16px", width: "100%", textAlign: "left",
               }}>
-                <img
-                  src={productImage}
-                  alt={productTitle}
-                  style={{ width: 56, height: 56, objectFit: "contain", borderRadius: 3, border: "1px solid #d5d9d9", background: "#fff" }}
-                />
+                <img src={productImage} alt={productTitle} style={{ width: 56, height: 56, objectFit: "contain", borderRadius: 3, border: "1px solid #d5d9d9", background: "#fff" }} />
                 <div>
-                  <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#0f1111", lineHeight: 1.4 }}>
-                    {productTitle}
+                  {sellerName && <div style={{ fontSize: "0.75rem", color: "#565959" }}>Sold by {sellerName}</div>}
+                  <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#0f1111" }}>{productTitle}</div>
+                  <div style={{ display: "flex", gap: 2, marginTop: 4 }}>
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      s <= formik.values.reviewRating
+                        ? <StarIcon key={s} style={{ fontSize: "0.75rem", color: "#ff9900" }} />
+                        : <StarBorderIcon key={s} style={{ fontSize: "0.75rem", color: "#d5d9d9" }} />
+                    ))}
                   </div>
-                  {sellerName && (
-                    <div style={{ fontSize: "0.8125rem", color: "#565959", marginTop: 2 }}>
-                      Sold by {sellerName}
-                    </div>
-                  )}
                 </div>
               </div>
+            </div>
 
-              {/* ── Star rating ── */}
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0f1111", marginBottom: 8 }}>
-                  Overall rating <span style={{ color: "#c40000" }}>*</span>
-                </label>
-                <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <button
-                      key={star}
-                      onMouseEnter={() => setHovered(star)}
-                      onMouseLeave={() => setHovered(0)}
-                      onClick={() => { setRating(star); setErrors((e) => ({ ...e, rating: undefined })); }}
-                      style={{
-                        background: "none", border: "none", cursor: "pointer",
-                        padding: 2, lineHeight: 1, transition: "transform 0.1s ease",
-                        transform: activeRating >= star ? "scale(1.15)" : "scale(1)",
-                      }}
-                    >
-                      {activeRating >= star
-                        ? <StarIcon style={{ fontSize: "2rem", color: "#ff9900" }} />
-                        : <StarBorderIcon style={{ fontSize: "2rem", color: "#adb1b8" }} />}
-                    </button>
-                  ))}
-                  {activeRating > 0 && (
-                    <span style={{ fontSize: "0.875rem", color: "#565959", marginLeft: 8 }}>
-                      {RATING_LABELS[activeRating]}
-                    </span>
-                  )}
-                </div>
-                {errors.rating && (
-                  <p style={{ color: "#c40000", fontSize: "0.8125rem", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, background: "#c40000", color: "#fff", borderRadius: "50%", fontSize: 10, fontWeight: "bold" }}>!</span>
-                    {errors.rating}
-                  </p>
+          ) : (
+          /* ════════════════ FORM ════════════════ */
+          <form onSubmit={formik.handleSubmit} noValidate>
+
+            {/* Product info strip */}
+            <div style={{
+              display: "flex", gap: 12, alignItems: "center",
+              background: "#f7f8f8", border: "1px solid #d5d9d9",
+              borderRadius: 3, padding: "12px 14px", marginBottom: 20,
+            }}>
+              <img
+                src={productImage} alt={productTitle}
+                style={{ width: 56, height: 56, objectFit: "contain", borderRadius: 3, border: "1px solid #d5d9d9", background: "#fff", flexShrink: 0 }}
+              />
+              <div>
+                {sellerName && <div style={{ fontSize: "0.75rem", color: "#565959", marginBottom: 2 }}>Sold by {sellerName}</div>}
+                <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#0f1111", lineHeight: 1.4 }}>{productTitle}</div>
+              </div>
+            </div>
+
+            {/* ── Overall Rating ── */}
+            <div style={{ marginBottom: 18 }}>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0f1111", marginBottom: 8 }}>
+                Overall rating <span style={{ color: "#c40000" }}>*</span>
+              </label>
+              <div style={{ display: "flex", alignItems: "center", gap: 2 }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star} type="button"
+                    onMouseEnter={() => setHovered(star)}
+                    onMouseLeave={() => setHovered(0)}
+                    onClick={() => formik.setFieldValue("reviewRating", star)}
+                    style={{
+                      background: "none", border: "none", cursor: "pointer",
+                      padding: 2, lineHeight: 1,
+                      transform: activeRating >= star ? "scale(1.18)" : "scale(1)",
+                      transition: "transform 0.1s ease",
+                    }}
+                  >
+                    {activeRating >= star
+                      ? <StarIcon style={{ fontSize: "2rem", color: "#ff9900" }} />
+                      : <StarBorderIcon style={{ fontSize: "2rem", color: "#adb1b8" }} />}
+                  </button>
+                ))}
+                {activeRating > 0 && (
+                  <span style={{ fontSize: "0.875rem", color: "#565959", marginLeft: 8 }}>
+                    {RATING_LABELS[activeRating]}
+                  </span>
                 )}
               </div>
+              {formik.touched.reviewRating && <ErrMsg msg={formik.errors.reviewRating} />}
+            </div>
 
-              {/* ── Headline ── */}
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0f1111", marginBottom: 6 }}>
-                  Add a headline <span style={{ color: "#c40000" }}>*</span>
+            {/* ── Written review ── */}
+            <div style={{ marginBottom: 16 }}>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0f1111", marginBottom: 6 }}>
+                Add a written review <span style={{ color: "#c40000" }}>*</span>
+              </label>
+              <textarea
+                name="reviewText"
+                rows={5}
+                maxLength={2000}
+                value={formik.values.reviewText}
+                onChange={formik.handleChange}
+                onBlur={(e) => { formik.handleBlur(e); onBlur(!!formik.errors.reviewText)(e); }}
+                onFocus={onFocus}
+                placeholder="What did you like or dislike? What did you use this product for?"
+                style={textareaBase(!!formik.touched.reviewText && !!formik.errors.reviewText)}
+              />
+              <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
+                {formik.touched.reviewText && <ErrMsg msg={formik.errors.reviewText} />}
+                <span style={{ fontSize: "0.75rem", color: "#888c8c", marginLeft: "auto" }}>
+                  {formik.values.reviewText.length}/2000
+                </span>
+              </div>
+            </div>
+
+            {/* ── Photo upload ── */}
+            <div style={{ marginBottom: 18 }}>
+              <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0f1111", marginBottom: 8 }}>
+                Add photos <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "#565959" }}>(optional)</span>
+              </label>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "flex-start" }}>
+
+                {/* Upload trigger */}
+                <label
+                  htmlFor="oi-fileInput"
+                  style={{
+                    width: 76, height: 76,
+                    border: "1px dashed #adb1b8", borderRadius: 3,
+                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    cursor: "pointer", background: "#fafafa", gap: 4,
+                    fontSize: "0.625rem", color: "#565959",
+                    transition: "border-color 0.15s, background 0.15s",
+                  }}
+                >
+                  {uploadingImg
+                    ? <span style={{ width: 18, height: 18, border: "2px solid rgba(0,0,0,0.15)", borderTopColor: "#111", borderRadius: "50%", animation: "amz-spin 0.7s linear infinite", display: "inline-block" }} />
+                    : <><AddPhotoAlternateIcon style={{ fontSize: "1.5rem", color: "#565959" }} /><span>Add photo</span></>}
                 </label>
                 <input
-                  type="text"
-                  value={headline}
-                  onChange={(e) => { setHeadline(e.target.value); setErrors((err) => ({ ...err, headline: undefined })); }}
-                  placeholder="What's most important to know?"
-                  maxLength={100}
-                  style={{
-                    width: "100%", padding: "8px 12px",
-                    border: `1px solid ${errors.headline ? "#c40000" : "#888c8c"}`,
-                    borderRadius: 3, fontSize: "0.9375rem", outline: "none",
-                    fontFamily: "inherit", color: "#0f1111",
-                    boxShadow: errors.headline ? "0 0 0 3px rgba(196,0,0,0.2)" : "none",
-                    transition: "border-color 0.15s ease, box-shadow 0.15s ease",
-                  }}
-                  onFocus={(e) => { if (!errors.headline) e.target.style.borderColor = "#e77600"; e.target.style.boxShadow = "0 0 0 3px rgba(228,121,17,0.5)"; }}
-                  onBlur={(e) => { e.target.style.borderColor = errors.headline ? "#c40000" : "#888c8c"; e.target.style.boxShadow = errors.headline ? "0 0 0 3px rgba(196,0,0,0.2)" : "none"; }}
+                  id="oi-fileInput"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleImageChange}
+                  disabled={uploadingImg}
                 />
-                {errors.headline && (
-                  <p style={{ color: "#c40000", fontSize: "0.8125rem", marginTop: 4, display: "flex", alignItems: "center", gap: 4 }}>
-                    <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, background: "#c40000", color: "#fff", borderRadius: "50%", fontSize: 10, fontWeight: "bold" }}>!</span>
-                    {errors.headline}
-                  </p>
-                )}
-              </div>
 
-              {/* ── Review body ── */}
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0f1111", marginBottom: 6 }}>
-                  Add a written review <span style={{ color: "#c40000" }}>*</span>
-                </label>
-                <textarea
-                  value={body}
-                  onChange={(e) => { setBody(e.target.value); setErrors((err) => ({ ...err, body: undefined })); }}
-                  placeholder="What did you like or dislike? What did you use this product for?"
-                  rows={5}
-                  maxLength={2000}
-                  style={{
-                    width: "100%", padding: "8px 12px", resize: "vertical",
-                    border: `1px solid ${errors.body ? "#c40000" : "#888c8c"}`,
-                    borderRadius: 3, fontSize: "0.9375rem", outline: "none",
-                    fontFamily: "inherit", color: "#0f1111",
-                    boxShadow: errors.body ? "0 0 0 3px rgba(196,0,0,0.2)" : "none",
-                    transition: "border-color 0.15s ease, box-shadow 0.15s ease",
-                  }}
-                  onFocus={(e) => { e.target.style.borderColor = "#e77600"; e.target.style.boxShadow = "0 0 0 3px rgba(228,121,17,0.5)"; }}
-                  onBlur={(e) => { e.target.style.borderColor = errors.body ? "#c40000" : "#888c8c"; e.target.style.boxShadow = errors.body ? "0 0 0 3px rgba(196,0,0,0.2)" : "none"; }}
-                />
-                <div style={{ display: "flex", justifyContent: "space-between", marginTop: 4 }}>
-                  {errors.body
-                    ? <p style={{ color: "#c40000", fontSize: "0.8125rem", display: "flex", alignItems: "center", gap: 4 }}>
-                        <span style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: 14, height: 14, background: "#c40000", color: "#fff", borderRadius: "50%", fontSize: 10, fontWeight: "bold" }}>!</span>
-                        {errors.body}
-                      </p>
-                    : <span />
-                  }
-                  <span style={{ fontSize: "0.75rem", color: "#888c8c" }}>{body.length}/2000</span>
-                </div>
+                {/* Thumbnails */}
+                {formik.values.productImages.map((img, i) => (
+                  <div key={i} style={{ position: "relative", width: 76, height: 76 }}>
+                    <img src={img} alt={`upload-${i}`} style={{ width: 76, height: 76, objectFit: "cover", borderRadius: 3, border: "1px solid #d5d9d9" }} />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveImage(i)}
+                      style={{
+                        position: "absolute", top: -6, right: -6,
+                        width: 18, height: 18, background: "#c40000", color: "#fff",
+                        border: "none", borderRadius: "50%", cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: "0.625rem", fontWeight: "bold",
+                      }}
+                    >✕</button>
+                  </div>
+                ))}
               </div>
+            </div>
 
-              {/* ── Actions ── */}
-              <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
-                <button className="amz-btn-secondary" onClick={onClose} style={{ padding: "8px 20px" }}>
-                  Cancel
-                </button>
-                <button
-                  className="amz-btn-primary"
-                  onClick={handleSubmit}
-                  disabled={reviewLoading}
-                  style={{ padding: "8px 24px", display: "flex", alignItems: "center", gap: 6 }}
-                >
-                  {reviewLoading
-                    ? <><span style={{ width: 14, height: 14, border: "2px solid rgba(0,0,0,0.15)", borderTopColor: "#111", borderRadius: "50%", animation: "amz-spin 0.7s linear infinite", display: "inline-block" }} />Submitting...</>
-                    : "Submit Review"
-                  }
-                </button>
-              </div>
-            </>
+            {/* ── Actions ── */}
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button
+                type="button"
+                onClick={onClose}
+                className="amz-btn-secondary"
+                style={{ padding: "8px 20px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="amz-btn-primary"
+                disabled={reviewLoading || uploadingImg}
+                style={{ padding: "8px 24px", display: "flex", alignItems: "center", gap: 6, opacity: reviewLoading || uploadingImg ? 0.6 : 1 }}
+              >
+                {reviewLoading
+                  ? <><span style={{ width: 14, height: 14, border: "2px solid rgba(0,0,0,0.15)", borderTopColor: "#111", borderRadius: "50%", animation: "amz-spin 0.7s linear infinite", display: "inline-block" }} />Submitting...</>
+                  : "Submit Review"}
+              </button>
+            </div>
+
+          </form>
           )}
         </div>
       </div>
@@ -496,7 +586,7 @@ const OrderDetails = () => {
 
       </div>
 
-      {/* Review Modal — rendered inline, no extra file */}
+      {/* Review Modal — rendered inline */}
       <ReviewModal
         open={reviewOpen}
         onClose={() => setReviewOpen(false)}

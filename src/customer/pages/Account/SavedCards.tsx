@@ -10,14 +10,13 @@ const SavedCards = () => (
     </div>
 
     <div className="amz-card">
-      <div className="amz-saved-cards-empty">
-        <div className="amz-saved-cards-icon">
+      <div className="amz-empty-state">
+        <div className="amz-empty-icon">
           <AddCardIcon />
         </div>
-        <div className="amz-saved-cards-title">No saved cards</div>
-        <div className="amz-saved-cards-desc">
-          Save your credit or debit card for faster checkout.
-          Your payment info is protected with 128-bit SSL encryption.
+        <div className="amz-empty-title">No saved cards</div>
+        <div className="amz-empty-desc">
+          Save your credit or debit card for faster checkout. Your payment info is protected with 128-bit SSL encryption.
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8125rem", color: "#565959" }}>
@@ -25,7 +24,7 @@ const SavedCards = () => (
           Secured by shop.in
         </div>
 
-        <button className="amz-btn-primary" style={{ marginTop: 8, padding: "8px 24px" }}>
+        <button className="amz-btn-primary" style={{ marginTop: 12, padding: "8px 24px" }}>
           Add a credit or debit card
         </button>
       </div>
