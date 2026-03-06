@@ -150,16 +150,125 @@ const Products = () => {
               ))}
             </section>
           ) : (
-            <section className="flex flex-col items-center justify-center gap-5 h-[65vh]">
-              <img
-                className="w-64 opacity-80"
-                src="https://cdn.pixabay.com/photo/2022/05/28/10/45/oops-7227010_960_720.png"
-                alt="No products found"
-              />
-              <div className="text-center">
-                <h2 className="text-xl font-bold text-gray-700">No results for "{categoryLabel}"</h2>
-                <p className="text-sm text-gray-500 mt-1">Try adjusting your filters or search for something else.</p>
+            <section className="flex flex-col items-center justify-center gap-5 py-16 text-center px-4">
+              <style>{`
+                .amazon-empty-icon {
+                  width: 140px;
+                  height: 140px;
+                }
+                .amazon-empty-title {
+                  font-size: 20px;
+                  font-weight: 700;
+                  color: #0F1111;
+                  margin: 0 0 8px;
+                }
+                .amazon-empty-desc {
+                  font-size: 14px;
+                  color: #565959;
+                  margin: 0 0 16px;
+                  line-height: 1.5;
+                }
+                .amazon-empty-search {
+                  display: flex;
+                  width: 100%;
+                  max-width: 400px;
+                  border: 1px solid #888;
+                  border-radius: 4px;
+                  overflow: hidden;
+                  margin-bottom: 20px;
+                  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+                }
+                .amazon-empty-search input {
+                  flex: 1;
+                  padding: 8px 12px;
+                  border: none;
+                  outline: none;
+                  font-size: 14px;
+                }
+                .amazon-empty-search-btn {
+                  padding: 0 14px;
+                  background: linear-gradient(to bottom, #FFD814, #F8B200);
+                  border: none;
+                  border-left: 1px solid #C7980A;
+                  cursor: pointer;
+                }
+                .amazon-empty-search-btn:hover {
+                  background: linear-gradient(to bottom, #f7ca00, #e5a800);
+                }
+                .amazon-empty-suggestions {
+                  text-align: left;
+                  margin-top: 8px;
+                }
+                .amazon-empty-suggestions li {
+                  font-size: 13px;
+                  color: #565959;
+                  margin-bottom: 6px;
+                  margin-left: 20px;
+                }
+                .amazon-empty-suggestions li::marker {
+                  color: #949494;
+                }
+                .amazon-empty-link {
+                  color: #007185;
+                  text-decoration: none;
+                  font-size: 13px;
+                  cursor: pointer;
+                }
+                .amazon-empty-link:hover {
+                  text-decoration: underline;
+                  color: #C7511F;
+                }
+              `}</style>
+
+              {/* Icon */}
+              <svg className="amazon-empty-icon" viewBox="0 0 200 180" fill="none">
+                {/* Box/Package icon representing no products */}
+                <rect x="40" y="60" width="120" height="90" rx="4" fill="#DDD" />
+                <rect x="40" y="60" width="120" height="20" rx="4" fill="#CCC" />
+                <rect x="90" y="80" width="20" height="70" fill="#BBB" />
+                <rect x="60" y="100" width="20" height="50" fill="#BBB" />
+                <rect x="120" y="100" width="20" height="50" fill="#BBB" />
+                {/* Sad face on box */}
+                <circle cx="85" cy="100" r="4" fill="#888" />
+                <circle cx="115" cy="100" r="4" fill="#888" />
+                <path d="M80 115 Q100 125 120 115" stroke="#888" strokeWidth="3" fill="none" strokeLinecap="round" />
+              </svg>
+
+              {/* Title */}
+              <h2 className="amazon-empty-title">
+                No products found for "{categoryLabel}"
+              </h2>
+
+              {/* Description */}
+              <p className="amazon-empty-desc">
+                We couldn't find any products matching your selection.
+                <br />
+                Try different keywords or remove filters to see more results.
+              </p>
+
+              {/* Search */}
+              <div className="amazon-empty-search">
+                <input
+                  type="text"
+                  placeholder="Search for products..."
+                />
+                <button className="amazon-empty-search-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#333" strokeWidth="2.5">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="M21 21l-4.35-4.35" strokeLinecap="round" />
+                  </svg>
+                </button>
               </div>
+
+              {/* Suggestions */}
+              <ul className="amazon-empty-suggestions">
+                <li>Remove some filters</li>
+                <li>Check spelling of keywords</li>
+                <li>Browse other categories</li>
+                <li>
+                  <span className="amazon-empty-link">Browse all products</span>
+                </li>
+              </ul>
             </section>
           )}
 
