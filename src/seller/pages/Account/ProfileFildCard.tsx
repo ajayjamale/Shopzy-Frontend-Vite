@@ -1,15 +1,25 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Divider } from '@mui/material'
+import React from "react";
 
-
-const ProfileFildCard = ({value,keys}:any) => {
-  return (
-    <div className='p-5 flex items-center bg-slate-50 '>
-          <p className='w-20 lg:w-36 pr-5'>{keys}</p>
-          <Divider orientation="vertical" flexItem />
-          <p className='pl-4 lg:pl-10 font-semibold lg:text-lg'>{value}</p>
-        </div>
-  )
+interface ProfileFieldCardProps {
+  keys:   string;
+  value?: string;
 }
 
-export default ProfileFildCard
+const ProfileFieldCard = ({ keys, value }: ProfileFieldCardProps) => (
+  <div style={{
+    display:      "grid",
+    gridTemplateColumns: "180px 1fr",
+    alignItems:   "center",
+    padding:      "13px 18px",
+    borderBottom: "1px solid #EAEDEE",
+    background:   "#FFFFFF",
+    gap:          12,
+  }}>
+    <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 600 }}>{keys}</span>
+    <span style={{ fontSize: 14, color: "#0F1111", fontWeight: 500 }}>
+      {value ?? <span style={{ color: "#B0B7BF", fontStyle: "italic" }}>Not provided</span>}
+    </span>
+  </div>
+);
+
+export default ProfileFieldCard;

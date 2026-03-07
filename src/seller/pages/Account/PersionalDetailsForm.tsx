@@ -1,90 +1,55 @@
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { TextField, Button } from "@mui/material";
+import { Field, SaveButton } from "./FormPrimitives";
 import type { UpdateDetailsFormProps } from "./BussinessDetailsForm";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { updateSeller } from "../../../Redux Toolkit/Seller/sellerSlice";
 
 const PersonalDetailsForm = ({ onClose }: UpdateDetailsFormProps) => {
-    const { sellers } = useAppSelector(store => store)
-    const dispatch=useAppDispatch();
+  const { sellers } = useAppSelector((s) => s);
+  const dispatch    = useAppDispatch();
 
-    const formik = useFormik({
-        initialValues: {
-            sellerName: '',
-            email: '',
-            mobile: '',
-        },
-        validationSchema: Yup.object({
-            sellerName: Yup.string().required("Seller Name is required"),
-            email: Yup.string().email("Invalid email address").required("Email is required"),
-            mobile: Yup.string().required("Mobile number is required"),
-        }),
-        onSubmit: (values) => {
-            
-            console.log("data ----- ",values);
-            dispatch(updateSeller(values))
-            onClose()
-        },
-    });
+  const formik = useFormik({
+    initialValues: { sellerName: "", email: "", mobile: "" },
+    validationSchema: Yup.object({
+      sellerName: Yup.string().required("Seller name is required"),
+      email:      Yup.string().email("Invalid email").required("Email is required"),
+      mobile:     Yup.string().required("Mobile is required"),
+    }),
+    onSubmit: (values) => {
+      dispatch(updateSeller(values));
+      onClose();
+    },
+  });
 
-    useEffect(() => {
+  useEffect(() => {
+    if (sellers.profile) {
+      formik.setValues({
+        sellerName: sellers.profile.sellerName ?? "",
+        email:      sellers.profile.email      ?? "",
+        mobile:     sellers.profile.mobile     ?? "",
+      });
+    }
+  }, [sellers.profile]);
 
-        if (sellers.profile) {
-            formik.setValues({
-                sellerName: sellers.profile?.sellerName,
-                email: sellers.profile?.email,
-                mobile: sellers.profile?.mobile,
-
-            })
-        }
-
-    }, [sellers.profile])
-
-    return (
-        <>
-            <h1 className="text-xl pb-5 text-center font-bold text-gray-600">
-                Personal Details
-            </h1>
-            <form className="space-y-5" onSubmit={formik.handleSubmit}>
-                <TextField
-                    fullWidth
-                    id="sellerName"
-                    name="sellerName"
-                    label="Seller Name"
-                    value={formik.values.sellerName}
-                    onChange={formik.handleChange}
-                    error={formik.touched.sellerName && Boolean(formik.errors.sellerName)}
-                    helperText={formik.touched.sellerName && formik.errors.sellerName}
-                />
-                <TextField
-                    fullWidth
-                    id="email"
-                    name="email"
-                    label="Seller Email"
-                    value={formik.values.email}
-                    onChange={formik.handleChange}
-                    error={formik.touched.email && Boolean(formik.errors.email)}
-                    helperText={formik.touched.email && formik.errors.email}
-                />
-                <TextField
-                    fullWidth
-                    id="mobile"
-                    name="mobile"
-                    label="Seller Mobile"
-                    value={formik.values.mobile}
-                    onChange={formik.handleChange}
-                    error={formik.touched.mobile && Boolean(formik.errors.mobile)}
-                    helperText={formik.touched.mobile && formik.errors.mobile}
-                />
-                <Button sx={{ py: ".9rem" }} color="primary" variant="contained" fullWidth type="submit">
-                    Save
-                </Button>
-            </form>
-        </>
-
-    );
+  return (
+    <form onSubmit={formik.handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+      <Field id="sellerName" name="sellerName" label="Seller Name"
+        value={formik.values.sellerName} onChange={formik.handleChange} onBlur={formik.handleBlur}
+        error={formik.touched.sellerName && Boolean(formik.errors.sellerName)}
+        helperText={formik.touched.sellerName && formik.errors.sellerName} />
+      <Field id="email" name="email" label="Email" type="email"
+        value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur}
+        error={formik.touched.email && Boolean(formik.errors.email)}
+        helperText={formik.touched.email && formik.errors.email} />
+      <Field id="mobile" name="mobile" label="Mobile"
+        value={formik.values.mobile} onChange={formik.handleChange} onBlur={formik.handleBlur}
+        error={formik.touched.mobile && Boolean(formik.errors.mobile)}
+        helperText={formik.touched.mobile && formik.errors.mobile} />
+      <SaveButton />
+    </form>
+  );
 };
 
 export default PersonalDetailsForm;

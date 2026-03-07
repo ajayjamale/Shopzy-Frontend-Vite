@@ -15,7 +15,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 const menu = [
-  { name: "Dashboard",            path: "/admin",                      icon: <DashboardIcon /> },
+  { name: "Manage Seller",            path: "/admin",                      icon: <DashboardIcon /> },
   { name: "Coupons",              path: "/admin/coupon",               icon: <IntegrationInstructionsIcon /> },
   { name: "Add New Coupon",       path: "/admin/add-coupon",           icon: <AddIcon /> },
   { name: "Home Page",            path: "/admin/home-grid",            icon: <HomeIcon /> },
