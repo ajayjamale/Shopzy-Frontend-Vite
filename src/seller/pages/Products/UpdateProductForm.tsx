@@ -59,10 +59,26 @@ const validationSchema = Yup.object({
 });
 
 interface FormValues {
-  title: string; description: string; mrpPrice: number; sellingPrice: number;
-  quantity: number; color: string; images: string[]; category: any;
-  sizes: string; seller: Seller | undefined; createdAt: any;
-  numRatings: number; in_stock: boolean;
+  title: string;
+  description: string;
+  mrpPrice: number;
+  sellingPrice: number;
+  // FIX 1: discountPercent was missing from FormValues.
+  // TypeScript infers the formik values type from initialValues.
+  // Without this field declared AND in initialValues, the spread
+  // { ...values, discountPercent } in onSubmit was adding it as an
+  // EXTRA property outside the typed shape — Axios may silently strip
+  // extra keys depending on serialization. Now it is part of the shape.
+  discountPercent: number;
+  quantity: number;
+  color: string;
+  images: string[];
+  category: any;
+  sizes: string;
+  seller: Seller | undefined;
+  createdAt: any;
+  numRatings: number;
+  in_stock: boolean;
 }
 
 // ─── Styled Components ────────────────────────────────────────────────────────
@@ -187,13 +203,25 @@ const UpdateProductForm = () => {
   const formik = useFormik<FormValues>({
     initialValues: {
       title: "", description: "", mrpPrice: 0, sellingPrice: 0,
+      // FIX 2: Added discountPercent to initialValues.
+      // Without this, formik never tracked the field and { ...values }
+      // in onSubmit was spreading an object where discountPercent wasn't
+      // part of the typed shape — causing it to be absent in the request body.
+      discountPercent: 0,
       quantity: 0, color: "", images: [], category: null,
       sizes: "", seller: undefined, createdAt: null, numRatings: 0, in_stock: true,
     },
     // validationSchema,
     onSubmit: (values) => {
-      dispatch(updateProduct({ productId: Number(productId), product: values }));
-      console.log(values);
+      const mrp = Number(values.mrpPrice);
+      const selling = Number(values.sellingPrice);
+      const discountPercent =
+        mrp > 0 && selling >= 0 && mrp > selling
+          ? Math.round(((mrp - selling) / mrp) * 100)
+          : 0;
+      const payload = { ...values, discountPercent };
+      dispatch(updateProduct({ productId: Number(productId), product: payload }));
+      console.log(payload);
     },
   });
 
@@ -221,20 +249,32 @@ const UpdateProductForm = () => {
   }, [sellerProduct.productCreated, sellerProduct.error]);
 
   useEffect(() => {
+    const mrp = products.product?.mrpPrice || 0;
+    const selling = products.product?.sellingPrice || 0;
+    // FIX 3: Populate discountPercent when loading the existing product.
+    // Previously this was always 0 because the field wasn't in setValues.
+    // Now we use the stored value from the backend, or recompute it as a
+    // fallback in case it was saved as 0 for products created before the fix.
+    const storedDiscount = products.product?.discountPercent || 0;
+    const computedDiscount = mrp > 0 && selling > 0 && mrp > selling
+      ? Math.round(((mrp - selling) / mrp) * 100)
+      : 0;
+
     formik.setValues({
       title: products.product?.title || "",
       description: products.product?.description || "",
-      mrpPrice: products.product?.mrpPrice || 0,
-      sellingPrice: products.product?.sellingPrice || 0,
+      mrpPrice: mrp,
+      sellingPrice: selling,
+      discountPercent: storedDiscount > 0 ? storedDiscount : computedDiscount,
       quantity: products.product?.quantity || 0,
       color: products.product?.color || "",
-      images: products.product?.images || ["image/"],
+      images: products.product?.images || [],
       category: products.product?.category,
       sizes: products.product?.sizes || "",
       seller: products.product?.seller,
       createdAt: products.product?.createdAt || "",
       numRatings: products.product?.numRatings || 0,
-      in_stock: products.product?.in_stock || true,
+      in_stock: products.product?.in_stock ?? true,
     });
   }, [products.product]);
 
@@ -384,6 +424,43 @@ const UpdateProductForm = () => {
                     />
                   </FieldRow>
                 </Grid>
+
+                {/* ── Live Discount Preview ── */}
+                <Grid item xs={12} sm={6} lg={3}>
+                  <Box mb={2.5}>
+                    <FieldLabel>Discount % <span style={{ color: AMZ.textMuted, fontWeight: 400 }}>(auto-calculated)</span></FieldLabel>
+                    {(() => {
+                      const mrp = Number(formik.values.mrpPrice);
+                      const sell = Number(formik.values.sellingPrice);
+                      const pct = mrp > 0 && sell >= 0 && mrp > sell ? Math.round(((mrp - sell) / mrp) * 100) : 0;
+                      return (
+                        <Box sx={{
+                          height: '37px', borderRadius: '3px',
+                          border: `1px solid ${pct > 0 ? '#a8d5b5' : AMZ.border}`,
+                          background: pct > 0 ? '#e6f4ea' : AMZ.headerBg,
+                          display: 'flex', alignItems: 'center', px: 1.5, gap: 1,
+                        }}>
+                          <Typography sx={{
+                            fontSize: '18px', fontWeight: 700,
+                            color: pct > 0 ? '#1e7e34' : AMZ.textMuted,
+                            fontFamily: "'Helvetica Neue', Arial",
+                          }}>
+                            {pct > 0 ? `-${pct}%` : '—'}
+                          </Typography>
+                          {pct > 0 && (
+                            <Typography sx={{ fontSize: '11px', color: '#1e7e34', fontFamily: "'Helvetica Neue', Arial" }}>
+                              saves ₹{(mrp - sell).toFixed(0)}
+                            </Typography>
+                          )}
+                        </Box>
+                      );
+                    })()}
+                    <Typography sx={{ fontSize: '11px', color: AMZ.textMuted, mt: 0.5, fontFamily: "'Helvetica Neue', Arial" }}>
+                      Sent to customer site automatically
+                    </Typography>
+                  </Box>
+                </Grid>
+
                 <Grid item xs={12} sm={6} lg={3}>
                   <FieldRow label="Color" required>
                     <AmazonSelect fullWidth error={formik.touched.color && Boolean(formik.errors.color)}>
