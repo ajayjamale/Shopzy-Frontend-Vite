@@ -1,22 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../Config/Api";
 
-// Define the initial state using an interface
+interface Message {
+  message: string;
+  role: "user" | "model";
+}
+
 interface AiChatBotState {
   response: string | null;
   loading: boolean;
   error: string | null;
-  messages: any[]
+  messages: Message[];
 }
 
 const initialState: AiChatBotState = {
   response: null,
   loading: false,
   error: null,
-  messages:[]
+  messages: [],
 };
 
-// Define the async thunk for sending the message to the chatbot
 export const chatBot = createAsyncThunk<
   any,
   { prompt: any; productId: number | null | undefined; userId: number | null }
@@ -27,17 +30,17 @@ export const chatBot = createAsyncThunk<
       const response = await api.post("/ai/chat", prompt, {
         headers: {
           "Content-Type": "application/json",
-          "Authorization":`Bearer ${localStorage.getItem("jwt")}`
+          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
         },
         params: {
           userId,
           productId,
         },
       });
-      console.log("response ",productId, response.data);
+      console.log("chatbot response:", response.data);
       return response.data;
     } catch (error: any) {
-        console.log("error ", error.response);
+      console.log("chatbot error:", error.response);
       return rejectWithValue(
         error.response?.data?.message || "Failed to generate chatbot response"
       );
@@ -45,34 +48,57 @@ export const chatBot = createAsyncThunk<
   }
 );
 
-// Create the slice
 const aiChatBotSlice = createSlice({
   name: "aiChatBot",
   initialState,
-  reducers: {},
+  reducers: {
+    // Optional: clear chat history
+    clearMessages: (state) => {
+      state.messages = [];
+      state.response = null;
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
-      .addCase(chatBot.pending, (state,action) => {
+      .addCase(chatBot.pending, (state, action) => {
         state.loading = true;
         state.error = null;
+
+        // ✅ Add user message to chat immediately
         const { prompt } = action.meta.arg;
-        
-        // You can log or use the data here
-        // console.log('Pending request:', { prompt, productId, userId });
-        const userPrompt={message:prompt.prompt,role:"user"}
-        state.messages=[...state.messages,userPrompt]
+        const userMessage: Message = {
+          message: prompt.prompt,
+          role: "user",
+        };
+        state.messages = [...state.messages, userMessage];
       })
+
       .addCase(chatBot.fulfilled, (state, action) => {
         state.loading = false;
         state.response = action.payload;
-        state.messages=[...state.messages,action.payload]
+
+        // ✅ Extract the text from ApiResponse and set role to "model"
+        const botMessage: Message = {
+          message: action.payload.message, // <-- was: action.payload (whole object)
+          role: "model",
+        };
+        state.messages = [...state.messages, botMessage];
       })
+
       .addCase(chatBot.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload as string;
+
+        // ✅ Show error as a bot message so user sees feedback in chat
+        const errorMessage: Message = {
+          message: "Sorry, something went wrong. Please try again.",
+          role: "model",
+        };
+        state.messages = [...state.messages, errorMessage];
       });
   },
 });
 
-// Export the reducer
+export const { clearMessages } = aiChatBotSlice.actions;
 export default aiChatBotSlice.reducer;
