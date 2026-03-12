@@ -20,19 +20,25 @@ const Home = () => {
   return (
     <>
       {!homePage.loading ? (
-        <div className="space-y-5 lg:space-y-10 relative">
+        // ✅ outer wrapper has NO space-y so carousel touches navbar directly
+        <div className="relative">
+
+          {/* Carousel — flush against navbar, no top margin */}
           <MainCarousel />
 
-          {homePage.homePageData?.electricCategories && <ElectronicCategory />}
-          {homePage.homePageData?.grid && <TopBrand />}
-          {homePage.homePageData?.deals && (
-            <section className="pt-10">
-              <DealSlider />
-            </section>
-          )}
-          {homePage.homePageData?.shopByCategories && <HomeCategory />}
+          {/* Everything below carousel gets normal spacing */}
+          <div className="space-y-5 lg:space-y-10">
+            {homePage.homePageData?.electricCategories && <ElectronicCategory />}
+            {homePage.homePageData?.grid && <TopBrand />}
+            {homePage.homePageData?.deals && (
+              <section className="pt-10">
+                <DealSlider />
+              </section>
+            )}
+            {homePage.homePageData?.shopByCategories && <HomeCategory />}
+          </div>
 
-          {/* ✅ z-[9999] ensures chatbot always renders above carousel and all other content */}
+          {/* Chatbot — fixed, always on top */}
           <section className="fixed bottom-10 right-10 z-[9999]">
             {showChatBot ? (
               <ChatBot handleClose={handleCloseChatBot} />
