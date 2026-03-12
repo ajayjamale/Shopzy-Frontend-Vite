@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Banner from "./Banner/Banner";
-import HomeCategory from "./HomeCategory/HomeCategory"; // this is the new dark component
+import HomeCategory from "./HomeCategory/HomeCategory";
 import TopBrand from "./TopBrands/Grid";
 import ElectronicCategory from "./Electronic Category/ElectronicCategory";
 import MainCarousel from "./Main Carousel/MainCarousel";
@@ -21,27 +21,19 @@ const Home = () => {
     <>
       {!homePage.loading ? (
         <div className="space-y-5 lg:space-y-10 relative">
-          {/* Main Fullscreen Carousel */}
           <MainCarousel />
 
-          {/* Electronics Section */}
           {homePage.homePageData?.electricCategories && <ElectronicCategory />}
-
-          {/* Top Brands */}
           {homePage.homePageData?.grid && <TopBrand />}
-
-          {/* Today's Deals */}
           {homePage.homePageData?.deals && (
             <section className="pt-10">
               <DealSlider />
             </section>
           )}
-
-          {/* Shop By Category - replaced with new dark full-width component */}
           {homePage.homePageData?.shopByCategories && <HomeCategory />}
 
-          {/* Chat Button */}
-          <section className="fixed bottom-10 right-10">
+          {/* ✅ z-[9999] ensures chatbot always renders above carousel and all other content */}
+          <section className="fixed bottom-10 right-10 z-[9999]">
             {showChatBot ? (
               <ChatBot handleClose={handleCloseChatBot} />
             ) : (

@@ -135,6 +135,8 @@ const styles: Record<string, React.CSSProperties> = {
     overflow: "hidden",
     fontFamily: "'Georgia', serif",
     border: "1px solid #e4e4e7",
+    position: "relative",
+    zIndex: 9999,
   },
   header: {
     display: "flex",
@@ -190,6 +192,8 @@ const styles: Record<string, React.CSSProperties> = {
     alignSelf: "center",
     background: "#f4f4f5",
     border: "1px solid #e4e4e7",
+    position: "relative",
+    zIndex: 9999,
     borderRadius: "20px",
     padding: "5px 12px",
     fontSize: "11px",
@@ -223,6 +227,8 @@ const styles: Record<string, React.CSSProperties> = {
   input: {
     flex: 1,
     border: "1px solid #e4e4e7",
+    position: "relative",
+    zIndex: 9999,
     borderRadius: "10px",
     padding: "10px 14px",
     fontSize: "13.5px",

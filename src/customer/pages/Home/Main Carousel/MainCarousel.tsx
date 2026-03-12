@@ -3,39 +3,39 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 const slides = [
   {
     id: 1,
-    tag: "New Season",
-    name: "Summer\nEssentials",
-    sub: "Light fabrics. Effortless silhouettes. Made for the warmth ahead.",
-    cta: "Explore Collection",
-    accent: "#C9A84C",
-    img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=85&fit=crop",
+    tag: "New Arrival",
+    name: "Urban\nStreetStyle",
+    sub: "Bold cuts. Raw edges. Designed for those who set the trend.",
+    cta: "Shop Now",
+    accent: "#E8C547",
+    img: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&q=85&fit=crop",
   },
   {
     id: 2,
     tag: "Women's Edit",
-    name: "Saree\nCouture",
-    sub: "Handwoven stories draped in timeless Indian craft.",
-    cta: "Shop The Edit",
-    accent: "#D4896A",
-    img: "https://www.ethnicplus.in/cdn/shop/files/5_0b7f45e4-22aa-435b-80e7-bd7d0e5d991f.jpg?v=1768755964&width=1770",
+    name: "Ethnic\nElegance",
+    sub: "Handcrafted fabrics woven with generations of artistry.",
+    cta: "Explore Edit",
+    accent: "#E07B5A",
+    img: "https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=1400&q=85&fit=crop",
   },
   {
     id: 3,
     tag: "Tech Picks",
-    name: "Premium\nAudio",
-    sub: "Engineered silence. For those who hear the difference.",
-    cta: "Discover Now",
-    accent: "#7BAF9E",
-    img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1400&q=85&fit=crop",
+    name: "Next-Gen\nGadgets",
+    sub: "Performance meets precision. Tools for the future, available today.",
+    cta: "Discover More",
+    accent: "#5AB8A8",
+    img: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=1400&q=85&fit=crop",
   },
   {
     id: 4,
-    tag: "Everyday Luxury",
-    name: "Kurta\nCollection",
-    sub: "Effortless elegance from morning to evening.",
-    cta: "View All",
-    accent: "#9B7EC8",
-    img: "https://www.ethnicplus.in/cdn/shop/files/4_2f2042d1-33c3-4f2c-8397-472e103fefb0.jpg?v=1768755972&width=1770",
+    tag: "Home & Living",
+    name: "Minimal\nInteriors",
+    sub: "Clean lines. Warm textures. Transform your space effortlessly.",
+    cta: "View Collection",
+    accent: "#A78BDA",
+    img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=1400&q=85&fit=crop",
   },
 ];
 
@@ -50,14 +50,14 @@ const MainCarousel: React.FC = () => {
     clearInterval(timerRef.current!);
     timerRef.current = setInterval(
       () => setCur((c) => (c + 1) % slides.length),
-      DELAY,
+      DELAY
     );
   }, []);
 
   useEffect(() => {
     timerRef.current = setInterval(
       () => setCur((c) => (c + 1) % slides.length),
-      DELAY,
+      DELAY
     );
     return () => clearInterval(timerRef.current!);
   }, []);
@@ -77,6 +77,8 @@ const MainCarousel: React.FC = () => {
         .mc-a4{animation:mcFadeUp .55s .48s ease both}
         .mc-prog{animation:mcProg ${DELAY}ms linear forwards;transform-origin:left}
       `}</style>
+
+      {/* ── z-index: 1 keeps carousel BELOW chatbot (z-index: 9999) ── */}
       <section
         style={{
           position: "relative",
@@ -84,6 +86,7 @@ const MainCarousel: React.FC = () => {
           height: "clamp(380px,58vw,720px)",
           overflow: "hidden",
           background: "#080C14",
+          zIndex: 1,
         }}
       >
         {slides.map((sl, i) => (
@@ -126,6 +129,8 @@ const MainCarousel: React.FC = () => {
             />
           </div>
         ))}
+
+        {/* ── Text content ── */}
         <div
           key={cur}
           style={{
@@ -139,23 +144,8 @@ const MainCarousel: React.FC = () => {
             maxWidth: "clamp(320px,55vw,680px)",
           }}
         >
-          <div
-            className="mc-a1"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              marginBottom: 20,
-            }}
-          >
-            <span
-              style={{
-                width: 24,
-                height: 1.5,
-                background: s.accent,
-                display: "inline-block",
-              }}
-            />
+          <div className="mc-a1" style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20 }}>
+            <span style={{ width: 24, height: 1.5, background: s.accent, display: "inline-block" }} />
             <span
               style={{
                 fontFamily: "'Syne',sans-serif",
@@ -169,6 +159,7 @@ const MainCarousel: React.FC = () => {
               {s.tag}
             </span>
           </div>
+
           <h1
             className="mc-a2"
             style={{
@@ -184,6 +175,7 @@ const MainCarousel: React.FC = () => {
           >
             {s.name}
           </h1>
+
           <p
             className="mc-a3"
             style={{
@@ -197,6 +189,7 @@ const MainCarousel: React.FC = () => {
           >
             {s.sub}
           </p>
+
           <div className="mc-a4">
             <button
               style={{
@@ -228,6 +221,8 @@ const MainCarousel: React.FC = () => {
             </button>
           </div>
         </div>
+
+        {/* ── Slide counter ── */}
         <div
           style={{
             position: "absolute",
@@ -240,20 +235,15 @@ const MainCarousel: React.FC = () => {
             gap: 2,
           }}
         >
-          <span
-            style={{
-              fontSize: "clamp(20px,2.8vw,34px)",
-              fontWeight: 400,
-              color: "#FAFAF8",
-              opacity: 0.85,
-            }}
-          >
+          <span style={{ fontSize: "clamp(20px,2.8vw,34px)", fontWeight: 400, color: "#FAFAF8", opacity: 0.85 }}>
             {String(cur + 1).padStart(2, "0")}
           </span>
           <span style={{ fontSize: 11, color: "rgba(255,255,255,.3)" }}>
             /{String(slides.length).padStart(2, "0")}
           </span>
         </div>
+
+        {/* ── Dot indicators ── */}
         <div
           style={{
             position: "absolute",
@@ -282,6 +272,8 @@ const MainCarousel: React.FC = () => {
             />
           ))}
         </div>
+
+        {/* ── Prev / Next arrows ── */}
         {([-1, 1] as const).map((dir) => (
           <button
             key={dir}
@@ -320,6 +312,8 @@ const MainCarousel: React.FC = () => {
             {dir === -1 ? "‹" : "›"}
           </button>
         ))}
+
+        {/* ── Progress bar ── */}
         <div
           style={{
             position: "absolute",
@@ -331,11 +325,7 @@ const MainCarousel: React.FC = () => {
             zIndex: 20,
           }}
         >
-          <div
-            key={`pb-${cur}`}
-            className="mc-prog"
-            style={{ height: "100%", background: s.accent }}
-          />
+          <div key={`pb-${cur}`} className="mc-prog" style={{ height: "100%", background: s.accent }} />
         </div>
       </section>
     </>
