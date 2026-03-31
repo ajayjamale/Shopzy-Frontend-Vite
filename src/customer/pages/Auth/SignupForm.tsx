@@ -58,7 +58,7 @@ const SignupForm = () => {
       dispatch(signup({
         fullName: formik.values.fullName,
         email: formik.values.email,
-        phoneNumber: formik.values.phoneNumber,
+        mobile: formik.values.phoneNumber,
         otp,
         navigate,
       }));
@@ -183,7 +183,7 @@ const SignupForm = () => {
           </button>
 
           <p className="auth-footer-horizontal" style={{ marginTop: '1rem' }}>
-            By creating an account, you agree to shop.in's{' '}
+            By creating an account, you agree to Shopzy's{' '}
             <a href="/conditions">Conditions of Use</a> and{' '}
             <a href="/privacy">Privacy Notice</a>.
           </p>

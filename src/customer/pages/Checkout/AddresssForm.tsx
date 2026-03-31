@@ -19,6 +19,7 @@ const schema = Yup.object().shape({
 interface AddressFormProp {
     handleClose: () => void;
     paymentGateway: string;
+    onAddressSaved?: (address: any) => void;
 }
 
 // ── Individual input field ────────────────────────────────────────────────────

@@ -147,7 +147,7 @@ const LoginForm = () => {
           </button>
 
           <p className="auth-footer-horizontal" style={{ marginTop: '1rem' }}>
-            By continuing, you agree to shop.in's{' '}
+            By continuing, you agree to Shopzy's{' '}
             <a href="/conditions">Conditions of Use</a> and{' '}
             <a href="/privacy">Privacy Notice</a>.
           </p>

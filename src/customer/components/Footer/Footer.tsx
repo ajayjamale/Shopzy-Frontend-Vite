@@ -8,6 +8,7 @@ import {
 import StorefrontIcon from "@mui/icons-material/Storefront";
 import { useNavigate } from "react-router-dom";
 import "../Navbar/Navbar.css";
+import { ShopzyLogo } from "../../../components/ShopzyLogo";
 
 const Footer = () => {
   const navigate = useNavigate();
@@ -135,15 +136,9 @@ const Footer = () => {
           <div>
             <div
               onClick={() => navigate("/")}
-              style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 20, cursor: "pointer" }}
+              style={{ marginBottom: 20, cursor: "pointer" }}
             >
-              <div style={{
-                width: 40, height: 40, background: "#FFD814", borderRadius: 10,
-                display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.2s",
-              }}>
-                <StorefrontIcon sx={{ color: "#131921", fontSize: 22 }} />
-              </div>
-              <span className="logo" style={{ fontSize: 22, color: "#ffffff", fontWeight: 800 }}>Shopzy</span>
+              <ShopzyLogo size={22} bg="#FFD814" color="#131921" textColor="#fff" />
             </div>
 
             <p style={{ fontSize: 13, lineHeight: 1.75, color: "#94a3b8", maxWidth: 320, marginBottom: 28 }} className="category">

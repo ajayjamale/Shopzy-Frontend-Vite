@@ -5,6 +5,7 @@ import { useAppSelector } from '../../../Redux Toolkit/Store';
 import LoginForm from './LoginForm';
 import SignupForm from './SignupForm';
 import './Auth.css';
+import { ShopzyLogo } from '../../../components/ShopzyLogo';
 
 const Auth = () => {
   const [isLoginPage, setIsLoginPage] = useState(true);
@@ -32,10 +33,8 @@ const Auth = () => {
     <div className="auth-horizontal-container">
 
       {/* Logo */}
-      <div className="auth-brand-logo" onClick={() => navigate('/')}>
-        <span className="auth-brand-logo-text">
-          shop<span>.</span>in
-        </span>
+      <div className="auth-brand-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
+        <ShopzyLogo size={24} bg="#FFD814" color="#131921" textColor="#131921" />
       </div>
 
       {/* Form Card */}
@@ -52,7 +51,7 @@ const Auth = () => {
         {isLoginPage ? <LoginForm /> : <SignupForm />}
 
         <div className="auth-toggle-horizontal">
-          <span>{isLoginPage ? 'New to shop.in?' : 'Already have an account?'}</span>
+          <span>{isLoginPage ? 'New to Shopzy?' : 'Already have an account?'}</span>
           <button
             onClick={() => setIsLoginPage((prev) => !prev)}
             className="auth-toggle-button-horizontal"
@@ -67,7 +66,7 @@ const Auth = () => {
         <div className="auth-below-divider">
           <span>Conditions of Use &nbsp;|&nbsp; Privacy Notice &nbsp;|&nbsp; Help</span>
         </div>
-        <p>© 1996–2025, shop.in, Inc. or its affiliates</p>
+        <p>© 1996–2025, Shopzy, Inc. or its affiliates</p>
       </div>
 
       {/* Toast */}

@@ -42,7 +42,7 @@ function OTPInput({ length = 6, onChange }: { length?: number; onChange: (v: str
   return (
     <div style={{ display:"flex", gap:8 }}>
       {vals.map((v, i) => (
-        <input key={i} ref={el => refs.current[i] = el}
+        <input key={i} ref={el => { refs.current[i] = el; }}
           value={v} maxLength={1} inputMode="numeric"
           onChange={e => update(i, e.target.value)}
           onKeyDown={e => onKey(i, e)} onPaste={onPaste}
@@ -121,7 +121,6 @@ const SellerLoginForm = () => {
           <input
             type="email" value={email} placeholder="seller@example.com"
             onChange={e => { setEmail(e.target.value); setEmailTouched(false); }}
-            onBlur={() => setEmailTouched(true)}
             disabled={otpSent}
             style={{
               width:"100%", padding:"9px 12px", fontSize:13, color:C.text,
@@ -131,7 +130,11 @@ const SellerLoginForm = () => {
               boxShadow: emailTouched && !validEmail ? `0 0 0 3px rgba(196,0,0,0.15)` : "none",
             }}
             onFocus={e => { if(!otpSent){ e.target.style.borderColor=C.borderFoc; e.target.style.boxShadow=`0 0 0 3px ${C.shadowFoc}`; }}}
-            onBlur2={e => { e.target.style.borderColor=C.border; e.target.style.boxShadow="none"; }}
+            onBlur={e => { 
+                setEmailTouched(true); 
+                e.target.style.borderColor=C.border; 
+                e.target.style.boxShadow="none"; 
+            }}
           />
           {emailTouched && !validEmail && (
             <span style={{ fontSize:12, color:C.red }}>Enter a valid email address</span>

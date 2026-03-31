@@ -8,7 +8,8 @@ export interface OrderState {
     paymentOrder: any | null;
     loading: boolean;
     error: string | null;
-    orderCanceled: boolean
+    orderCanceled: boolean;
+    paymentConfirmed: boolean;
 }
 
 export interface Order {
@@ -20,6 +21,7 @@ export interface Order {
     orderDate: string; 
     shippingAddress: Address;
     paymentDetails: any;
+    createdAt?: string;
     totalMrpPrice: number;
     totalSellingPrice?: number; // Optional field
     discount?: number; // Optional field
@@ -32,7 +34,9 @@ export enum OrderStatus {
     PENDING = 'PENDING',
     SHIPPED = 'SHIPPED',
     DELIVERED = 'DELIVERED',
-    CANCELLED = 'CANCELLED'
+    CANCELLED = 'CANCELLED',
+    RETURNED = 'RETURNED',
+    RETURN_REQUESTED = 'RETURN_REQUESTED'
 }
 
 export interface OrderItem {

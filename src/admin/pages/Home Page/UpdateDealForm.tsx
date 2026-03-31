@@ -120,7 +120,7 @@ const UpdateDealForm = ({ id, onSuccess }: Props) => {
                         </InputAdornment>
                     }
                 >
-                    {admin?.homeCategories?.map((item: any) => (
+                    {admin?.categories?.map((item: any) => (
                         <MenuItem key={item.id} value={item.id.toString()} sx={{ fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
                             {item.categoryId}
                         </MenuItem>

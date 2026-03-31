@@ -72,7 +72,7 @@ const Profile = () => {
 
         {/* Breadcrumb */}
         <div className="amz-breadcrumb">
-          <a href="/">shop.in</a>
+          <a href="/">Shopzy</a>
           <span>›</span>
           <span>Your Account</span>
         </div>

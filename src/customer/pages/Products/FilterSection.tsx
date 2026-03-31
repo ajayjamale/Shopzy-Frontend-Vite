@@ -367,9 +367,9 @@ const FilterSection = () => {
               <FilterRow
                 key={item.name}
                 label={item.name}
-                value={item.value}
+                value={item.value.toString()}
                 name="discount"
-                selected={get("discount") === item.value}
+                selected={get("discount") === item.value.toString()}
                 onChange={handleChange}
               />
             ))}

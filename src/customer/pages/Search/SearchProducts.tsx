@@ -219,7 +219,7 @@ const SearchProducts = () => {
           {!products.loading && !query.trim() && (
             <div className="sp-empty">
               <div className="sp-empty-icon">🔍</div>
-              <h2 className="sp-empty-title">Search Shopkart</h2>
+              <h2 className="sp-empty-title">Search Shopzy</h2>
               <p className="sp-empty-sub">
                 Use the search bar at the top to find products across all categories.
               </p>

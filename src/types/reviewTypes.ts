@@ -10,6 +10,7 @@ export interface Review {
     productImages:string[];
     createdAt: string;
     updatedAt: string;
+    reviewTitle?: string;
   }
   
   export interface CreateReviewRequest {
@@ -29,5 +30,6 @@ export interface Review {
     reviewCreated: boolean;
     reviewUpdated: boolean;
     reviewDeleted: boolean;
+    success?: boolean;
   }
   

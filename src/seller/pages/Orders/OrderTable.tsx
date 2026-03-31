@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { fetchSellerOrders, updateOrderStatus } from "../../../Redux Toolkit/Seller/sellerOrderSlice";
-import type { Order, OrderItem } from "../../../types/orderTypes";
+import { Order, OrderItem, OrderStatus } from "../../../types/orderTypes";
 
 /* ── palette ─────────────────────────────────────────── */
 const C = {
@@ -244,7 +244,7 @@ export default function OrderTable() {
     dispatch(updateOrderStatus({
       jwt: localStorage.getItem("jwt") || "",
       orderId,
-      orderStatus: status,
+      orderStatus: status as OrderStatus,
     }));
   };
 

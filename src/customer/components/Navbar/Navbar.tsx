@@ -22,6 +22,7 @@ import CategorySheet from "./CategorySheet";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { searchProduct } from "../../../Redux Toolkit/Customer/ProductSlice";
+import { ShopzyLogo } from "../../../components/ShopzyLogo";
 
 /** Categories that have a sub-sheet defined */
 const SHEET_CATEGORIES = new Set(["men", "women", "electronics", "home_furniture"]);
@@ -124,19 +125,8 @@ const Navbar = () => {
           )}
 
           {/* Logo */}
-          <div onClick={() => navigate("/")}
-            className="cursor-pointer flex items-center gap-1.5 sm:gap-2 shrink-0 group"
-            style={{ userSelect: "none" }}
-          >
-            <div style={{ width: 32, height: 32, background: "#FFD814", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", transition: "transform 0.2s ease", flexShrink: 0 }}
-              className="group-hover:scale-110"
-            >
-              <StorefrontIcon sx={{ color: "#131921", fontSize: 18 }} />
-            </div>
-            <div className="flex flex-col leading-tight">
-              <span className="logo text-white" style={{ fontSize: 18, letterSpacing: "0.04em" }}>Shopzy</span>
-              <span className="hidden sm:block" style={{ fontSize: 9, color: "#FFD814", letterSpacing: "0.18em", fontWeight: 500 }}>.inspired shopping</span>
-            </div>
+          <div onClick={() => navigate("/")} className="cursor-pointer">
+            <ShopzyLogo size={18} />
           </div>
 
           {/* Deliver to */}

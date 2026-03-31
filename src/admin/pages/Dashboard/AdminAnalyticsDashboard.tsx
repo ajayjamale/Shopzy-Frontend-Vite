@@ -182,7 +182,7 @@ const AdminAnalyticsDashboard = () => {
                     { label: 'Total Customers',  value: '18,450',    icon: <PeopleIcon />,      color: '#0066c0', sub: '+320 this month'    },
                     { label: 'Active Coupons',   value: activeCoupons, icon: <LocalOfferIcon />, color: '#CC0C39', sub: `${totalCoupons} total` },
                 ].map(card => (
-                    <Grid item xs={12} sm={6} md={4} lg={2.4} key={card.label}>
+                    <Grid key={card.label} size={{ xs: 12, sm: 6, md: 4, lg: 2 }}>
                         <StatCard {...card} />
                     </Grid>
                 ))}
@@ -191,7 +191,7 @@ const AdminAnalyticsDashboard = () => {
             {/* Revenue chart + Pie chart */}
             <Grid container spacing={2} sx={{ mb: 3 }}>
                 {/* Area chart */}
-                <Grid item xs={12} lg={8}>
+                <Grid size={{ xs: 12, lg: 8 }}>
                     <Paper sx={{ p: 2.5, border: '1px solid #e0e0e0', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
                         <SectionHeading title="Revenue & Orders — 2024" sub="Monthly breakdown across all sellers" />
                         <ResponsiveContainer width="100%" height={260}>
@@ -225,7 +225,7 @@ const AdminAnalyticsDashboard = () => {
                 </Grid>
 
                 {/* Pie chart */}
-                <Grid item xs={12} lg={4}>
+                <Grid size={{ xs: 12, lg: 4 }}>
                     <Paper sx={{ p: 2.5, border: '1px solid #e0e0e0', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', height: '100%' }}>
                         <SectionHeading title="Order Status Breakdown" sub="Percentage by fulfilment status" />
                         <ResponsiveContainer width="100%" height={220}>
@@ -258,7 +258,7 @@ const AdminAnalyticsDashboard = () => {
             {/* Seller status breakdown + Recent orders */}
             <Grid container spacing={2}>
                 {/* Seller breakdown */}
-                <Grid item xs={12} lg={4}>
+                <Grid size={{ xs: 12, lg: 4 }}>
                     <Paper sx={{ p: 2.5, border: '1px solid #e0e0e0', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
                         <SectionHeading title="Seller Status Breakdown" />
                         {[
@@ -297,7 +297,7 @@ const AdminAnalyticsDashboard = () => {
                 </Grid>
 
                 {/* Recent orders */}
-                <Grid item xs={12} lg={8}>
+                <Grid size={{ xs: 12, lg: 8 }}>
                     <Paper sx={{ p: 2.5, border: '1px solid #e0e0e0', borderRadius: '4px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
                         <SectionHeading title="Recent Orders" sub="Latest 6 orders across the platform" />
                         <TableContainer sx={{ borderRadius: '4px', overflow: 'hidden', border: '1px solid #e0e0e0' }}>

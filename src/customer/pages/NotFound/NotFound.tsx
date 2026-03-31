@@ -273,7 +273,7 @@ const NotFound = () => {
 
         {/* Header */}
         <div className="nf-header">
-          <span className="nf-logo-text">shopkart<span className="nf-logo-dot">.</span></span>
+          <span className="nf-logo-text">Shopzy<span className="nf-logo-dot">.</span></span>
         </div>
 
         {/* Main content */}
@@ -336,7 +336,7 @@ const NotFound = () => {
           <div className="nf-search">
             <input
               type="text"
-              placeholder="Search Shopkart"
+              placeholder="Search Shopzy"
               onKeyDown={(e) => e.key === 'Enter' && navigate('/')}
               autoFocus
             />
@@ -383,8 +383,8 @@ const NotFound = () => {
 
         {/* Footer */}
         <div className="nf-footer">
-          <div className="nf-footer-logo">shopkart.</div>
-          <div className="nf-footer-text">© 2026 Shopkart India. All rights reserved.</div>
+          <div className="nf-footer-logo">Shopzy.</div>
+          <div className="nf-footer-text">© 2026 Shopzy India. All rights reserved.</div>
         </div>
       </div>
     </>

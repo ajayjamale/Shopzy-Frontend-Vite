@@ -60,7 +60,7 @@ function Field({ label, name, value, onChange, onBlur, error, helperText, type="
         {label}{required && <span style={{ color:C.red, marginLeft:2 }}>*</span>}
       </label>
       <div style={{ position:"relative" }}>
-        <input name={name} value={value} onChange={onChange} onBlur={onBlur}
+        <input name={name} value={value} onChange={onChange}
           type={isP && !showP ? "password" : "text"} placeholder={placeholder}
           style={{
             width:"100%", padding:"9px 12px", paddingRight: isP ? 34 : 12,
@@ -70,7 +70,11 @@ function Field({ label, name, value, onChange, onBlur, error, helperText, type="
             transition:"border-color .15s, box-shadow .15s",
           }}
           onFocus={e => { e.target.style.borderColor=C.borderFoc; e.target.style.boxShadow=`0 0 0 3px ${C.shadowFoc}`; }}
-          onBlur2={e => { e.target.style.borderColor=error?C.red:C.border; e.target.style.boxShadow=error?"0 0 0 3px rgba(196,0,0,0.15)":"none"; }}
+          onBlur={e => { 
+            onBlur?.(e); 
+            e.target.style.borderColor=error?C.red:C.border; 
+            e.target.style.boxShadow=error?"0 0 0 3px rgba(196,0,0,0.15)":"none"; 
+          }}
         />
         {isP && (
           <button type="button" onClick={() => setShowP(v => !v)}

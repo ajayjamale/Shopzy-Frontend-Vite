@@ -373,7 +373,7 @@ const UpdateProductForm = () => {
             </SectionHeader>
             <SectionBody>
               <Grid container spacing={3}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <FieldRow label="Product name" required>
                     <AmazonField fullWidth id="title" name="title"
                       placeholder="Product name"
@@ -383,7 +383,7 @@ const UpdateProductForm = () => {
                     />
                   </FieldRow>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <FieldRow label="Product description" required>
                     <AmazonField fullWidth multiline rows={5} id="description" name="description"
                       placeholder="Detailed product description"
@@ -406,7 +406,7 @@ const UpdateProductForm = () => {
             </SectionHeader>
             <SectionBody>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="MRP (₹)" required>
                     <AmazonField fullWidth id="mrp_price" name="mrpPrice" type="number"
                       value={formik.values.mrpPrice} onChange={formik.handleChange}
@@ -415,7 +415,7 @@ const UpdateProductForm = () => {
                     />
                   </FieldRow>
                 </Grid>
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="Your selling price (₹)" required>
                     <AmazonField fullWidth id="sellingPrice" name="sellingPrice" type="number"
                       value={formik.values.sellingPrice} onChange={formik.handleChange}
@@ -426,7 +426,7 @@ const UpdateProductForm = () => {
                 </Grid>
 
                 {/* ── Live Discount Preview ── */}
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <Box mb={2.5}>
                     <FieldLabel>Discount % <span style={{ color: AMZ.textMuted, fontWeight: 400 }}>(auto-calculated)</span></FieldLabel>
                     {(() => {
@@ -461,7 +461,7 @@ const UpdateProductForm = () => {
                   </Box>
                 </Grid>
 
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="Color" required>
                     <AmazonSelect fullWidth error={formik.touched.color && Boolean(formik.errors.color)}>
                       <Select name="color" value={formik.values.color} onChange={formik.handleChange} displayEmpty>
@@ -479,7 +479,7 @@ const UpdateProductForm = () => {
                     </AmazonSelect>
                   </FieldRow>
                 </Grid>
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="Size" required>
                     <AmazonSelect fullWidth error={formik.touched.sizes && Boolean(formik.errors.sizes)}>
                       <Select name="sizes" value={formik.values.sizes} onChange={formik.handleChange} displayEmpty>

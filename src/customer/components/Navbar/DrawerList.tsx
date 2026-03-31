@@ -13,6 +13,7 @@ import HomeIcon from "@mui/icons-material/Home";
 import InfoIcon from "@mui/icons-material/Info";
 import ContactSupportIcon from "@mui/icons-material/ContactSupport";
 import "./Navbar.css";
+import { ShopzyLogo } from "../../../components/ShopzyLogo";
 
 const DrawerList = ({ toggleDrawer }: any) => {
   const theme = useTheme();
@@ -71,14 +72,8 @@ const DrawerList = ({ toggleDrawer }: any) => {
           </>
         ) : (
           <>
-            <div className="cursor-pointer flex items-center gap-2" onClick={() => { toggleDrawer(false)(); window.location.href = "/"; }}>
-              <Box sx={{ width: 34, height: 34, background: "#FFD814", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <StorefrontIcon sx={{ color: "#131921", fontSize: 20 }} />
-              </Box>
-              <div>
-                <div className="logo" style={{ fontSize: 18, fontWeight: 800, color: "#fff", lineHeight: 1.1 }}>Shopzy</div>
-                <div style={{ fontSize: 8, letterSpacing: "0.18em", color: "#FFD814", textTransform: "uppercase", fontWeight: 600 }}>Main Menu</div>
-              </div>
+            <div className="cursor-pointer" onClick={() => { toggleDrawer(false)(); window.location.href = "/"; }}>
+              <ShopzyLogo size={18} bg="transparent" textColor="#fff" color="#FFD814" />
             </div>
             <IconButton onClick={toggleDrawer(false)} sx={{ color: "#fff", background: "rgba(255,255,255,0.1)", borderRadius: "8px", width: 34, height: 34, "&:hover": { background: "rgba(255,255,255,0.18)" } }}>
               <CloseIcon sx={{ fontSize: 16 }} />

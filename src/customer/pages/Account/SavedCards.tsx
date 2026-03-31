@@ -21,7 +21,7 @@ const SavedCards = () => (
 
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8125rem", color: "#565959" }}>
           <LockIcon style={{ fontSize: "0.875rem" }} />
-          Secured by shop.in
+          Secured by Shopzy
         </div>
 
         <button className="amz-btn-primary" style={{ marginTop: 12, padding: "8px 24px" }}>

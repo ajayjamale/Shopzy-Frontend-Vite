@@ -115,7 +115,7 @@ const AdminAuth = () => {
 
                     {/* Header */}
                     <div className="aa-header">
-                        <div className="aa-logo">shopkart.</div>
+                        <div className="aa-logo">Shopzy.</div>
                         <span className="aa-badge">Admin Portal</span>
                     </div>
 
@@ -130,7 +130,7 @@ const AdminAuth = () => {
                 {/* Footer */}
                 <div style={{ position: 'relative', zIndex: 1, marginTop: 20 }}>
                     <p className="aa-footer">
-                        © 2026 Shopkart India &nbsp;·&nbsp;
+                        © 2026 Shopzy India &nbsp;·&nbsp;
                         <a href="/">Back to store</a>
                     </p>
                 </div>

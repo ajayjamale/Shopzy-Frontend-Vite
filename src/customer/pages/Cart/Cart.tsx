@@ -207,7 +207,7 @@ const Cart = () => {
           <div className="bg-white rounded-md border border-gray-200 px-12 py-10 flex flex-col items-center gap-4 max-w-sm w-full text-center">
             <ShoppingCartOutlined sx={{ fontSize: 64, color: "#c8c8c8" }} />
             <div>
-              <h1 className="text-lg font-semibold text-gray-800">Your cart is empty</h1>
+              <h1 className="text-lg font-semibold text-gray-800">Your Shopzy Cart is empty</h1>
               <p className="text-sm text-gray-500 mt-1">
                 Looks like you haven't added anything yet.
               </p>

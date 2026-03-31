@@ -5,31 +5,31 @@ export const mainCategory = [
     level: 1,
     levelTwoCategory:[
         {
-            "name": "Topwere",
+            "name": "Topwear",
             "categoryId": "men_topwear",
             "parentCategoryId":"men",
             "level":2
         },
         {
-            "name": "Bottomwere",
+            "name": "Bottomwear",
             "categoryId": "men_bottomwear",
             "parentCategoryId":"men",
             "level":2
         },
         {
-            "name": "Innerwere And Sleepwere",
+            "name": "Innerwear And Sleepwear",
             "categoryId": "men_innerwear_and_sleepwear",
             "parentCategoryId":"men",
             "level":2
         },
         {
-            "name": "Footwere",
+            "name": "Footwear",
             "categoryId": "men_footwear",
             "parentCategoryId":"men",
             "level":2
         },
         {
-            "name": "Persional Care And  grooming",
+            "name": "Personal Care And Grooming",
             "categoryId": "men_personal_care_and_grooming",
             "parentCategoryId":"men",
             "level":2
@@ -58,7 +58,7 @@ export const mainCategory = [
     name: "Women",
     categoryId: "women",
     level: 1,
-    levelTowCategory:[
+    levelTwoCategory:[
         {
           "parentCategoryId":"women",
           "level":2,
@@ -92,7 +92,7 @@ export const mainCategory = [
         {
           "parentCategoryId":"women",
           "level":2,
-          "name":"Buauty & Personal Care",
+          "name":"Beauty & Personal Care",
           "categoryId": "women_beauty_personal_care"
         },
         {

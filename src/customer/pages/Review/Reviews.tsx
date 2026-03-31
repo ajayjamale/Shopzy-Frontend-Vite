@@ -32,9 +32,9 @@ const Reviews = () => {
 
         {/* Breadcrumb */}
         <div className="amz-rv-breadcrumb">
-          <a href="/">shop.in</a>
+          <a href="/">Shopzy</a>
           <span>›</span>
-          <a href={`/product/${productId}`}>{product?.title || "Product"}</a>
+          <a href={`/product-details/${product?.category?.categoryId}/${product?.title}/${productId}`}>{product?.title || "Product"}</a>
           <span>›</span>
           <span>Customer Reviews</span>
         </div>

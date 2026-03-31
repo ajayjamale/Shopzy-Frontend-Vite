@@ -137,7 +137,7 @@ const CreateCouponForm: React.FC = () => {
             <Grid container spacing={2}>
 
               {/* Coupon Code */}
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   id="code"
@@ -163,7 +163,7 @@ const CreateCouponForm: React.FC = () => {
               </Grid>
 
               {/* Discount Percentage */}
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   id="discountPercentage"
@@ -188,7 +188,7 @@ const CreateCouponForm: React.FC = () => {
               </Grid>
 
               {/* Start Date */}
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <DatePicker
                   label="Validity Start Date"
                   value={formik.values.validityStartDate}
@@ -206,7 +206,7 @@ const CreateCouponForm: React.FC = () => {
               </Grid>
 
               {/* End Date */}
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <DatePicker
                   label="Validity End Date"
                   value={formik.values.validityEndDate}
@@ -224,7 +224,7 @@ const CreateCouponForm: React.FC = () => {
               </Grid>
 
               {/* Minimum Order Value */}
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <TextField
                   fullWidth
                   id="minimumOrderValue"
@@ -249,7 +249,7 @@ const CreateCouponForm: React.FC = () => {
               </Grid>
 
               {/* Note */}
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Box sx={{
                   backgroundColor: "#FFF3CD",
                   border: "1px solid #FFEAA7",
@@ -263,7 +263,7 @@ const CreateCouponForm: React.FC = () => {
               </Grid>
 
               {/* Submit */}
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Button
                   variant="contained"
                   type="submit"

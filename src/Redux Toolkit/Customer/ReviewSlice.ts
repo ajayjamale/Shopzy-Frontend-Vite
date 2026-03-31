@@ -39,11 +39,11 @@ export const fetchReviewsByProductId = createAsyncThunk<
 
 export const createReview = createAsyncThunk<
   Review,
-  { productId: number; review: CreateReviewRequest; jwt: string,navigate:any },
+  { productId: number; review: CreateReviewRequest; jwt: string; navigate?: any },
   { rejectValue: string }
 >(
   "review/createReview",
-  async ({ productId, review, jwt,navigate }, { rejectWithValue }) => {
+  async ({ productId, review, jwt, navigate }, { rejectWithValue }) => {
     try {
       const response = await api.post(
         `${API_URL}/products/${productId}/reviews`,
@@ -54,7 +54,7 @@ export const createReview = createAsyncThunk<
           },
         }
       );
-      navigate(`/reviews/${productId}`);
+      if (navigate) navigate(`/reviews/${productId}`);
       console.log("create reviews for product ", response.data);
       return response.data;
     } catch (error: any) {

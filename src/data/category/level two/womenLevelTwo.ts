@@ -32,7 +32,7 @@ export const womenLevelTwo=[
     {
       "parentCategoryId":"women",
       "level":2,
-      "name":"Buauty & Personal Care",
+      "name":"Beauty & Personal Care",
       "categoryId": "women_beauty_personal_care"
     },
     {

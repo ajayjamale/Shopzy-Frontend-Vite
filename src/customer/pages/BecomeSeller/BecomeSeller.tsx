@@ -45,7 +45,7 @@ function RightPanel() {
     <div style={{ padding:"40px 30px", height:"100%", display:"flex", flexDirection:"column", gap:28 }}>
       <div>
         <div style={{ display:"flex", alignItems:"baseline", gap:3, marginBottom:6 }}>
-          <span style={{ fontFamily:"serif", fontSize:26, fontWeight:700, color:C.white }}>amazon</span>
+          <span className="logo" style={{ fontSize: 26, color: "#ffffff", fontWeight: 800 }}>Shopzy</span>
           <span style={{ fontSize:12, fontWeight:700, color:C.orange, letterSpacing:".06em", textTransform:"uppercase" }}>seller</span>
         </div>
         <p style={{ fontSize:13.5, color:"rgba(255,255,255,0.5)", lineHeight:1.55 }}>
@@ -56,7 +56,7 @@ function RightPanel() {
       {[
         ["Reach crores of customers",  "Instantly list on India's most trusted marketplace."],
         ["Fast, secure payments",       "Payments credited every 7 days to your bank."],
-        ["Hassle-free fulfilment",       "Amazon FBA handles packing, shipping & returns."],
+        ["Hassle-free fulfilment",       "Shopzy FBF handles packing, shipping & returns."],
         ["Seller protection & support", "A-to-Z Guarantee and 24/7 seller success team."],
       ].map(([t,d],i) => (
         <div key={t} style={{ display:"flex", gap:13, alignItems:"flex-start" }}>
@@ -126,12 +126,12 @@ const BecomeSeller = () => {
         {/* Amazon-style header */}
         <header style={{ background:C.navy, padding:"8px 24px", display:"flex", alignItems:"center", gap:16, borderBottom:`2px solid ${C.orange}` }}>
           <div style={{ display:"flex", alignItems:"baseline", gap:4 }}>
-            <span style={{ fontFamily:"serif", fontSize:22, fontWeight:700, color:C.white }}>amazon</span>
+            <span className="logo" style={{ fontSize: 22, color: "#ffffff", fontWeight: 800 }}>Shopzy</span>
             <span style={{ fontSize:11, fontWeight:700, color:C.orange, letterSpacing:".08em", textTransform:"uppercase" }}>seller central</span>
           </div>
           <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:12 }}>
             <span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>
-              {isLoginPage ? "New to Amazon?" : "Already a seller?"}
+              {isLoginPage ? "New to Shopzy?" : "Already a seller?"}
             </span>
             <button onClick={() => setIsLoginPage(v => !v)}
               style={{ background:"none", border:"1px solid rgba(255,255,255,0.22)", borderRadius:3, padding:"5px 13px", color:C.white, fontSize:12, fontWeight:600, cursor:"pointer" }}>
@@ -180,7 +180,7 @@ const BecomeSeller = () => {
                 <a href="#" style={{ color:C.blue }}>Help</a>
               </p>
               <p style={{ fontSize:11, color:C.textLight, marginTop:3 }}>
-                © 1996–2025 Amazon.com, Inc. or its affiliates. All rights reserved.
+                © 1996–2025 Shopzy.com, Inc. or its affiliates. All rights reserved.
               </p>
             </div>
           </div>

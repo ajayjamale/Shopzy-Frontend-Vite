@@ -278,7 +278,7 @@ const ProductForm = () => {
             </SectionHeader>
             <SectionBody>
               <Grid container spacing={3}>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <FieldRow label="Product name" required>
                     <AmazonField
                       fullWidth id="title" name="title"
@@ -290,7 +290,7 @@ const ProductForm = () => {
                     />
                   </FieldRow>
                 </Grid>
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <FieldRow label="Product description" required>
                     <AmazonField
                       fullWidth multiline rows={5}
@@ -316,7 +316,7 @@ const ProductForm = () => {
             </SectionHeader>
             <SectionBody>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="MRP (₹)" required>
                     <AmazonField
                       fullWidth id="mrp_price" name="mrpPrice" type="number"
@@ -328,7 +328,7 @@ const ProductForm = () => {
                     />
                   </FieldRow>
                 </Grid>
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="Your selling price (₹)" required>
                     <AmazonField
                       fullWidth id="sellingPrice" name="sellingPrice" type="number"
@@ -340,7 +340,7 @@ const ProductForm = () => {
                     />
                   </FieldRow>
                 </Grid>
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="Color" required>
                     <AmazonSelect fullWidth error={formik.touched.color && Boolean(formik.errors.color)}>
                       <Select name="color" value={formik.values.color} onChange={formik.handleChange} displayEmpty>
@@ -358,7 +358,7 @@ const ProductForm = () => {
                     </AmazonSelect>
                   </FieldRow>
                 </Grid>
-                <Grid item xs={12} sm={6} lg={3}>
+                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="Size" required>
                     <AmazonSelect fullWidth error={formik.touched.sizes && Boolean(formik.errors.sizes)}>
                       <Select name="sizes" value={formik.values.sizes} onChange={formik.handleChange} displayEmpty>
@@ -384,7 +384,7 @@ const ProductForm = () => {
             </SectionHeader>
             <SectionBody>
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6} lg={4}>
+                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
                   <FieldRow label="Main category" required>
                     <AmazonSelect fullWidth error={formik.touched.category && Boolean(formik.errors.category)}>
                       <Select name="category" value={formik.values.category} onChange={formik.handleChange} displayEmpty>
@@ -399,7 +399,7 @@ const ProductForm = () => {
                     </AmazonSelect>
                   </FieldRow>
                 </Grid>
-                <Grid item xs={12} sm={6} lg={4}>
+                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
                   <FieldRow label="Sub category">
                     <AmazonSelect fullWidth>
                       <Select name="category2" value={formik.values.category2} onChange={formik.handleChange} displayEmpty disabled={!formik.values.category}>
@@ -413,7 +413,7 @@ const ProductForm = () => {
                     </AmazonSelect>
                   </FieldRow>
                 </Grid>
-                <Grid item xs={12} sm={6} lg={4}>
+                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
                   <FieldRow label="Third category">
                     <AmazonSelect fullWidth>
                       <Select name="category3" value={formik.values.category3} onChange={formik.handleChange} displayEmpty disabled={!formik.values.category2}>

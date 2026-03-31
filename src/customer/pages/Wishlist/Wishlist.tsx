@@ -10,7 +10,7 @@ const Wishlist = () => {
     const { wishlist, auth } = useAppSelector(store => store);
 
     useEffect(() => {
-        dispatch(getWishlistByUserId(localStorage.getItem('jwt') || ''));
+        dispatch(getWishlistByUserId() as any);
     }, [auth.jwt]);
 
     const products = wishlist.wishlist?.products ?? [];
