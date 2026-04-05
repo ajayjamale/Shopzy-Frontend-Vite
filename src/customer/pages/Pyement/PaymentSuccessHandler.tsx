@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { paymentSuccess } from "../../../Redux Toolkit/Customer/OrderSlice";
 import { clearCart } from "../../../Redux Toolkit/Customer/CartSlice";
@@ -12,6 +12,7 @@ const PaymentSuccessHandler = () => {
     // ── Only watch the specific flags we need — not the whole slice ──
     const { loading, paymentConfirmed, error } = useAppSelector(store => store.orders);
     const [show, setShow] = useState(false);
+    const confirmedRef = useRef(false);
 
     const getParam = (key: string) =>
         new URLSearchParams(location.search).get(key);
@@ -21,7 +22,8 @@ const PaymentSuccessHandler = () => {
 
     // Step 1: Confirm payment with backend when component mounts
     useEffect(() => {
-        if (paymentId) {
+        if (paymentId && !confirmedRef.current) {
+            confirmedRef.current = true;
             dispatch(paymentSuccess({
                 paymentId,
                 paymentLinkId: paymentLinkId || "",
@@ -44,13 +46,13 @@ const PaymentSuccessHandler = () => {
             <style>{`
                 .psh-page {
                     min-height: 100vh;
-                    background: #EAEDED;
+                    background: #f5f6f8;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
                     justify-content: center;
                     padding: 32px 16px;
-                    font-family: Arial, sans-serif;
+                    font-family: var(--font-body);
                 }
                 .psh-loading {
                     display: flex;
@@ -61,7 +63,7 @@ const PaymentSuccessHandler = () => {
                 .psh-spinner {
                     width: 48px; height: 48px;
                     border: 4px solid #e0e0e0;
-                    border-top-color: #FF9900;
+                    border-top-color: #f4c24d;
                     border-radius: 50%;
                     animation: psh-spin 0.8s linear infinite;
                 }
@@ -127,7 +129,7 @@ const PaymentSuccessHandler = () => {
                 .psh-congrats { font-size: 22px; font-weight: 700; color: #0F1111; margin: 0 0 6px; }
                 .psh-sub { font-size: 14px; color: #565959; margin: 0 0 6px; line-height: 1.5; }
                 .psh-order-id { font-size: 12px; color: #888; margin: 0 0 28px; }
-                .psh-order-id strong { color: #007185; }
+                .psh-order-id strong { color: #0b7285; }
                 .psh-divider { width: 100%; border: none; border-top: 1px solid #f0f0f0; margin: 0 0 24px; }
                 .psh-next { width: 100%; text-align: left; margin-bottom: 24px; }
                 .psh-next-title {
@@ -145,8 +147,8 @@ const PaymentSuccessHandler = () => {
                 .psh-buttons { display: flex; flex-direction: column; gap: 10px; width: 100%; }
                 .psh-btn-primary {
                     width: 100%; padding: 10px;
-                    background: linear-gradient(to bottom, #FFD814, #F8B200);
-                    border: 1px solid #C7980A; border-radius: 4px;
+                    background: linear-gradient(to bottom, #f4c24d, #e9b12f);
+                    border: 1px solid #e1a836; border-radius: 4px;
                     font-size: 14px; font-weight: 600; color: #111; cursor: pointer;
                 }
                 .psh-btn-primary:hover { background: linear-gradient(to bottom, #f7ca00, #e5a800); }

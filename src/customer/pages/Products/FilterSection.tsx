@@ -140,7 +140,7 @@ const FilterSection = () => {
         .filter-clear-btn {
           font-size: 12px;
           font-weight: 600;
-          color: #007185;
+          color: #0b7285;
           background: none;
           border: none;
           cursor: pointer;
@@ -149,7 +149,7 @@ const FilterSection = () => {
           transition: background 0.15s, color 0.15s;
         }
         .filter-clear-btn:hover {
-          color: #C7511F;
+          color: #b45309;
           background: #fff5f0;
         }
 
@@ -166,7 +166,7 @@ const FilterSection = () => {
           gap: 4px;
           background: #e6f4f5;
           border: 1px solid #b2dde3;
-          color: #007185;
+          color: #0b7285;
           font-size: 11px;
           font-weight: 600;
           padding: 3px 8px 3px 10px;
@@ -180,7 +180,7 @@ const FilterSection = () => {
         .filter-chip-x {
           font-size: 13px;
           line-height: 1;
-          color: #007185;
+          color: #0b7285;
           margin-left: 2px;
         }
 
@@ -245,7 +245,7 @@ const FilterSection = () => {
           color: #333;
         }
         .filter-row.selected .filter-row-label {
-          color: #007185;
+          color: #0b7285;
           font-weight: 600;
         }
         .color-dot {
@@ -256,7 +256,7 @@ const FilterSection = () => {
           flex-shrink: 0;
         }
         .filter-check {
-          color: #007185;
+          color: #0b7285;
           opacity: 0;
           transition: opacity 0.15s;
           display: flex;
@@ -269,7 +269,7 @@ const FilterSection = () => {
         /* ── Show more ── */
         .show-more-btn {
           font-size: 12px;
-          color: #007185;
+          color: #0b7285;
           background: none;
           border: none;
           cursor: pointer;

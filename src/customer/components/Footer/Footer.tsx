@@ -81,7 +81,7 @@ const Footer = () => {
 
   const sectionHead: React.CSSProperties = {
     fontSize: 11, fontWeight: 800, letterSpacing: "0.12em",
-    color: "#FFD814", textTransform: "uppercase", margin: "0 0 20px",
+    color: "#f4c24d", textTransform: "uppercase", margin: "0 0 20px",
   };
 
   const smHead: React.CSSProperties = {
@@ -90,10 +90,10 @@ const Footer = () => {
   };
 
   return (
-    <footer style={{ marginTop: 80, background: "#0d1117", color: "#e2e8f0", fontFamily: "system-ui, sans-serif" }}>
+    <footer style={{ marginTop: 80, background: "#0d1117", color: "#e2e8f0", fontFamily: "var(--font-body)" }}>
 
       {/* ── FEATURES STRIP ─────────────────────────────── */}
-      <div style={{ background: "#FFD814", borderBottom: "3px solid #131921" }}>
+      <div style={{ background: "#f4c24d", borderBottom: "3px solid #0f172a" }}>
         <div style={{ maxWidth: 1280, margin: "0 auto" }} className="footer-features-padding">
           <div className="footer-features-grid">
             {features.map((f, i) => (
@@ -113,12 +113,12 @@ const Footer = () => {
                   width: 44, height: 44, borderRadius: 12,
                   background: "rgba(0,0,0,0.1)", display: "flex",
                   alignItems: "center", justifyContent: "center",
-                  color: "#131921", flexShrink: 0,
+                  color: "#0f172a", flexShrink: 0,
                 }}>
                   {f.icon}
                 </div>
                 <div>
-                  <p style={{ fontWeight: 800, fontSize: 13, color: "#131921", margin: 0, letterSpacing: "0.03em" }}>{f.title}</p>
+                  <p style={{ fontWeight: 800, fontSize: 13, color: "#0f172a", margin: 0, letterSpacing: "0.03em" }}>{f.title}</p>
                   <p style={{ fontSize: 11, color: "#374151", margin: "2px 0 0" }} className="category">{f.desc}</p>
                 </div>
               </div>
@@ -138,7 +138,7 @@ const Footer = () => {
               onClick={() => navigate("/")}
               style={{ marginBottom: 20, cursor: "pointer" }}
             >
-              <ShopzyLogo size={22} bg="#FFD814" color="#131921" textColor="#fff" />
+              <ShopzyLogo size={22} bg="#f4c24d" color="#0f172a" textColor="#fff" />
             </div>
 
             <p style={{ fontSize: 13, lineHeight: 1.75, color: "#94a3b8", maxWidth: 320, marginBottom: 28 }} className="category">
@@ -191,7 +191,7 @@ const Footer = () => {
                   }}
                   onMouseEnter={(e) => {
                     const b = e.currentTarget as HTMLButtonElement;
-                    b.style.background = "#FFD814"; b.style.color = "#131921"; b.style.borderColor = "#FFD814";
+                    b.style.background = "#f4c24d"; b.style.color = "#0f172a"; b.style.borderColor = "#f4c24d";
                   }}
                   onMouseLeave={(e) => {
                     const b = e.currentTarget as HTMLButtonElement;
@@ -221,7 +221,7 @@ const Footer = () => {
                   onMouseLeave={(e) => { (e.currentTarget as HTMLLIElement).style.color = "#94a3b8"; (e.currentTarget as HTMLLIElement).style.paddingLeft = "0"; }}
                   className="category"
                 >
-                  <FaArrowRight size={9} style={{ color: "#FFD814", flexShrink: 0 }} />
+                  <FaArrowRight size={9} style={{ color: "#f4c24d", flexShrink: 0 }} />
                   {link.name}
                 </li>
               ))}
@@ -240,7 +240,7 @@ const Footer = () => {
                   onMouseLeave={(e) => { (e.currentTarget as HTMLLIElement).style.color = "#94a3b8"; (e.currentTarget as HTMLLIElement).style.paddingLeft = "0"; }}
                   className="category"
                 >
-                  <FaArrowRight size={9} style={{ color: "#FFD814", flexShrink: 0 }} />
+                  <FaArrowRight size={9} style={{ color: "#f4c24d", flexShrink: 0 }} />
                   {link.name}
                 </li>
               ))}
@@ -278,12 +278,12 @@ const Footer = () => {
                   <button
                     onClick={handleSubscribe}
                     style={{
-                      background: "#FFD814", border: "none", padding: "0 16px",
-                      cursor: "pointer", fontWeight: 800, color: "#131921",
+                      background: "#f4c24d", border: "none", padding: "0 16px",
+                      cursor: "pointer", fontWeight: 800, color: "#0f172a",
                       fontSize: 16, whiteSpace: "nowrap", transition: "background 0.15s", flexShrink: 0,
                     }}
                     onMouseEnter={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#f0c400")}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#FFD814")}
+                    onMouseLeave={(e) => ((e.currentTarget as HTMLButtonElement).style.background = "#f4c24d")}
                   >
                     →
                   </button>
@@ -362,7 +362,7 @@ const Footer = () => {
                   onMouseEnter={(e) => { const d = e.currentTarget as HTMLDivElement; d.style.background = "rgba(255,216,20,0.07)"; d.style.borderColor = "rgba(255,216,20,0.3)"; }}
                   onMouseLeave={(e) => { const d = e.currentTarget as HTMLDivElement; d.style.background = "rgba(255,255,255,0.03)"; d.style.borderColor = "rgba(255,255,255,0.08)"; }}
                 >
-                  <p style={{ fontSize: 11, fontWeight: 700, color: "#FFD814", margin: "0 0 6px" }}>{box.title}</p>
+                  <p style={{ fontSize: 11, fontWeight: 700, color: "#f4c24d", margin: "0 0 6px" }}>{box.title}</p>
                   {box.lines.map((l) => (
                     <p key={l} style={{ fontSize: 12, color: "#64748b", margin: "2px 0" }} className="category">{l}</p>
                   ))}

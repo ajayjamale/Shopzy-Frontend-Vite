@@ -30,8 +30,8 @@ const AddressCard: React.FC<AddressCardProps> = ({ value, selectedValue, handleC
                     name="radio-buttons"
                     size='small'
                     sx={{
-                        color: '#007185',
-                        '&.Mui-checked': { color: '#007185' },
+                        color: '#0b7285',
+                        '&.Mui-checked': { color: '#0b7285' },
                         padding: '2px',
                     }}
                 />
@@ -42,7 +42,7 @@ const AddressCard: React.FC<AddressCardProps> = ({ value, selectedValue, handleC
                 <div className='flex items-center gap-2'>
                     <h1 className='font-bold text-sm text-gray-900'>{item.name}</h1>
                     {isSelected && (
-                        <span className='text-[10px] font-semibold bg-[#007185] text-white px-2 py-0.5 rounded-full'>
+                        <span className='text-[10px] font-semibold bg-[#0b7285] text-white px-2 py-0.5 rounded-full'>
                             Deliver here
                         </span>
                     )}

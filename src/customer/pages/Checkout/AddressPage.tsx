@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import PricingCard from '../Cart/PricingCard'
 import { Box, Modal } from '@mui/material'
 import AddressForm from './AddresssForm'
@@ -38,14 +38,18 @@ const AddressPage = () => {
     const { loading: orderLoading } = useAppSelector(store => store.orders);
     const [paymentGateway, setPaymentGateway] = useState(paymentGatwayList[0].value);
     const [open, setOpen] = useState(false);
+    const [placingOrder, setPlacingOrder] = useState(false);
+    const [orderError, setOrderError] = useState<string | null>(null);
+    const inFlightRef = useRef(false);
 
-    // FIX 1: Extracted a single async dispatchOrder function used by both
-    // handleCreateOrder (existing address) and handleAddressSaved (new address).
-    // Previously both called dispatch() without awaiting — so if the thunk's
-    // window.location.href ran but React re-rendered before navigation completed,
-    // or if payment_link_url was undefined, there was no fallback or error handling.
+    // Shared helper to place the order once and redirect.
+    // Guards against double-submit (clicks + StrictMode) and keeps navigation in the UI layer.
     const dispatchOrder = async (address: any) => {
+        if (inFlightRef.current || orderLoading || placingOrder) return;
+        inFlightRef.current = true;
+        setPlacingOrder(true);
         try {
+            setOrderError(null);
             // FIX 2: .unwrap() re-throws any rejectWithValue error as an exception,
             // giving us a reliable try/catch. Without .unwrap(), a rejected thunk
             // looks like a resolved promise and errors are silently swallowed.
@@ -55,10 +59,7 @@ const AddressPage = () => {
                 jwt: localStorage.getItem('jwt') || '',
             })).unwrap();
 
-            // FIX 3: The thunk already does window.location.href inside itself,
-            // but we add a safety check here too. If the backend returns the URL
-            // but the thunk's redirect somehow didn't fire (e.g. the thunk was
-            // cancelled or the field name changed), this catches it.
+            // Redirect to payment gateway from the UI layer for full control.
             if (result?.payment_link_url) {
                 window.location.href = result.payment_link_url;
             } else {
@@ -70,12 +71,15 @@ const AddressPage = () => {
                     '\nCheck your backend — the order was created but the user',
                     'cannot be redirected to payment without this field.'
                 );
-                alert('Payment gateway URL not received. Please contact support.');
+                setOrderError('Payment gateway URL not received. Please contact support.');
             }
         } catch (error: any) {
             // error here is the rejectWithValue payload (a string)
             console.error('[AddressPage] createOrder failed:', error);
-            alert(`Order failed: ${error}`);
+            setOrderError(`Order failed: ${error}`);
+        } finally {
+            setPlacingOrder(false);
+            inFlightRef.current = false;
         }
     };
 
@@ -84,7 +88,7 @@ const AddressPage = () => {
 
     // Called when user picks an existing saved address and clicks Place Order
     const handleCreateOrder = () => {
-        if (orderLoading) return;
+        if (orderLoading || placingOrder) return;
         const addresses = user.user?.addresses ?? [];
         if (addresses.length === 0) return;
         dispatchOrder(addresses[selectedIndex]);
@@ -108,34 +112,36 @@ const AddressPage = () => {
     };
 
     const addresses = user.user?.addresses ?? [];
+    const isProcessing = orderLoading || placingOrder;
 
     return (
-        <div className='min-h-screen bg-[#EAEDED] pt-6 pb-12 px-4 sm:px-8 lg:px-20'>
+        <div className='min-h-screen bg-[#f5f6f8]'>
+            <div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12'>
 
             {/* Step indicator */}
             <div className='flex items-center gap-2 text-sm text-gray-500 mb-5'>
-                <span className='text-[#007185] font-semibold'>Cart</span>
+                <span className='text-[#0b7285] font-semibold'>Cart</span>
                 <span>›</span>
                 <span className='font-bold text-gray-900'>Delivery Address</span>
                 <span>›</span>
                 <span>Payment</span>
             </div>
 
-            <div className='grid grid-cols-1 lg:grid-cols-3 gap-5 items-start'>
+            <div className='grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-5 items-start'>
 
                 {/* ── Left: Address selection ── */}
                 <div className='lg:col-span-2 space-y-4'>
-                    <div className='bg-white rounded-md border border-gray-200 overflow-hidden'>
+                    <div className='bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm'>
 
                         {/* Section header */}
-                        <div className='flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-[#F0F2F2]'>
+                        <div className='flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-[#f2f4f7]'>
                             <div className='flex items-center gap-2'>
-                                <LocationOnOutlinedIcon sx={{ fontSize: 18, color: '#007185' }} />
+                                <LocationOnOutlinedIcon sx={{ fontSize: 18, color: '#0b7285' }} />
                                 <span className='font-bold text-sm text-gray-900'>Choose a Delivery Address</span>
                             </div>
                             <button
                                 onClick={handleOpen}
-                                className='text-xs font-semibold text-[#007185] hover:underline flex items-center gap-1'
+                                className='text-xs font-semibold text-[#0b7285] hover:underline flex items-center gap-1'
                             >
                                 <AddIcon sx={{ fontSize: 15 }} />
                                 Add new address
@@ -167,7 +173,7 @@ const AddressPage = () => {
                         <div className='border-t border-gray-100 px-5 py-3'>
                             <button
                                 onClick={handleOpen}
-                                className='flex items-center gap-2 text-sm text-[#007185] hover:underline font-semibold'
+                                className='flex items-center gap-2 text-sm text-[#0b7285] hover:underline font-semibold'
                             >
                                 <AddIcon sx={{ fontSize: 17 }} />
                                 Add a new delivery address
@@ -180,8 +186,8 @@ const AddressPage = () => {
                 <div className='col-span-1 space-y-4'>
 
                     {/* Payment Gateway */}
-                    <div className='bg-white rounded-md border border-gray-200 overflow-hidden'>
-                        <div className='px-5 py-3 border-b border-gray-100 bg-[#F0F2F2]'>
+                    <div className='bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm'>
+                        <div className='px-5 py-3 border-b border-gray-100 bg-[#f2f4f7]'>
                             <span className='text-sm font-bold text-gray-900'>Choose Payment Method</span>
                         </div>
                         <div className='px-5 py-4'>
@@ -203,8 +209,8 @@ const AddressPage = () => {
                                             value={item.value}
                                             size='small'
                                             sx={{
-                                                color: '#007185',
-                                                '&.Mui-checked': { color: '#007185' },
+                                                color: '#0b7285',
+                                                '&.Mui-checked': { color: '#0b7285' },
                                                 padding: 0,
                                             }}
                                         />
@@ -221,7 +227,7 @@ const AddressPage = () => {
                     </div>
 
                     {/* Order Summary + Checkout */}
-                    <div className='bg-white rounded-md border border-gray-200 overflow-hidden'>
+                    <div className='bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm'>
                         <div className='px-5 py-2 flex items-center gap-1.5 text-xs text-[#007600] border-b border-gray-100'>
                             <LockIcon sx={{ fontSize: 13 }} />
                             <span>Secure transaction</span>
@@ -230,15 +236,15 @@ const AddressPage = () => {
                         <div className='px-5 pb-5 pt-2'>
                             <button
                                 onClick={handleCreateOrder}
-                                disabled={addresses.length === 0 || orderLoading}
+                                disabled={addresses.length === 0 || isProcessing}
                                 className='w-full py-2.5 rounded-full font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2'
                                 style={{
-                                    background: 'linear-gradient(to bottom, #FFD814, #F8B200)',
-                                    border: '1px solid #C7980A',
+                                    background: 'linear-gradient(to bottom, #f7d56a, #f4c24d)',
+                                    border: '1px solid #e1a836',
                                     color: '#111',
                                 }}
                             >
-                                {orderLoading ? (
+                                {isProcessing ? (
                                     <>
                                         <svg className='animate-spin' width='16' height='16' viewBox='0 0 24 24' fill='none'>
                                             <circle cx='12' cy='12' r='10' stroke='rgba(0,0,0,0.2)' strokeWidth='3' />
@@ -248,6 +254,11 @@ const AddressPage = () => {
                                     </>
                                 ) : 'Place Order'}
                             </button>
+                            {orderError && (
+                                <div className='mt-3 text-xs text-red-600 bg-red-50 border border-red-200 rounded-md px-3 py-2'>
+                                    {orderError}
+                                </div>
+                            )}
                             <p className='text-center text-xs text-gray-400 mt-2'>
                                 By placing your order, you agree to our terms & conditions.
                             </p>
@@ -265,6 +276,7 @@ const AddressPage = () => {
                     />
                 </Box>
             </Modal>
+        </div>
         </div>
     );
 };

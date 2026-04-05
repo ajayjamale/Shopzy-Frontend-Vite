@@ -35,7 +35,7 @@ const StarRating: React.FC<{ rating: number }> = ({ rating = 4 }) => (
         {[1, 2, 3, 4, 5].map((i) => (
             <span key={i} className={`star ${i <= Math.round(rating) ? "filled" : ""}`}>★</span>
         ))}
-        <span className="rating-count">({rating})</span>
+        <span className="rating-count">{rating.toFixed(1)}</span>
     </div>
 );
 
@@ -97,6 +97,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
             >
                 {/* Image Section */}
                 <div className="card">
+                    {item.discountPercent ? (
+                        <span className="pc-badge">-{item.discountPercent}%</span>
+                    ) : null}
                     {item.images.map((image: any, index: number) => (
                         <img
                             key={index}
@@ -169,14 +172,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
                     <StarRating rating={4.3} />
 
                     <div className="price-row">
-                        <span className="selling-price">₹{item.sellingPrice}</span>
-                        <span className="mrp-price">₹{item.mrpPrice}</span>
-                        <span className="discount-percent">{item.discountPercent}% off</span>
+                        <span className="selling-price">₹{item.sellingPrice?.toLocaleString("en-IN")}</span>
+                        <span className="mrp-price">₹{item.mrpPrice?.toLocaleString("en-IN")}</span>
+                        {item.discountPercent ? (
+                            <span className="discount-percent">{item.discountPercent}% off</span>
+                        ) : null}
                     </div>
 
                     <div className="delivery-info">
                         <LocalShippingOutlinedIcon sx={{ fontSize: 14, color: "#007600" }} />
-                        <span>FREE delivery <strong>Tomorrow</strong></span>
+                        <span>Free delivery <strong>Tomorrow</strong></span>
                     </div>
 
                     <button

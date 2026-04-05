@@ -35,7 +35,7 @@ const CartItemCard: React.FC<CartItemProps> = ({ item }) => {
   const saved = item.product?.mrpPrice - item.sellingPrice;
 
   return (
-    <div className="px-5 py-4 flex gap-4 relative">
+    <div className="px-5 py-4 flex flex-col sm:flex-row gap-4 relative">
 
       {/* Remove button */}
       <button
@@ -49,14 +49,14 @@ const CartItemCard: React.FC<CartItemProps> = ({ item }) => {
       {/* Product image */}
       <div className="flex-shrink-0">
         <img
-          className="w-[100px] h-[130px] rounded-md object-cover object-top border border-gray-100"
+          className="w-full sm:w-[110px] h-[160px] sm:h-[130px] rounded-lg object-cover object-top border border-gray-100 bg-white"
           src={item.product.images[0]}
           alt={item.product?.title}
         />
       </div>
 
       {/* Details */}
-      <div className="flex-1 space-y-1 pr-6">
+      <div className="flex-1 space-y-1 pr-0 sm:pr-6">
         <h1 className="font-semibold text-sm text-gray-900 leading-snug">
           {item.product?.seller?.businessDetails.businessName}
         </h1>

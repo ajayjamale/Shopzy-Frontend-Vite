@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { useAppDispatch } from '../../../Redux Toolkit/Store';
-import { createOrder } from '../../../Redux Toolkit/Customer/OrderSlice';
 import type { Address } from '../../../types/userTypes';
 
 // ── Validation ────────────────────────────────────────────────────────────────
@@ -58,8 +56,7 @@ const InputField = ({
 };
 
 // ── Main Component ────────────────────────────────────────────────────────────
-const AddressForm: React.FC<AddressFormProp> = ({ handleClose, paymentGateway }) => {
-    const dispatch = useAppDispatch();
+const AddressForm: React.FC<AddressFormProp> = ({ handleClose, paymentGateway, onAddressSaved }) => {
     const [done, setDone] = useState(false);
 
     const formik = useFormik({
@@ -68,14 +65,14 @@ const AddressForm: React.FC<AddressFormProp> = ({ handleClose, paymentGateway })
             address: '', locality: '', city: '', state: '',
         },
         validationSchema: schema,
-        onSubmit: (values) => {
-            dispatch(createOrder({
-                address: values as Address,
-                jwt: localStorage.getItem('jwt') || '',
-                paymentGateway,
-            }));
+        onSubmit: async (values, helpers) => {
             setDone(true);
-            setTimeout(handleClose, 1400);
+            try {
+                onAddressSaved?.(values as Address);
+                setTimeout(handleClose, 1200);
+            } finally {
+                helpers.setSubmitting(false);
+            }
         },
     });
 
@@ -172,7 +169,7 @@ const AddressForm: React.FC<AddressFormProp> = ({ handleClose, paymentGateway })
                                 <span className='af-spinner' />
                             ) : (
                                 <>
-                                    <span>Use this Address</span>
+                                    <span>Use this Address &amp; Continue</span>
                                     <span className='af-arrow'>→</span>
                                 </>
                             )}
@@ -234,7 +231,7 @@ const styles = `
   }
   .af-progress-bar {
     height: 100%;
-    background: linear-gradient(to right, #007185, #00a693);
+    background: linear-gradient(to right, #0b7285, #00a693);
     transition: width 0.35s ease;
   }
   .af-progress-label {
@@ -262,14 +259,14 @@ const styles = `
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.7px;
-    color: #007185;
+    color: #0b7285;
     margin: 0 0 12px;
   }
   .af-section-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #007185;
+    background: #0b7285;
     flex-shrink: 0;
   }
 
@@ -301,7 +298,7 @@ const styles = `
     transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
   }
   .af-input-wrap:focus-within {
-    border-color: #007185;
+    border-color: #0b7285;
     background: #fff;
     box-shadow: 0 0 0 3px rgba(0,113,133,0.1);
   }
@@ -368,8 +365,8 @@ const styles = `
     flex: 2;
     padding: 10px 20px;
     border-radius: 8px;
-    border: 1px solid #C7980A;
-    background: linear-gradient(to bottom, #FFD814, #F8B200);
+    border: 1px solid #e1a836;
+    background: linear-gradient(to bottom, #f4c24d, #e9b12f);
     font-size: 13px;
     font-weight: 700;
     color: #111;

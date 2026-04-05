@@ -56,7 +56,7 @@ const DrawerList = ({ toggleDrawer }: any) => {
       <Box sx={{
         px: 2, height: 60, borderBottom: "1px solid #f1f5f9",
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        background: "#131921", flexShrink: 0,
+        background: "#0f172a", flexShrink: 0,
       }}>
         {showMobileCategory ? (
           <>
@@ -73,7 +73,7 @@ const DrawerList = ({ toggleDrawer }: any) => {
         ) : (
           <>
             <div className="cursor-pointer" onClick={() => { toggleDrawer(false)(); window.location.href = "/"; }}>
-              <ShopzyLogo size={18} bg="transparent" textColor="#fff" color="#FFD814" />
+              <ShopzyLogo size={18} bg="transparent" textColor="#fff" color="#f4c24d" />
             </div>
             <IconButton onClick={toggleDrawer(false)} sx={{ color: "#fff", background: "rgba(255,255,255,0.1)", borderRadius: "8px", width: 34, height: 34, "&:hover": { background: "rgba(255,255,255,0.18)" } }}>
               <CloseIcon sx={{ fontSize: 16 }} />
@@ -101,8 +101,8 @@ const DrawerList = ({ toggleDrawer }: any) => {
                     disableRipple onClick={() => handleCategoryClick(item.categoryId)}
                     sx={{
                       borderRadius: "10px", px: 2, py: 1.4,
-                      background: isActive ? "#131921" : "transparent",
-                      "&:hover": { background: isActive ? "#131921" : "#f8fafc" },
+                      background: isActive ? "#0f172a" : "transparent",
+                      "&:hover": { background: isActive ? "#0f172a" : "#f8fafc" },
                       transition: "all 0.15s ease",
                     }}
                   >
@@ -111,10 +111,10 @@ const DrawerList = ({ toggleDrawer }: any) => {
                       primaryTypographyProps={{
                         fontSize: 13, fontWeight: isActive ? 700 : 500,
                         letterSpacing: "0.02em", className: "category",
-                        sx: { color: isActive ? "#FFD814" : "#1e293b" },
+                        sx: { color: isActive ? "#f4c24d" : "#1e293b" },
                       }}
                     />
-                    <ArrowForwardIosIcon sx={{ fontSize: 11, color: isActive ? "#FFD814" : "#cbd5e1", transition: "transform 0.15s", transform: isActive ? "translateX(2px)" : "none" }} />
+                    <ArrowForwardIosIcon sx={{ fontSize: 11, color: isActive ? "#f4c24d" : "#cbd5e1", transition: "transform 0.15s", transform: isActive ? "translateX(2px)" : "none" }} />
                   </ListItemButton>
                 </ListItem>
               );
@@ -130,7 +130,7 @@ const DrawerList = ({ toggleDrawer }: any) => {
               {quickLinks.map((link) => (
                 <ListItemButton
                   key={link.label}
-                  sx={{ borderRadius: "10px", px: 2, py: 1.2, gap: 1.5, color: "#475569", "&:hover": { background: "#f1f5f9", color: "#131921" } }}
+                  sx={{ borderRadius: "10px", px: 2, py: 1.2, gap: 1.5, color: "#475569", "&:hover": { background: "#f1f5f9", color: "#0f172a" } }}
                   onClick={() => { toggleDrawer(false)(); window.location.href = link.path; }}
                 >
                   {link.icon}
@@ -143,7 +143,7 @@ const DrawerList = ({ toggleDrawer }: any) => {
           {/* Footer strip */}
           <Box sx={{ p: "14px 20px", borderTop: "1px solid #f1f5f9", background: "#fff", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
             <span style={{ fontSize: 11, color: "#94a3b8" }} className="category">{mainCategory.length} categories</span>
-            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#FFD814", background: "#131921", padding: "4px 10px", borderRadius: 20 }}>
+            <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: "0.12em", color: "#f4c24d", background: "#0f172a", padding: "4px 10px", borderRadius: 20 }}>
               SHOPZY
             </span>
           </Box>

@@ -77,19 +77,32 @@ export const createOrder = createAsyncThunk<
 
     console.log("createOrder raw response:", response.data);
 
-    // Check for payment_link_url — log full response so we can see
+    const data = response.data ?? {};
+    const paymentUrl =
+      data.payment_link_url ||
+      data.paymentLinkUrl ||
+      data.payment_url ||
+      data.paymentUrl ||
+      data?.paymentLink?.shortUrl ||
+      data?.paymentLink?.short_url ||
+      data?.paymentLink?.longUrl ||
+      data?.paymentLink?.long_url ||
+      data?.payment_link?.short_url ||
+      data?.payment_link?.long_url;
+
+    // Check for a usable payment URL — log full response so we can see
     // the exact field names the backend returns
-    if (!response.data?.payment_link_url) {
+    if (!paymentUrl) {
       console.error(
         "payment_link_url missing. Backend returned:",
-        JSON.stringify(response.data, null, 2)
+        JSON.stringify(data, null, 2)
       );
       return rejectWithValue(
         "Order created but payment_link_url missing. See console for backend response."
       );
     }
 
-    return response.data;
+    return { ...data, payment_link_url: paymentUrl };
   } catch (error: any) {
     // Log the full error so we can see HTTP status, headers, and body
     console.error("createOrder error status :", error.response?.status);

@@ -27,7 +27,7 @@ const Home = () => {
           <MainCarousel />
 
           {/* Everything below carousel gets normal spacing */}
-          <div className="space-y-5 lg:space-y-10">
+          <div className="space-y-6 lg:space-y-12 pb-16 bg-[#f5f6f8]">
             {homePage.homePageData?.electricCategories && <ElectronicCategory />}
             {homePage.homePageData?.grid && <TopBrand />}
             {homePage.homePageData?.deals && (
@@ -39,7 +39,7 @@ const Home = () => {
           </div>
 
           {/* Chatbot — fixed, always on top */}
-          <section className="fixed bottom-10 right-10 z-[9999]">
+          <section className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 z-[9999]">
             {showChatBot ? (
               <ChatBot handleClose={handleCloseChatBot} />
             ) : (

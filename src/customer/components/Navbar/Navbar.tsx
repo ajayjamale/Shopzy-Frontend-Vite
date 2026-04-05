@@ -106,19 +106,19 @@ const Navbar = () => {
     <Box
       sx={{ zIndex: 1100, position: "sticky", top: 0, width: "100%" }}
       className="navbar"
-      style={{ boxShadow: scrolled ? "0 2px 20px rgba(0,0,0,0.45)" : "none", transition: "box-shadow 0.3s ease" }}
+      style={{ boxShadow: scrolled ? "0 10px 26px rgba(15,23,42,0.28)" : "none", transition: "box-shadow 0.3s ease" }}
     >
       {/* ── TOP BAR ──────────────────────────────────────── */}
       <div
         className="navbar-top"
-        style={{ background: "linear-gradient(180deg,#1a2332 0%,#131921 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+        style={{ background: "linear-gradient(180deg,#182238 0%,#0f172a 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}
       >
         <div className="flex items-center gap-1.5 sm:gap-3 lg:gap-5 px-2 sm:px-4 lg:px-10 h-[60px] min-w-0">
 
           {/* Hamburger — mobile only */}
           {isSmall && (
             <IconButton onClick={toggleDrawer(true)} size="small"
-              sx={{ color: "#fff", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "6px", p: "5px", "&:hover": { borderColor: "#FFD814", color: "#FFD814" } }}
+              sx={{ color: "#fff", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "6px", p: "5px", "&:hover": { borderColor: "#f4c24d", color: "#f4c24d" } }}
             >
               <MenuIcon sx={{ fontSize: 20 }} />
             </IconButton>
@@ -138,7 +138,7 @@ const Navbar = () => {
             >
               <span style={{ fontSize: 10, color: "#a0aab4" }}>Deliver to</span>
               <span className="flex items-center gap-1 font-semibold text-white" style={{ fontSize: 12 }}>
-                <RoomOutlinedIcon sx={{ fontSize: 14, color: "#FFD814" }} />
+                <RoomOutlinedIcon sx={{ fontSize: 14, color: "#f4c24d" }} />
                 {firstName ?? "Update location"}
               </span>
             </button>
@@ -148,16 +148,16 @@ const Navbar = () => {
           {!isSmall ? (
             <Box sx={{
               flex: 1, display: "flex", alignItems: "stretch", mx: 1,
-              borderRadius: "8px", overflow: "hidden",
-              border: searchFocused ? "2px solid #FFD814" : "2px solid transparent",
-              transition: "border-color 0.2s ease",
-              boxShadow: searchFocused ? "0 0 0 3px rgba(255,216,20,0.15)" : "none",
+              borderRadius: "10px", overflow: "hidden",
+              border: searchFocused ? "2px solid #f4c24d" : "2px solid transparent",
+              transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+              boxShadow: searchFocused ? "0 0 0 3px rgba(244,194,77,0.18)" : "0 1px 6px rgba(0,0,0,0.16)",
             }}>
-              <Box sx={{ background: "#f0f2f2", px: 1.5, display: "flex", alignItems: "center", fontSize: 12, cursor: "pointer", color: "#333", gap: 0.3, whiteSpace: "nowrap", "&:hover": { background: "#e3e6e6" } }}>
+              <Box sx={{ background: "#f2f4f7", px: 1.5, display: "flex", alignItems: "center", fontSize: 12, cursor: "pointer", color: "#333", gap: 0.3, whiteSpace: "nowrap", "&:hover": { background: "#e6e9ee" } }}>
                 All <KeyboardArrowDownIcon sx={{ fontSize: 14 }} />
               </Box>
               <Box sx={{ flex: 1, background: "#fff", display: "flex", alignItems: "center", px: 1.5 }}>
-                <InputBase placeholder="Search Shopzy" fullWidth value={searchQuery}
+                <InputBase placeholder="Search products, brands and more" fullWidth value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                   onFocus={() => setSearchFocused(true)}
@@ -166,8 +166,8 @@ const Navbar = () => {
                   sx={{ fontSize: 14 }}
                 />
               </Box>
-              <Box onClick={handleSearch} sx={{ background: "#FFD814", width: 52, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "background 0.15s", "&:hover": { background: "#f0c400" } }}>
-                <SearchIcon sx={{ color: "#131921", fontSize: 22 }} />
+              <Box onClick={handleSearch} sx={{ background: "#f4c24d", width: 52, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", transition: "background 0.15s", "&:hover": { background: "#e5a93c" } }}>
+                <SearchIcon sx={{ color: "#0f172a", fontSize: 22 }} />
               </Box>
             </Box>
           ) : (
@@ -204,7 +204,7 @@ const Navbar = () => {
           {/* Wishlist + Cart */}
           <div className="flex items-center gap-0.5 sm:gap-1 ml-auto sm:ml-1 shrink-0">
             <IconButton onClick={() => navigate("/wishlist")} size="small"
-              sx={{ color: "#fff", p: "6px", "&:hover": { color: "#FFD814" }, transition: "color 0.2s" }}
+              sx={{ color: "#fff", p: "6px", "&:hover": { color: "#f4c24d" }, transition: "color 0.2s" }}
             >
               <FavoriteBorder sx={{ fontSize: 22 }} />
             </IconButton>
@@ -215,7 +215,7 @@ const Navbar = () => {
               onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
             >
               <Badge badgeContent={cart.cart?.cartItems?.length || 0}
-                sx={{ "& .MuiBadge-badge": { background: "#FFD814", color: "#131921", fontWeight: 800, fontSize: 11, minWidth: 18, height: 18 } }}
+                sx={{ "& .MuiBadge-badge": { background: "#f4c24d", color: "#0f172a", fontWeight: 800, fontSize: 11, minWidth: 18, height: 18 } }}
               >
                 <AddShoppingCartIcon sx={{ fontSize: 26 }} />
               </Badge>
@@ -226,17 +226,17 @@ const Navbar = () => {
 
         {/* Mobile search expansion */}
         {isSmall && mobileSearchOpen && (
-          <div style={{ background: "#1a2332", borderTop: "1px solid rgba(255,255,255,0.08)", padding: "0 12px 12px" }}>
-            <div className="flex items-stretch overflow-hidden" style={{ borderRadius: 8, border: "2px solid #FFD814" }}>
+          <div style={{ background: "#182238", borderTop: "1px solid rgba(255,255,255,0.08)", padding: "0 12px 12px" }}>
+            <div className="flex items-stretch overflow-hidden" style={{ borderRadius: 10, border: "2px solid #f4c24d" }}>
               <InputBase placeholder="Search Shopzy" fullWidth value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 sx={{ px: 2, py: 0.8, fontSize: 14, background: "#fff", minWidth: 0 }}
               />
               <button type="button" onClick={handleSearch}
-                style={{ padding: "0 16px", background: "#FFD814", border: "none", cursor: "pointer", display: "flex", alignItems: "center", flexShrink: 0 }}
+                style={{ padding: "0 16px", background: "#f4c24d", border: "none", cursor: "pointer", display: "flex", alignItems: "center", flexShrink: 0 }}
               >
-                <SearchIcon sx={{ color: "#131921" }} />
+                <SearchIcon sx={{ color: "#0f172a" }} />
               </button>
             </div>
           </div>
@@ -246,7 +246,7 @@ const Navbar = () => {
       {/* ── BOTTOM CATEGORY BAR + HOVER SHEET ─────────────── */}
       <div
         className="navbar-bottom"
-        style={{ background: "linear-gradient(180deg,#2a3f55 0%,#232f3e 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative" }}
+        style={{ background: "linear-gradient(180deg,#23324a 0%,#1a263b 100%)", borderBottom: "1px solid rgba(255,255,255,0.06)", position: "relative" }}
       >
         {/* Category pills row */}
         <div className="navbar-bottom-inner flex items-center gap-1 px-2 sm:px-4 lg:px-10 overflow-x-auto" style={{ height: 42 }}>
@@ -273,7 +273,7 @@ const Navbar = () => {
                 type="button"
                 className="navbar-link hidden sm:inline-flex shrink-0 items-center gap-1"
                 style={{
-                  color: isActive ? "#FFD814" : undefined,
+                  color: isActive ? "#f4c24d" : undefined,
                   borderColor: isActive ? "rgba(255,255,255,0.55)" : undefined,
                   background: isActive ? "rgba(255,255,255,0.1)" : undefined,
                   position: "relative",
@@ -302,7 +302,7 @@ const Navbar = () => {
                     transform: "translateX(-50%)",
                     width: "80%",
                     height: 2,
-                    background: "#FFD814",
+                    background: "#f4c24d",
                     borderRadius: 1,
                   }} />
                 )}
@@ -315,9 +315,9 @@ const Navbar = () => {
           {/* Sell on Shopzy */}
           <button type="button" onClick={becomeSellerClick}
             className="hidden md:inline-flex shrink-0 items-center gap-1"
-            style={{ fontSize: "0.8rem", fontWeight: 600, padding: "4px 14px", borderRadius: 20, border: "1px solid #FFD814", color: "#FFD814", background: "transparent", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s ease" }}
-            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#FFD814"; (e.currentTarget as HTMLButtonElement).style.color = "#131921"; }}
-            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#FFD814"; }}
+            style={{ fontSize: "0.8rem", fontWeight: 600, padding: "4px 14px", borderRadius: 20, border: "1px solid #f4c24d", color: "#f4c24d", background: "transparent", cursor: "pointer", whiteSpace: "nowrap", transition: "all 0.2s ease" }}
+            onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "#f4c24d"; (e.currentTarget as HTMLButtonElement).style.color = "#0f172a"; }}
+            onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.background = "transparent"; (e.currentTarget as HTMLButtonElement).style.color = "#f4c24d"; }}
           >
             Sell on Shopzy
           </button>
@@ -339,7 +339,7 @@ const Navbar = () => {
               zIndex: 1200,
               background: "#ffffff",
               boxShadow: "0 16px 48px rgba(0,0,0,0.22)",
-              borderTop: "2px solid #FFD814",
+              borderTop: "2px solid #f4c24d",
               maxHeight: "70vh",
               overflowY: "auto",
               animation: "sheetSlideDown 0.18s ease",

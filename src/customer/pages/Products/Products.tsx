@@ -61,39 +61,52 @@ const Products = () => {
   const categoryLabel = categoryId?.split("_").join(" ") || "";
 
   return (
-    <div className="mt-10">
+    <div className="bg-[#f5f6f8]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
 
       {/* Category heading */}
-      <div className="px-9 pb-4">
-        <h1 className="text-2xl font-bold text-gray-900 uppercase tracking-wide">
+      <div className="pb-4">
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 uppercase tracking-wide">
           {categoryLabel}
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          {products.products?.length > 0
-            ? `Showing ${products.products.length} results`
-            : "No results"}
-        </p>
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">
+              {products.products?.length > 0
+                ? `Showing ${products.products.length} results`
+                : "No results"}
+            </p>
+          </div>
+          <div className="hidden sm:flex items-center gap-2 text-xs text-gray-500">
+            <span className="px-2 py-1 rounded-full bg-white border border-gray-200">
+              Curated picks
+            </span>
+            <span className="px-2 py-1 rounded-full bg-white border border-gray-200">
+              Free delivery
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div className="lg:flex">
+      <div className="lg:flex gap-6">
 
         {/* Sidebar filter — desktop */}
-        <section className="hidden lg:block w-[22%] sticky top-0 self-start">
+        <section className="hidden lg:block w-[260px] sticky top-24 self-start">
           <FilterSection />
         </section>
 
         {/* Main content */}
-        <div className="w-full lg:w-[78%] space-y-4">
+        <div className="w-full flex-1 space-y-4">
 
           {/* Toolbar */}
-          <div className="flex justify-between items-center px-5 h-[48px] border-b border-gray-200 bg-white">
+          <div className="flex justify-between items-center px-4 sm:px-5 py-3 border border-gray-200 bg-white rounded-xl shadow-sm">
 
             {/* Mobile filter toggle */}
             <div className="relative">
               {!isLarge && (
                 <button
                   onClick={handleShowFilter}
-                  className="flex items-center gap-1.5 text-sm font-semibold text-[#007185] border border-[#007185] rounded px-3 py-1 hover:bg-teal-50 transition"
+                  className="flex items-center gap-1.5 text-sm font-semibold text-[#0b7285] border border-[#0b7285] rounded-full px-3 py-1 hover:bg-teal-50 transition"
                 >
                   {showFilter ? (
                     <FilterAltOffIcon sx={{ fontSize: 16 }} />
@@ -106,7 +119,7 @@ const Products = () => {
               {showFilter && !isLarge && (
                 <Box
                   sx={{ zIndex: 100 }}
-                  className="absolute top-[44px] left-0 w-[280px] shadow-xl border border-gray-200 rounded-md overflow-hidden"
+                  className="absolute top-[44px] left-0 w-[290px] shadow-xl border border-gray-200 rounded-xl overflow-hidden"
                 >
                   <FilterSection />
                 </Box>
@@ -116,16 +129,16 @@ const Products = () => {
             {/* Sort dropdown */}
             <div className="flex items-center gap-2">
               <span className="text-sm text-gray-600 hidden sm:inline">Sort by:</span>
-              <FormControl size="small" sx={{ width: "180px" }}>
+              <FormControl size="small" sx={{ width: "190px" }}>
                 <Select
                   value={sort}
                   onChange={handleSortProduct}
                   displayEmpty
                   sx={{
                     fontSize: 13,
-                    borderRadius: 1,
+                    borderRadius: 2,
                     "& .MuiOutlinedInput-notchedOutline": { borderColor: "#ddd" },
-                    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#F6A429" },
+                    "&:hover .MuiOutlinedInput-notchedOutline": { borderColor: "#f4c24d" },
                   }}
                   renderValue={(val) =>
                     val === "" ? <span className="text-gray-400">Featured</span>
@@ -142,7 +155,7 @@ const Products = () => {
 
           {/* Product grid */}
           {products.products?.length > 0 ? (
-            <section className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-6 gap-x-2 px-5">
+            <section className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 lg:gap-5 px-2 sm:px-4">
               {products.products.map((item: any, index: number) => (
                 <div key={index * 9}>
                   <ProductCard item={item} />
@@ -187,9 +200,9 @@ const Products = () => {
                 }
                 .amazon-empty-search-btn {
                   padding: 0 14px;
-                  background: linear-gradient(to bottom, #FFD814, #F8B200);
+                  background: linear-gradient(to bottom, #f4c24d, #e9b12f);
                   border: none;
-                  border-left: 1px solid #C7980A;
+                  border-left: 1px solid #e1a836;
                   cursor: pointer;
                 }
                 .amazon-empty-search-btn:hover {
@@ -209,14 +222,14 @@ const Products = () => {
                   color: #949494;
                 }
                 .amazon-empty-link {
-                  color: #007185;
+                  color: #0b7285;
                   text-decoration: none;
                   font-size: 13px;
                   cursor: pointer;
                 }
                 .amazon-empty-link:hover {
                   text-decoration: underline;
-                  color: #C7511F;
+                  color: #b45309;
                 }
               `}</style>
 
@@ -282,9 +295,9 @@ const Products = () => {
               sx={{
                 "& .MuiPaginationItem-root": { fontSize: 13 },
                 "& .Mui-selected": {
-                  background: "#FFD814 !important",
-                  borderColor: "#C7980A !important",
-                  color: "#111",
+                  background: "#f4c24d !important",
+                  borderColor: "#e1a836 !important",
+                  color: "#0f172a",
                   fontWeight: 700,
                 },
               }}
@@ -293,6 +306,7 @@ const Products = () => {
 
         </div>
       </div>
+    </div>
     </div>
   );
 };

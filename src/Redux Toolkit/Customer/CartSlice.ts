@@ -128,8 +128,28 @@ const cartSlice = createSlice({
         state.error = null;
       })
       .addCase(addItemToCart.fulfilled, (state, action: PayloadAction<CartItem>) => {
+        const payload: any = action.payload;
+        if (!state.cart) {
+          if (payload?.cartItems) {
+            state.cart = payload;
+            state.loading = false;
+            return;
+          }
+          if (payload?.cart) {
+            state.cart = payload.cart;
+            state.loading = false;
+            return;
+          }
+        }
         if (state.cart) {
           state.cart.cartItems.push(action.payload);
+          state.cart.totalMrpPrice = sumCartItemMrpPrice(state.cart.cartItems);
+          state.cart.totalSellingPrice = sumCartItemSellingPrice(state.cart.cartItems);
+          state.cart.discount = state.cart.totalMrpPrice - state.cart.totalSellingPrice;
+          state.cart.totalItem = state.cart.cartItems.reduce(
+            (acc, item) => acc + (item.quantity ?? 1),
+            0
+          );
         }
         state.loading = false;
       })
@@ -148,6 +168,11 @@ const cartSlice = createSlice({
           );
           state.cart.totalMrpPrice = sumCartItemMrpPrice(state.cart.cartItems);
           state.cart.totalSellingPrice = sumCartItemSellingPrice(state.cart.cartItems);
+          state.cart.discount = state.cart.totalMrpPrice - state.cart.totalSellingPrice;
+          state.cart.totalItem = state.cart.cartItems.reduce(
+            (acc, item) => acc + (item.quantity ?? 1),
+            0
+          );
         }
         state.loading = false;
       })
@@ -172,6 +197,11 @@ const cartSlice = createSlice({
           }
           state.cart.totalMrpPrice = sumCartItemMrpPrice(state.cart.cartItems);
           state.cart.totalSellingPrice = sumCartItemSellingPrice(state.cart.cartItems);
+          state.cart.discount = state.cart.totalMrpPrice - state.cart.totalSellingPrice;
+          state.cart.totalItem = state.cart.cartItems.reduce(
+            (acc, item) => acc + (item.quantity ?? 1),
+            0
+          );
         }
         state.loading = false;
       })

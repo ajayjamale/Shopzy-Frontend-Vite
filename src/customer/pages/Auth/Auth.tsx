@@ -34,7 +34,7 @@ const Auth = () => {
 
       {/* Logo */}
       <div className="auth-brand-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-        <ShopzyLogo size={24} bg="#FFD814" color="#131921" textColor="#131921" />
+        <ShopzyLogo size={24} bg="#f4c24d" color="#0f172a" textColor="#0f172a" />
       </div>
 
       {/* Form Card */}
@@ -86,7 +86,7 @@ const Auth = () => {
             color: '#ffffff',
             fontWeight: 500,
             fontSize: '0.875rem',
-            fontFamily: "'Amazon Ember', 'Helvetica Neue', Arial, sans-serif",
+            fontFamily: "var(--font-body)",
             '& .MuiAlert-icon': { color: '#ffffff' },
           }}
         >
