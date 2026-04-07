@@ -25,7 +25,9 @@ export interface HomeData {
     categoryId: string;
     section?: string;
     name?: string;
-    image: string;
+    image?: string;
+    imageUrl?: string;
     parentCategoryId?: string;
+    redirectLink?: string;
   }
   

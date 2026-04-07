@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { fetchTransactionsBySeller } from "../../../Redux Toolkit/Seller/transactionSlice";
 import type { Transaction } from "../../../types/Transaction";
 import { redableDateTime } from "../../../util/redableDateTime";
+import { getSellerToken } from "../../../util/authToken";
 
 const C = {
   navy:   "#232F3E",
@@ -32,7 +33,7 @@ export default function TransactionTable() {
   const { transaction }             = useAppSelector((s) => s);
 
   useEffect(() => {
-    dispatch(fetchTransactionsBySeller(localStorage.getItem("jwt") || ""));
+    dispatch(fetchTransactionsBySeller(getSellerToken()));
   }, [dispatch]);
 
   const rows: Transaction[] = transaction.transactions ?? [];

@@ -7,7 +7,7 @@ export default function GridTable() {
 
   return (
     <>
-      <HomeCategoryTable categories={homePage.homePageData?.grid}/>
+      <HomeCategoryTable categories={homePage.homePageData?.topBrands as any}/>
     </>
   );
 }

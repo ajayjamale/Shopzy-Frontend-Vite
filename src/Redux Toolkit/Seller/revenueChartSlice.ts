@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { api } from '../../Config/Api';
+import { getSellerToken } from '../../util/authToken';
 
 // Define the base URL for the API
 const API_BASE_URL = '/api/seller/revenue/chart';
@@ -27,7 +27,7 @@ export const fetchRevenueChart = createAsyncThunk(
     async ({ type }: { type: string }, { rejectWithValue }) => {
         console.log("type      ---- ",type)
       try {
-        const token = localStorage.getItem('jwt'); 
+        const token = getSellerToken(); 
         const response = await api.get(`${API_BASE_URL}`, {
           params: { type },
           headers: { Authorization: `Bearer ${token}` },

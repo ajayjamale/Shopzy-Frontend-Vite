@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import type { HomeCategory } from '../../types/homeDataTypes';
 import { api } from '../../Config/Api';
+import { getAdminToken } from '../../util/authToken';
 
 const API_URL = '/admin';
 
@@ -8,7 +9,9 @@ export const updateHomeCategory = createAsyncThunk<HomeCategory, { id: number; d
   'homeCategory/updateHomeCategory',
   async ({ id, data }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`${API_URL}/home-category/${id}`, data);
+      const response = await api.patch(`${API_URL}/home-category/${id}`, data, {
+        headers: { Authorization: `Bearer ${getAdminToken()}` },
+      });
       console.log("category updated ",response)
       return response.data;
     } catch (error: any) {
@@ -27,7 +30,9 @@ export const fetchHomeCategories = createAsyncThunk<HomeCategory[]>(
   'homeCategory/fetchHomeCategories',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get(`${API_URL}/home-category`);
+      const response = await api.get(`${API_URL}/home-category`, {
+        headers: { Authorization: `Bearer ${getAdminToken()}` },
+      });
       console.log(" categories ",response.data)
       return response.data;
     } catch (error:any) {

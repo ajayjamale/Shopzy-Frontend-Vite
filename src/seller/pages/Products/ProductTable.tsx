@@ -18,6 +18,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
 import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
 import { fetchSellerProducts, updateProductStock } from '../../../Redux Toolkit/Seller/sellerProductSlice';
 import { useNavigate } from 'react-router-dom';
+import { getSellerToken } from '../../../util/authToken';
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
 const AMZ = {
@@ -222,8 +223,8 @@ export default function ProductTable() {
   const [stockFilter, setStockFilter] = React.useState('all');
 
   React.useEffect(() => {
-    dispatch(fetchSellerProducts(localStorage.getItem('jwt')));
-  }, []);
+    dispatch(fetchSellerProducts(getSellerToken()));
+  }, [dispatch]);
 
   const handleUpdateStack = (id: number | undefined) => () => {
     dispatch(updateProductStock(id));
@@ -274,7 +275,7 @@ export default function ProductTable() {
             </Typography>
           </Box>
           <Box display="flex" gap={1} flexWrap="wrap">
-            <AmazonButton variant="outlined" startIcon={<RefreshIcon sx={{ fontSize: 15 }} />} onClick={() => dispatch(fetchSellerProducts(localStorage.getItem('jwt')))}>
+            <AmazonButton variant="outlined" startIcon={<RefreshIcon sx={{ fontSize: 15 }} />} onClick={() => dispatch(fetchSellerProducts(getSellerToken()))}>
               Refresh
             </AmazonButton>
             <AmazonButton variant="contained" startIcon={<AddIcon sx={{ fontSize: 15 }} />} onClick={() => navigate('/seller/add-product')}>

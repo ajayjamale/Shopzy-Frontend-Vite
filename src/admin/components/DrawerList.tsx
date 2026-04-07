@@ -13,24 +13,32 @@ import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstruct
 import { Category } from "@mui/icons-material";
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LogoutIcon from '@mui/icons-material/Logout';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import SlideshowIcon from '@mui/icons-material/Slideshow';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn';
 
 const menu = [
   { name: "Manage Seller",            path: "/admin",                      icon: <DashboardIcon /> },
   { name: "Coupons",              path: "/admin/coupon",               icon: <IntegrationInstructionsIcon /> },
   { name: "Add New Coupon",       path: "/admin/add-coupon",           icon: <AddIcon /> },
   { name: "Home Page",            path: "/admin/home-grid",            icon: <HomeIcon /> },
+  { name: "Home Content CMS",     path: "/admin/home-content",         icon: <SlideshowIcon /> },
   { name: "Electronics Category", path: "/admin/electronics-category", icon: <ElectricBoltIcon /> },
   { name: "Shop By Category",     path: "/admin/shop-by-category",     icon: <Category /> },
   { name: "Deals",                path: "/admin/deals",                icon: <LocalOfferIcon /> },
+  { name: "Settlements",          path: "/admin/settlements",          icon: <AccountBalanceWalletIcon /> },
+  { name: "Returns",              path: "/admin/returns",              icon: <AssignmentReturnIcon /> },
+  { name: "Users",                path: "/admin/users",                icon: <PeopleAltIcon /> },
 ];
 
 const menu2 = [
-  { name: "Account", path: "/seller/account", icon: <AccountBoxIcon /> },
-  { name: "Logout",  path: "/",               icon: <LogoutIcon /> },
+  { name: "Account", path: "/admin/users", icon: <AccountBoxIcon /> },
+  { name: "Logout",  path: "__logout__",    icon: <LogoutIcon /> },
 ];
 
 interface DrawerListProps {
-  toggleDrawer?: any;
+  toggleDrawer?: () => void;
 }
 
 const AdminDrawerList = ({ toggleDrawer }: DrawerListProps) => {
@@ -38,12 +46,22 @@ const AdminDrawerList = ({ toggleDrawer }: DrawerListProps) => {
   const navigate = useNavigate();
 
   const handleNav = (path: string) => {
+    if (path === "__logout__") {
+      localStorage.removeItem("jwt");
+      localStorage.removeItem("seller_jwt");
+      navigate("/");
+      toggleDrawer?.();
+      return;
+    }
     navigate(path);
     toggleDrawer?.();
   };
 
   const NavItem = ({ item }: { item: typeof menu[0] }) => {
-    const isActive = location.pathname === item.path;
+    const isRoot = item.path === "/admin";
+    const isActive = isRoot
+      ? location.pathname === "/admin" || location.pathname === "/admin/"
+      : location.pathname === item.path || location.pathname.startsWith(item.path + "/");
     return (
       <ListItem disablePadding sx={{ mb: 0.5 }}>
         <ListItemButton

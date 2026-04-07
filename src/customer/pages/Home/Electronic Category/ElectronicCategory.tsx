@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@mui/material";
 import { useAppSelector } from "../../../../Redux Toolkit/Store";
+import type { HomeContentItem } from "../../../../types/homeContentTypes";
 
 const fallback = [
   { name: "Mobiles",     img: "https://rukminim2.flixcart.com/image/416/416/xif0q/mobile/5/t/j/edge-50-fusion-pb300002in-motorola-original-imahywzrfagkuyxx.jpeg?q=70", categoryId: "mobiles" },
@@ -19,7 +20,9 @@ const ElectronicCategory: React.FC = () => {
   const navigate  = useNavigate();
   const { homePage } = useAppSelector(s => s);
   const isSmall   = useMediaQuery("(max-width:600px)");
-  const cats = (homePage.homePageData?.electricCategories || fallback).slice(0, isSmall ? 5 : undefined);
+  const cats: (HomeContentItem | any)[] = (homePage.homePageData?.electronics?.length
+    ? homePage.homePageData.electronics
+    : fallback).slice(0, isSmall ? 5 : undefined);
 
   return (
     <>
@@ -114,9 +117,9 @@ const ElectronicCategory: React.FC = () => {
           }}>
             {cats.map((item: any, idx: number) => (
               <div
-                key={item.categoryId}
+                key={item.id || item.categoryId || idx}
                 className="fk-elec-card"
-                onClick={() => navigate(`/products/${item.categoryId}`)}
+                onClick={() => navigate(`/products/${item.categoryId || item.redirectLink || "electronics"}`)}
               >
                 {idx < 3 && <span className="fk-elec-offer">SALE</span>}
 
@@ -129,8 +132,8 @@ const ElectronicCategory: React.FC = () => {
                   border: `2px solid ${COLORS[idx % COLORS.length]}22`,
                 }}>
                   <img
-                    src={item.img || item.image}
-                    alt={item.name}
+                    src={item.img || item.image || item.imageUrl}
+                    alt={item.name || item.title}
                     style={{ width: "72%", height: "72%", objectFit: "contain" }}
                   />
                 </div>
@@ -140,7 +143,7 @@ const ElectronicCategory: React.FC = () => {
                   color: "#212121", textAlign: "center",
                   lineHeight: 1.3, fontFamily: "system-ui,sans-serif",
                 }}>
-                  {item.name}
+                  {item.name || item.title}
                 </span>
 
                 {/* Colored underline accent */}

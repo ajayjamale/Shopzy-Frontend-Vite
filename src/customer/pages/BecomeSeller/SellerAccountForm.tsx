@@ -316,7 +316,7 @@ function Step4({ formik }: any) {
 /* ─── SellerAccountForm ───────────────────────────────── */
 const SellerAccountForm = () => {
   const dispatch = useAppDispatch();
-  const { sellerAuth } = useAppSelector(store => store);
+  const sellerAuth = useAppSelector(state => state.sellerAuth);
   const [activeStep, setActiveStep] = useState(0);
 
   const formik = useFormik({

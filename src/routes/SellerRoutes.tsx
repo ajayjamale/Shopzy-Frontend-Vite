@@ -9,6 +9,9 @@ import Payment from '../seller/pages/Payment/Payment'
 import TransactionTable from '../seller/pages/Payment/TransactionTable'
 import Invetory from '../seller/pages/Invetory/Invetory'
 import UpdateProductForm from '../seller/pages/Products/UpdateProductForm'
+import SettlementPage from '../seller/pages/Settlement/SettlementPage'
+import SettlementDetail from '../seller/pages/Settlement/SettlementDetail'
+import SellerReturns from '../seller/pages/Returns/SellerReturns'
 
 const SellerRoutes = () => {
   return (
@@ -19,9 +22,13 @@ const SellerRoutes = () => {
         <Route path='/update-product/:productId' element={<UpdateProductForm />} />
         <Route path='/orders' element={<Orders />} />
         <Route path='/invetory' element={<Invetory />} />
+        <Route path='/inventory' element={<Invetory />} />
         <Route path='/account' element={<Profile />} />
         <Route path='/payment' element={<Payment />} />
         <Route path='/transaction' element={<TransactionTable/>} />
+        <Route path='/returns' element={<SellerReturns/>} />
+        <Route path='/settlements' element={<SettlementPage/>} />
+        <Route path='/settlements/:id' element={<SettlementDetail />} />
        </Routes>
   )
 }

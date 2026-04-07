@@ -1,5 +1,6 @@
-import React, { useRef, useState } from "react";
+import React from "react";
 import { useAppSelector } from "../../../../Redux Toolkit/Store";
+import type { HomeContentItem } from "../../../../types/homeContentTypes";
 
 const fallback = [
   { name:"Ethnic Plus",  image:"https://www.ethnicplus.in/cdn/shop/files/2_e396bfa9-adef-490a-9444-1095114de031.jpg?v=1771173950&width=640",  badge:"Women's Ethnic" },
@@ -32,7 +33,11 @@ if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
 
 const TopBrand: React.FC = () => {
   const { homePage } = useAppSelector(s => s);
-  const items: any[] = homePage.homePageData?.grid || fallback;
+  const items: any[] = homePage.homePageData?.topBrands?.map((i: HomeContentItem) => ({
+    name: i.title,
+    image: i.imageUrl,
+    badge: i.badgeText || i.subtitle
+  })) || fallback;
 
   // Duplicate items so the loop is seamless (track is 2× the original list)
   const doubled = [...items, ...items];

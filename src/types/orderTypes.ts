@@ -32,11 +32,39 @@ export interface Order {
 
 export enum OrderStatus {
     PENDING = 'PENDING',
+    PLACED = 'PLACED',
+    CONFIRMED = 'CONFIRMED',
     SHIPPED = 'SHIPPED',
     DELIVERED = 'DELIVERED',
     CANCELLED = 'CANCELLED',
+    REFUND_INITIATED = 'REFUND_INITIATED',
     RETURNED = 'RETURNED',
     RETURN_REQUESTED = 'RETURN_REQUESTED'
+}
+
+export type ReturnStatus =
+  | 'REQUESTED'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'PICKUP_SCHEDULED'
+  | 'RECEIVED'
+  | 'REFUND_INITIATED'
+  | 'REFUNDED';
+
+export interface ReturnRequest {
+    id?: number;
+    orderId: number;
+    orderItemId: number;
+    userId?: number;
+    sellerId?: number;
+    quantity: number;
+    reason: string;
+    description?: string;
+    images?: string[];
+    status?: ReturnStatus;
+    adminComment?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }
 
 export interface OrderItem {

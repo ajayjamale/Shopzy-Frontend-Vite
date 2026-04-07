@@ -4,9 +4,10 @@ import './HomeCategoryCard.css'; // import the CSS file
 
 interface HomeCategoryCardProps {
   item: {
-    name: string;
+    name?: string;
     categoryId: string;
-    image: string;
+    image?: string;
+    imageUrl?: string;
     // other fields are optional, but we only need these for display
   };
 }
@@ -20,7 +21,7 @@ const HomeCategoryCard: React.FC<HomeCategoryCardProps> = ({ item }) => {
       onClick={() => navigate(`/products/${item.categoryId}`)}
     >
       <div className="hcc-img-wrap">
-        <img src={item.image} alt={item.name} loading="lazy" />
+        <img src={item.image || item.imageUrl} alt={item.name} loading="lazy" />
       </div>
       <span className="hcc-name">{item.name}</span>
     </div>

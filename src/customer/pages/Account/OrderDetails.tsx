@@ -564,7 +564,14 @@ const OrderDetails = () => {
               <>
                 <div className="amz-divider" />
                 <button
-                  onClick={() => dispatch(cancelOrder(orderId))}
+                  onClick={() =>
+                    dispatch(
+                      cancelOrder({
+                        orderId: Number(orderId),
+                        jwt: localStorage.getItem("jwt") || "",
+                      })
+                    )
+                  }
                   className="amz-btn-danger"
                   style={{ width: "100%", padding: "10px", justifyContent: "center" }}
                 >

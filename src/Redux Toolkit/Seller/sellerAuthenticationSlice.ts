@@ -39,7 +39,8 @@ export const verifyLoginOtp = createAsyncThunk('otp/verifyLoginOtp',
     try {
         const response = await api.post('/sellers/verify/login-top', data);
         console.log("login seller success - ", response.data)
-        localStorage.setItem("jwt",response.data.jwt)
+        // Store seller token under a seller-specific key to avoid clashing with customer JWT
+        localStorage.setItem("seller_jwt",response.data.jwt)
         data.navigate("/seller")
         return response.data;
     } catch (error:any) {

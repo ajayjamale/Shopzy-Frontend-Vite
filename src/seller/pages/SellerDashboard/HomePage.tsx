@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import SellingChart from "./SellingChart";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { fetchSellerReport } from "../../../Redux Toolkit/Seller/sellerSlice";
@@ -11,6 +11,7 @@ import {
   Select,
   type SelectChangeEvent,
 } from "@mui/material";
+import { getSellerToken } from "../../../util/authToken";
 
 const Chart = [
   { name: "Today", value: "today" },
@@ -22,10 +23,24 @@ const HomePage = () => {
   const { sellers } = useAppSelector((store) => store);
   const dispatch = useAppDispatch();
   const [chartType, setChartType] = React.useState(Chart[0].value);
+  const jwt = useMemo(() => getSellerToken(), []);
+
+  const refreshReport = useCallback(() => {
+    if (!jwt) return;
+    dispatch(fetchSellerReport(jwt));
+  }, [dispatch, jwt]);
 
   useEffect(() => {
-    dispatch(fetchSellerReport(localStorage.getItem("jwt") || ""));
-  }, []);
+    if (!jwt) return;
+    refreshReport();
+    const onFocus = () => refreshReport();
+    window.addEventListener("focus", onFocus);
+    const intervalId = window.setInterval(refreshReport, 30000);
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [jwt, refreshReport]);
 
   const handleChange = (event: SelectChangeEvent) => {
     setChartType(event.target.value as string);
@@ -92,7 +107,7 @@ const HomePage = () => {
               onChange={handleChange}
             >
               {Chart.map((item) => (
-                <MenuItem value={item.value}>{item.name}</MenuItem>
+                <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>
               ))}
             </Select>
           </FormControl>

@@ -25,6 +25,8 @@ import revenueChartSlice from "./Seller/revenueChartSlice";
 import CustomerSlice from "./Customer/Customer/CustomerSlice";
 import DealSlice from "./Admin/DealSlice";
 import AdminSlice from "./Admin/AdminSlice";
+import settlementSlice from "./Seller/settlementSlice";
+import returnSlice from "./Customer/ReturnSlice";
 
 const rootReducer = combineReducers({
   // customer
@@ -38,6 +40,7 @@ const rootReducer = combineReducers({
   wishlist: WishlistSlice,
   aiChatBot: AiChatBotSlice,
   homePage: CustomerSlice,
+  returns: returnSlice,
 
   // seller
   sellers: sellerSlice,
@@ -47,12 +50,12 @@ const rootReducer = combineReducers({
   payouts: payoutSlice,
   transaction: transactionSlice,
   revenueChart: revenueChartSlice,
+  settlement: settlementSlice,
 
   // admin
   adminCoupon: AdminCouponSlice,
-  adminDeals: DealSlice,
   admin: AdminSlice,
-  deal:DealSlice
+  deal: DealSlice,
 });
 
 const store = configureStore({

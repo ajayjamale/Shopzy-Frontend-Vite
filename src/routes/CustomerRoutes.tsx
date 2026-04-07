@@ -20,6 +20,8 @@ import Wishlist from '../customer/pages/Wishlist/Wishlist'
 import { getWishlistByUserId } from '../Redux Toolkit/Customer/WishlistSlice'
 import ChatBot from '../customer/pages/ChatBot/ChatBot'
 import SearchProducts from '../customer/pages/Search/SearchProducts'
+import ProtectedRoute from './ProtectedRoute'
+import { getCustomerToken } from '../util/authToken'
 
 
 const CustomerRoutes = () => {
@@ -27,9 +29,11 @@ const CustomerRoutes = () => {
     const { cart, auth } = useAppSelector(store => store);
 
     useEffect(() => {
-        dispatch(fetchUserCart(localStorage.getItem("jwt") || ""))
+        const token = auth.jwt || getCustomerToken();
+        if (!token) return;
+        dispatch(fetchUserCart(token))
         dispatch(getWishlistByUserId())
-    }, [auth.jwt])
+    }, [auth.jwt, dispatch])
   return (
     <>
       <Navbar />
@@ -41,10 +45,10 @@ const CustomerRoutes = () => {
         <Route path='/reviews/:productId' element={<Reviews />} />
         <Route path='/reviews/:productId/create' element={<WriteReviews />} />
         <Route path='/product-details/:categoryId/:name/:productId' element={<ProductDetails />} />
-        <Route path='/cart' element={<Cart />} />
-        <Route path='/wishlist' element={<Wishlist />} />
-        <Route path='/checkout/address' element={<Address />} />
-        <Route path='/account/*' element={<Profile />} />
+        <Route path='/cart' element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+        <Route path='/wishlist' element={<ProtectedRoute><Wishlist /></ProtectedRoute>} />
+        <Route path='/checkout/address' element={<ProtectedRoute><Address /></ProtectedRoute>} />
+        <Route path='/account/*' element={<ProtectedRoute><Profile /></ProtectedRoute>} />
         <Route path='/login' element={<Auth/>} />
         <Route path='/payment-success/:orderId' element={<PaymentSuccessHandler/>} />
         <Route path='*' element={<NotFound />} />

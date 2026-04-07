@@ -1,10 +1,11 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import { api } from '../../../Config/Api';
-import type { HomeCategory, HomeData } from '../../../types/homeDataTypes';
+import type { HomeCategory } from '../../../types/homeDataTypes';
+import type { HomePageContent } from '../../../types/homeContentTypes';
 
 // Async thunk to fetch home page data with try-catch for error handling
-export const fetchHomePageData = createAsyncThunk<HomeData>(
+export const fetchHomePageData = createAsyncThunk<HomePageContent>(
   'home/fetchHomePageData',
   async (_, { rejectWithValue }) => {
     try {
@@ -20,7 +21,7 @@ export const fetchHomePageData = createAsyncThunk<HomeData>(
   }
 );
 
-export const createHomeCategories = createAsyncThunk<HomeData, HomeCategory[]>(
+export const createHomeCategories = createAsyncThunk<HomePageContent | void, HomeCategory[]>(
   'home/createHomeCategories',
   async (homeCategories, { rejectWithValue }) => {
     try {

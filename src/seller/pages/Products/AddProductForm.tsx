@@ -19,6 +19,7 @@ import { colors } from "../../../data/Filter/color";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { createProduct } from "../../../Redux Toolkit/Seller/sellerProductSlice";
 import { uploadToCloudinary } from "../../../util/uploadToCloudnary";
+import { getSellerToken } from "../../../util/authToken";
 import { electronicsLevelThree } from "../../../data/category/level three/electronicsLevelThree";
 import { electronicsLevelTwo } from "../../../data/category/level two/electronicsLavelTwo";
 import { furnitureLevelTwo } from "../../../data/category/level two/furnitureLevleTwo";
@@ -184,7 +185,7 @@ const ProductForm = () => {
     },
     // validationSchema,
     onSubmit: (values) => {
-      dispatch(createProduct({ request: values, jwt: localStorage.getItem("jwt") }));
+      dispatch(createProduct({ request: values, jwt: getSellerToken() }));
       console.log(values);
     },
   });

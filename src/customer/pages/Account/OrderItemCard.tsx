@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
@@ -7,12 +7,16 @@ import { formatDate } from "../../util/fomateDate";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { createReview } from "../../../Redux Toolkit/Customer/ReviewSlice";
 import { uploadToCloudinary } from "../../../util/uploadToCloudnary";
+import { clearReturnFeedback, requestReturn } from "../../../Redux Toolkit/Customer/ReturnSlice";
+import { fetchUserOrderHistory } from "../../../Redux Toolkit/Customer/OrderSlice";
 import RateReviewIcon from "@mui/icons-material/RateReview";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CloseIcon from "@mui/icons-material/Close";
+import ReplayIcon from "@mui/icons-material/Replay";
+import dayjs from "dayjs";
 import "./Profile.css";
 
 /* ══════════════════════════════════════════════════════════
@@ -417,11 +421,22 @@ interface Props { item: OrderItem; order: Order; }
 
 const OrderItemCard: React.FC<Props> = ({ item, order }) => {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const [reviewOpen, setReviewOpen] = useState(false);
+  const [returnOpen, setReturnOpen] = useState(false);
+
+  const { loading: returnLoading, lastCreated, error: returnError } = useAppSelector((s) => s.returns);
 
   const isDelivered = order.orderStatus === "DELIVERED";
   const isCancelled = order.orderStatus === "CANCELLED";
   const isReturned  = order.orderStatus === "RETURNED" || order.orderStatus === "RETURN_REQUESTED";
+
+  const eligibleForReturn = useMemo(() => {
+    if (!isDelivered || isReturned) return false;
+    if (!order.deliverDate) return false;
+    const deliveredOn = dayjs(order.deliverDate);
+    return dayjs().diff(deliveredOn, "day") <= 7;
+  }, [isDelivered, isReturned, order.deliverDate]);
 
   const badgeCls = isDelivered ? "amz-badge-green"
     : isCancelled ? "amz-badge-red"
@@ -488,6 +503,17 @@ const OrderItemCard: React.FC<Props> = ({ item, order }) => {
               >
                 View details
               </button>
+
+              {eligibleForReturn && (
+                <button
+                  className="amz-btn-secondary"
+                  style={{ fontSize: "0.8125rem", padding: "5px 12px", display: "inline-flex", alignItems: "center", gap: 4 }}
+                  onClick={(e) => { e.stopPropagation(); setReturnOpen(true); }}
+                >
+                  <ReplayIcon style={{ fontSize: "0.875rem" }} />
+                  Request return
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -517,7 +543,310 @@ const OrderItemCard: React.FC<Props> = ({ item, order }) => {
         productImage={item.product.images[0]}
         sellerName={item.product.seller?.businessDetails?.businessName}
       />
+
+      <ReturnRequestModal
+        open={returnOpen}
+        onClose={() => setReturnOpen(false)}
+        orderId={order.id}
+        orderItemId={item.id}
+        productTitle={item.product.title}
+        productImage={item.product.images[0]}
+        quantity={item.quantity ?? 1}
+        sellerName={item.product.seller?.businessDetails?.businessName}
+        loading={returnLoading}
+        lastCreated={lastCreated}
+        error={returnError}
+      />
     </>
+  );
+};
+
+interface ReturnModalProps {
+  open: boolean;
+  onClose: () => void;
+  orderId: number;
+  orderItemId: number;
+  quantity: number;
+  productTitle: string;
+  productImage: string;
+  sellerName?: string;
+  loading: boolean;
+  lastCreated?: any;
+  error?: string | null;
+}
+
+const ReturnRequestModal: React.FC<ReturnModalProps> = ({
+  open,
+  onClose,
+  orderId,
+  orderItemId,
+  quantity,
+  productTitle,
+  productImage,
+  sellerName,
+  loading,
+  lastCreated,
+  error,
+}) => {
+  const dispatch = useAppDispatch();
+  const [uploading, setUploading] = useState(false);
+  const jwt = localStorage.getItem("jwt") || "";
+
+  const formik = useFormik({
+    initialValues: {
+      reason: "",
+      description: "",
+      images: [] as string[],
+      quantity: quantity || 1,
+    },
+    validationSchema: Yup.object({
+      reason: Yup.string().required("Select a reason"),
+      description: Yup.string().test(
+        "min-if-filled",
+        "Tell us a bit more (min 10 chars)",
+        (value) => !value || value.trim().length === 0 || value.trim().length >= 10
+      ),
+      quantity: Yup.number().min(1).max(quantity).required(),
+    }),
+    onSubmit: async (values, helpers) => {
+      try {
+        await dispatch(requestReturn({
+          jwt,
+          payload: {
+            orderId,
+            orderItemId,
+            quantity: Number(values.quantity),
+            reason: values.reason.trim(),
+            description: values.description?.trim() || "",
+            images: values.images,
+          }
+        })).unwrap();
+        if (jwt) {
+          dispatch(fetchUserOrderHistory(jwt));
+        }
+        helpers.resetForm();
+      } catch (e) {
+        // handled in slice
+      }
+    },
+  });
+
+  useEffect(() => {
+    if (open) {
+      dispatch(clearReturnFeedback());
+    }
+  }, [open, dispatch]);
+
+  useEffect(() => {
+    if (open && lastCreated?.orderItemId === orderItemId) {
+      const t = setTimeout(onClose, 1500);
+      return () => clearTimeout(t);
+    }
+  }, [lastCreated, open, onClose, orderItemId]);
+
+  const addImage = async (file?: File) => {
+    if (!file) return;
+    setUploading(true);
+    try {
+      const url = await uploadToCloudinary(file);
+      formik.setFieldValue("images", [...formik.values.images, url]);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (!open) return null;
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed",
+        inset: 0,
+        background: "rgba(0,0,0,0.55)",
+        zIndex: 1300,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          width: "100%",
+          maxWidth: 560,
+          background: "#fff",
+          borderRadius: 8,
+          overflow: "hidden",
+          border: "1px solid #d5d9d9",
+          boxShadow: "0 18px 36px rgba(0,0,0,0.18)",
+          fontFamily: "'Amazon Ember','Helvetica Neue',Arial,sans-serif",
+        }}
+      >
+        <div style={{
+          padding: "12px 16px",
+          background: "#232f3e",
+          color: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}>
+          <span style={{ fontWeight: 700 }}>Request a return</span>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#fff", cursor: "pointer" }}>
+            <CloseIcon />
+          </button>
+        </div>
+
+        <div style={{ padding: "16px 18px", display: "grid", gap: 12 }}>
+          <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+            <img src={productImage} alt={productTitle} style={{ width: 64, height: 64, objectFit: "contain", border: "1px solid #eee", borderRadius: 6 }} />
+            <div>
+              <div style={{ fontWeight: 700 }}>{productTitle}</div>
+              {sellerName && <div style={{ fontSize: 12, color: "#565959" }}>Sold by {sellerName}</div>}
+            </div>
+          </div>
+
+          {lastCreated?.orderItemId === orderItemId && (
+            <div style={{ background: "#ecfdf3", border: "1px solid #bbf7d0", color: "#166534", padding: 10, borderRadius: 8 }}>
+              Return submitted. Tracking ID #{lastCreated.id ?? "pending"}.
+            </div>
+          )}
+          {error && (
+            <div style={{ background: "#fef2f2", border: "1px solid #fecaca", color: "#b91c1c", padding: 10, borderRadius: 8 }}>
+              {error}
+            </div>
+          )}
+
+          <label style={{ fontSize: 13, fontWeight: 700 }}>Reason</label>
+          <select
+            name="reason"
+            value={formik.values.reason}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            style={{
+              padding: "9px 10px",
+              borderRadius: 8,
+              border: `1px solid ${formik.touched.reason && formik.errors.reason ? "#c40000" : "#d5d9d9"}`,
+            }}
+          >
+            <option value="">Select a reason</option>
+            <option value="Damaged / defective">Damaged / defective</option>
+            <option value="Wrong item received">Wrong item received</option>
+            <option value="Quality issues">Quality issues</option>
+            <option value="Arrived late">Arrived late</option>
+            <option value="Other">Other</option>
+          </select>
+          {formik.touched.reason && formik.errors.reason && (
+            <span style={{ color: "#c40000", fontSize: 12 }}>{formik.errors.reason as string}</span>
+          )}
+
+          <label style={{ fontSize: 13, fontWeight: 700 }}>Details</label>
+          <textarea
+            name="description"
+            rows={3}
+            value={formik.values.description}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            style={{
+              padding: "10px 12px",
+              borderRadius: 8,
+              border: `1px solid ${formik.touched.description && formik.errors.description ? "#c40000" : "#d5d9d9"}`,
+              resize: "vertical",
+            }}
+            placeholder="Describe the issue to help us resolve faster"
+          />
+          {formik.touched.description && formik.errors.description && (
+            <span style={{ color: "#c40000", fontSize: 12 }}>{formik.errors.description as string}</span>
+          )}
+
+          <label style={{ fontSize: 13, fontWeight: 700 }}>Quantity</label>
+          <input
+            type="number"
+            min={1}
+            max={quantity}
+            name="quantity"
+            value={formik.values.quantity}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            style={{
+              padding: "8px 10px",
+              borderRadius: 8,
+              border: "1px solid #d5d9d9",
+              width: 120,
+            }}
+          />
+
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "center" }}>
+            <button
+              type="button"
+              onClick={() => document.getElementById(`return-img-${orderItemId}`)?.click()}
+              className="amz-btn-secondary"
+              style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "6px 10px" }}
+            >
+              <AddPhotoAlternateIcon sx={{ fontSize: 18 }} />
+              Add photo
+            </button>
+            <input
+              id={`return-img-${orderItemId}`}
+              type="file"
+              accept="image/*"
+              style={{ display: "none" }}
+              onChange={(e) => addImage(e.target.files?.[0] || undefined)}
+            />
+            {uploading && <span style={{ fontSize: 12, color: "#565959" }}>Uploading...</span>}
+            <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+              {formik.values.images.map((url, idx) => (
+                <div key={url} style={{ position: "relative" }}>
+                  <img src={url} alt="" style={{ width: 60, height: 60, objectFit: "cover", borderRadius: 6, border: "1px solid #eee" }} />
+                  <button
+                    type="button"
+                    onClick={() => formik.setFieldValue("images", formik.values.images.filter((_, i) => i !== idx))}
+                    style={{
+                      position: "absolute",
+                      top: -6,
+                      right: -6,
+                      background: "#111827",
+                      color: "#fff",
+                      border: "none",
+                      borderRadius: "50%",
+                      width: 18,
+                      height: 18,
+                      cursor: "pointer",
+                      fontSize: 10,
+                      lineHeight: "18px",
+                    }}
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 6 }}>
+            <button
+              type="button"
+              onClick={onClose}
+              className="amz-btn-secondary"
+              style={{ padding: "8px 14px" }}
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={formik.submitForm}
+              className="amz-btn-primary"
+              style={{ padding: "8px 16px", minWidth: 140 }}
+              disabled={loading || uploading}
+            >
+              {loading ? "Submitting..." : "Submit return"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

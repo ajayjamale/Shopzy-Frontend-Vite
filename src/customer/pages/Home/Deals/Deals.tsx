@@ -15,10 +15,11 @@ const fallbackDeals = [
 
 const DealCardLight: React.FC<{ deal: any }> = ({ deal }) => {
   const navigate = useNavigate();
-  const label = deal.category.categoryId.split("_").join(" ");
+  const target = deal.redirectLink || deal.category?.categoryId || "";
+  const label = (deal.title || target).split("_").join(" ");
   return (
     <div
-      onClick={() => navigate(`/products/${deal.category.categoryId}`)}
+      onClick={() => target && navigate(target.startsWith("/") ? target : `/products/${target}`)}
       style={{
         borderRadius: 14,
         overflow: "hidden",
@@ -42,7 +43,7 @@ const DealCardLight: React.FC<{ deal: any }> = ({ deal }) => {
     >
       <div style={{ position: "relative", overflow: "hidden" }}>
         <img
-          src={deal.category.image}
+          src={deal.image || deal.category?.image}
           alt={label}
           style={{
             width: "100%",
@@ -73,7 +74,7 @@ const DealCardLight: React.FC<{ deal: any }> = ({ deal }) => {
             textAlign: "center",
           }}
         >
-          {deal.discount}%<br />
+          {(deal.discountLabel || deal.discount || "")}<br />
           <span style={{ fontSize: 8, letterSpacing: "0.06em" }}>OFF</span>
         </div>
       </div>

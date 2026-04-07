@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { fetchSellerOrders, updateOrderStatus } from "../../../Redux Toolkit/Seller/sellerOrderSlice";
 import { Order, OrderItem, OrderStatus } from "../../../types/orderTypes";
+import { getSellerToken } from "../../../util/authToken";
 
 /* ── palette ─────────────────────────────────────────── */
 const C = {
@@ -25,9 +26,13 @@ const STATUS: Record<string, { color: string; bg: string }> = {
   SHIPPED:   { color: "#1E6EC8", bg: "#E8F1FB" },
   DELIVERED: { color: "#067D62", bg: "#E6F4F1" },
   CANCELLED: { color: "#CC0C39", bg: "#FFF0F0" },
+  RETURN_REQUESTED: { color: "#7C3AED", bg: "#F3E8FF" },
+  REFUND_INITIATED: { color: "#2563EB", bg: "#DBEAFE" },
+  RETURNED: { color: "#0F766E", bg: "#CCFBF1" },
 };
 
 const STATUS_LIST = ["PENDING","PLACED","CONFIRMED","SHIPPED","DELIVERED","CANCELLED"];
+const RETURN_FLOW_STATUSES = new Set(["RETURN_REQUESTED", "REFUND_INITIATED", "RETURNED"]);
 
 const getStatus = (s: string) => STATUS[s] ?? { color: C.mid, bg: C.bg };
 
@@ -153,7 +158,9 @@ const OrderRow = ({
   order: Order;
   onUpdate: (id: number, status: string) => void;
   zebra: boolean;
-}) => (
+}) => {
+  const isReturnManaged = RETURN_FLOW_STATUSES.has(order.orderStatus);
+  return (
   <tr style={{ background: zebra ? "#FAFAFA" : C.white, verticalAlign: "top" }}>
     {/* order id */}
     <td style={{ padding: "14px 16px", fontSize: 13, color: C.link, fontWeight: 600,
@@ -222,27 +229,49 @@ const OrderRow = ({
     {/* update */}
     <td style={{ padding: "14px 16px", borderBottom: `1px solid ${C.soft}`,
       textAlign: "right" as const, verticalAlign: "middle" }}>
-      <StatusDropdown
-        orderId={order.id}
-        current={order.orderStatus}
-        onUpdate={onUpdate}
-      />
+      {isReturnManaged ? (
+        <span style={{ fontSize: 12, color: C.mid, fontWeight: 600 }}>
+          Manage in Returns
+        </span>
+      ) : (
+        <StatusDropdown
+          orderId={order.id}
+          current={order.orderStatus}
+          onUpdate={onUpdate}
+        />
+      )}
     </td>
   </tr>
-);
+  );
+};
 
 /* ── OrderTable ──────────────────────────────────────── */
 export default function OrderTable() {
   const dispatch        = useAppDispatch();
   const { sellerOrder } = useAppSelector((s) => s);
+  const jwt = useMemo(() => getSellerToken(), []);
+
+  const refreshOrders = useCallback(() => {
+    if (!jwt) return;
+    dispatch(fetchSellerOrders(jwt));
+  }, [dispatch, jwt]);
 
   useEffect(() => {
-    dispatch(fetchSellerOrders(localStorage.getItem("jwt") || ""));
-  }, [dispatch]);
+    if (!jwt) return;
+    refreshOrders();
+    const onFocus = () => refreshOrders();
+    window.addEventListener("focus", onFocus);
+    const intervalId = window.setInterval(refreshOrders, 30000);
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", onFocus);
+    };
+  }, [jwt, refreshOrders]);
 
   const handleUpdate = (orderId: number, status: string) => {
+    if (!jwt) return;
     dispatch(updateOrderStatus({
-      jwt: localStorage.getItem("jwt") || "",
+      jwt,
       orderId,
       orderStatus: status as OrderStatus,
     }));

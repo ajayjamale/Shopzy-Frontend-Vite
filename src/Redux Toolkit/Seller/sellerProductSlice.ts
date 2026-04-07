@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
 import { api } from "../../Config/Api";
 import type { Product } from "../../types/productTypes";
+import { getSellerToken } from "../../util/authToken";
 
 const API_URL = "/sellers/product";
 
@@ -48,7 +48,7 @@ export const updateProduct = createAsyncThunk<
   async ({ productId, product }, { rejectWithValue }) => {
     try {
       const response = await api.patch(`${API_URL}/${productId}`, product, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+        headers: { Authorization: `Bearer ${getSellerToken()}` },
       });
       console.log("product updated ", response.data);
       return response.data;
@@ -67,7 +67,7 @@ export const updateProductStock = createAsyncThunk<any, any>(
         `${API_URL}/${productId}/stock`,
         {},
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem("jwt")}` },
+          headers: { Authorization: `Bearer ${getSellerToken()}` },
         }
       );
       console.log("product stock updated ", response.data);
@@ -83,7 +83,9 @@ export const deleteProduct = createAsyncThunk<void, number>(
   "sellerProduct/deleteProduct",
   async (productId, { rejectWithValue }) => {
     try {
-      await api.delete(`${API_URL}/${productId}`);
+      await api.delete(`${API_URL}/${productId}`, {
+        headers: { Authorization: `Bearer ${getSellerToken()}` },
+      });
     } catch (error: any) {
       return rejectWithValue(error.response.data);
     }

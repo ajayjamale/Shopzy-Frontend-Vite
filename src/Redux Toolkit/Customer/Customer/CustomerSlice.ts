@@ -1,18 +1,16 @@
 // homeSlice.ts
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import { createHomeCategories, fetchHomePageData } from './AsyncThunk';
-import type { HomeCategory, HomeData } from '../../../types/homeDataTypes';
+import type { HomePageContent } from '../../../types/homeContentTypes';
 
 interface HomeState {
-  homePageData: HomeData | null;
-  homeCategories: HomeCategory[];
+  homePageData: HomePageContent | null;
   loading: boolean;
   error: string | null;
 }
 
 const initialState: HomeState = {
   homePageData:null,
-  homeCategories: [],
   loading: false,
   error: null,
 };
@@ -27,7 +25,7 @@ const homeSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(fetchHomePageData.fulfilled, (state, action: PayloadAction<HomeData>) => {
+    builder.addCase(fetchHomePageData.fulfilled, (state, action: PayloadAction<HomePageContent>) => {
       state.loading = false;
       state.homePageData = action.payload;
     });
@@ -41,9 +39,8 @@ const homeSlice = createSlice({
       state.loading = true;
       state.error = null;
     });
-    builder.addCase(createHomeCategories.fulfilled, (state, action) => {
+    builder.addCase(createHomeCategories.fulfilled, (state) => {
       state.loading = false;
-      state.homePageData = action.payload;
     });
     builder.addCase(createHomeCategories.rejected, (state, action) => {
       state.loading = false;

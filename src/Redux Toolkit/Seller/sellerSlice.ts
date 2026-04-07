@@ -4,6 +4,7 @@ import axios from "axios";
 import { api } from "../../Config/Api";
 import type { Seller, SellerReport } from "../../types/sellerTypes";
 import type { RootState } from "../Store";
+import { getAdminToken, getSellerToken } from "../../util/authToken";
 
 // Define the initial state type
 interface SellerState {
@@ -73,6 +74,9 @@ export const fetchSellers = createAsyncThunk<Seller[], string>(
         params: {
           status,
         },
+        headers: {
+          Authorization: `Bearer ${getAdminToken()}`,
+        },
       });
       console.log("fetch sellers", response.data);
       return response.data;
@@ -125,7 +129,11 @@ export const fetchSellerById = createAsyncThunk<Seller, number>(
   "sellers/fetchSellerById",
   async (id: number, { rejectWithValue }) => {
     try {
-      const response = await api.get<Seller>(`${API_URL}/${id}`);
+      const response = await api.get<Seller>(`${API_URL}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${getAdminToken()}`,
+        },
+      });
       return response.data;
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
@@ -162,7 +170,7 @@ export const updateSeller = createAsyncThunk<
     try {
       const response = await api.patch(`${API_URL}`, seller,{
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+          Authorization: `Bearer ${getSellerToken()}`,
         },
       });
       console.log("seller updated successfully", response.data);
@@ -192,7 +200,11 @@ export const updateSellerAccountStatus = createAsyncThunk<
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.patch(`/admin/seller/${id}/status/${status}`);
+      const response = await api.patch(`/admin/seller/${id}/status/${status}`, null, {
+        headers: {
+          Authorization: `Bearer ${getAdminToken()}`,
+        },
+      });
       console.log("update  seller status: ", response.data);
       return response.data;
     } catch (error: any) {
@@ -241,7 +253,11 @@ export const deleteSeller = createAsyncThunk<void, number>(
   "sellers/deleteSeller",
   async (id: number, { rejectWithValue }) => {
     try {
-      await api.delete(`${API_URL}/${id}`);
+      await api.delete(`${API_URL}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${getAdminToken()}`,
+        },
+      });
     } catch (error: any) {
       if (axios.isAxiosError(error) && error.response) {
         console.error(

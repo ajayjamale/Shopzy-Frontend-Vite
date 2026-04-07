@@ -6,7 +6,7 @@ function ElectronicsTable() {
 
   return (
     <>
-      <HomeCategoryTable categories={homePage.homePageData?.electricCategories}/>
+      <HomeCategoryTable categories={homePage.homePageData?.electronics as any}/>
     </>
   );
 }

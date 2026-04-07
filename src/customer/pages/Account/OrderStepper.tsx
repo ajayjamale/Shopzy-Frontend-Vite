@@ -18,21 +18,34 @@ const cancelledSteps: Step[] = [
   { name: "Cancelled",    description: "Refund initiated", value: "CANCELLED" },
 ];
 
+const returnSteps: Step[] = [
+  { name: "Order Placed", description: "Received", value: "PLACED" },
+  { name: "Delivered", description: "Completed", value: "DELIVERED" },
+  { name: "Return Requested", description: "Under review", value: "RETURN_REQUESTED" },
+  { name: "Refund Initiated", description: "Processing", value: "REFUND_INITIATED" },
+  { name: "Returned", description: "Refund completed", value: "RETURNED" },
+];
+
 const OrderStepper: React.FC<{ orderStatus: string }> = ({ orderStatus }) => {
   const [statusSteps, setStatusSteps] = useState<Step[]>(steps);
   const [currentIndex, setCurrentIndex] = useState(0);
   const isCancelled = orderStatus === "CANCELLED";
+  const isReturnFlow = ["RETURN_REQUESTED", "REFUND_INITIATED", "RETURNED"].includes(orderStatus);
 
   useEffect(() => {
     if (isCancelled) {
       setStatusSteps(cancelledSteps);
       setCurrentIndex(1);
+    } else if (isReturnFlow) {
+      setStatusSteps(returnSteps);
+      const idx = returnSteps.findIndex((s) => s.value === orderStatus);
+      setCurrentIndex(idx >= 0 ? idx : 0);
     } else {
       setStatusSteps(steps);
       const idx = steps.findIndex((s) => s.value === orderStatus);
       setCurrentIndex(idx >= 0 ? idx : 0);
     }
-  }, [orderStatus]);
+  }, [orderStatus, isCancelled, isReturnFlow]);
 
   const fillPct = statusSteps.length > 1
     ? (currentIndex / (statusSteps.length - 1)) * 100

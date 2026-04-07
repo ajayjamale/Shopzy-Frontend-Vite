@@ -27,10 +27,12 @@ const Ic = ({ d, size = 18 }: { d: string; size?: number }) => (
 const ICONS = {
   dashboard:   "M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z",
   orders:      "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z",
+  returns:     "M21 3H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4v2h10v-2h4c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 14H3V5h18v12zm-9-1l5-5h-3V7h-4v4H7l5 5z",
   products:    "M12 2l-5.5 9h11L12 2zm0 3.84L13.93 9h-3.87L12 5.84zM17.5 13c-2.49 0-4.5 2.01-4.5 4.5s2.01 4.5 4.5 4.5 4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5zm0 7c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5zM3 21.5h8v-8H3v8zm2-6h4v4H5v-4z",
   addProduct:  "M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z",
   payment:     "M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z",
   transaction: "M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z",
+  settlement:  "M4 4h16v2H4V4zm0 4h16v2H4V8zm0 4h10v2H4v-2zm0 4h10v2H4v-2zM18 12l3 3-3 3-1.41-1.41L17.17 16H14v-2h3.17l-0.58-0.59L18 12z",
   account:     "M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z",
   logout:      "M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z",
 };
@@ -58,15 +60,18 @@ interface MenuItem {
 const menu: MenuItem[] = [
   { name: "Dashboard",   path: "/seller",             icon: <NavIcon iconKey="dashboard"   />, activeIcon: <NavIcon iconKey="dashboard"   active /> },
   { name: "Orders",      path: "/seller/orders",      icon: <NavIcon iconKey="orders"      />, activeIcon: <NavIcon iconKey="orders"      active /> },
+  { name: "Returns",     path: "/seller/returns",     icon: <NavIcon iconKey="returns"     />, activeIcon: <NavIcon iconKey="returns"     active /> },
+  { name: "Inventory",   path: "/seller/inventory",   icon: <NavIcon iconKey="products"    />, activeIcon: <NavIcon iconKey="products"    active /> },
   { name: "Products",    path: "/seller/products",    icon: <NavIcon iconKey="products"    />, activeIcon: <NavIcon iconKey="products"    active /> },
   { name: "Add Product", path: "/seller/add-product", icon: <NavIcon iconKey="addProduct"  />, activeIcon: <NavIcon iconKey="addProduct"  active /> },
   { name: "Payment",     path: "/seller/payment",     icon: <NavIcon iconKey="payment"     />, activeIcon: <NavIcon iconKey="payment"     active /> },
+  { name: "Settlements", path: "/seller/settlements", icon: <NavIcon iconKey="settlement" />, activeIcon: <NavIcon iconKey="settlement" active /> },
   { name: "Transaction", path: "/seller/transaction", icon: <NavIcon iconKey="transaction" />, activeIcon: <NavIcon iconKey="transaction" active /> },
 ];
 
 const menu2: MenuItem[] = [
   { name: "Account", path: "/seller/account", icon: <NavIcon iconKey="account" />, activeIcon: <NavIcon iconKey="account" active /> },
-  { name: "Logout",  path: "/",               icon: <NavIcon iconKey="logout"  />, activeIcon: <NavIcon iconKey="logout"  active /> },
+  { name: "Logout",  path: "__logout__",      icon: <NavIcon iconKey="logout"  />, activeIcon: <NavIcon iconKey="logout"  active /> },
 ];
 
 /* ── NavRow ─────────────────────────────────────────── */
@@ -113,7 +118,7 @@ const NavRow = ({
 
 /* ── SellerDrawerList ───────────────────────────────── */
 interface DrawerListProps {
-  toggleDrawer?: any;
+  toggleDrawer?: () => void;
 }
 
 const SellerDrawerList = ({ toggleDrawer }: DrawerListProps) => {
@@ -121,6 +126,12 @@ const SellerDrawerList = ({ toggleDrawer }: DrawerListProps) => {
   const location = useLocation();
 
   const go = (path: string) => {
+    if (path === "__logout__") {
+      localStorage.removeItem("seller_jwt");
+      navigate("/");
+      toggleDrawer?.();
+      return;
+    }
     navigate(path);
     toggleDrawer?.();
   };
@@ -173,12 +184,20 @@ const SellerDrawerList = ({ toggleDrawer }: DrawerListProps) => {
         </div>
 
         {menu.map((item) => (
+          (() => {
+            const isDashboard = item.path === "/seller";
+            const isActive = isDashboard
+              ? location.pathname === "/seller" || location.pathname === "/seller/"
+              : location.pathname === item.path || location.pathname.startsWith(item.path + "/");
+            return (
           <NavRow
             key={item.name}
             item={item}
-            isActive={location.pathname === item.path}
+            isActive={isActive}
             onClick={() => go(item.path)}
           />
+            );
+          })()
         ))}
 
         <div style={{ height: 1, background: C.border, margin: "8px 0" }} />

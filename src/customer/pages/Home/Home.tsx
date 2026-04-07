@@ -9,10 +9,15 @@ import { Backdrop, Button, CircularProgress } from "@mui/material";
 import ChatBot from "../ChatBot/ChatBot";
 import { useAppSelector } from "../../../Redux Toolkit/Store";
 import DealSlider from "./Deals/Deals";
+import type { HomePageContent } from "../../../types/homeContentTypes";
 
 const Home = () => {
   const [showChatBot, setShowChatBot] = useState(false);
   const { homePage } = useAppSelector((store) => store);
+  const data = homePage.homePageData as HomePageContent | null;
+
+  const isVisible = (key: string) =>
+    data?.sections?.find((s) => s.sectionKey === key && s.visible);
 
   const handleShowChatBot = () => setShowChatBot(!showChatBot);
   const handleCloseChatBot = () => setShowChatBot(false);
@@ -28,14 +33,9 @@ const Home = () => {
 
           {/* Everything below carousel gets normal spacing */}
           <div className="space-y-6 lg:space-y-12 pb-16 bg-[#f5f6f8]">
-            {homePage.homePageData?.electricCategories && <ElectronicCategory />}
-            {homePage.homePageData?.grid && <TopBrand />}
-            {homePage.homePageData?.deals && (
-              <section className="pt-10">
-                <DealSlider />
-              </section>
-            )}
-            {homePage.homePageData?.shopByCategories && <HomeCategory />}
+            {isVisible("ELECTRONICS") && <ElectronicCategory />}
+            {isVisible("TOP_BRAND") && <TopBrand />}
+            {data?.shopByCategories && isVisible("SHOP_BY_CATEGORY") && <HomeCategory />}
           </div>
 
           {/* Chatbot — fixed, always on top */}

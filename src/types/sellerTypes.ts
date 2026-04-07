@@ -32,6 +32,7 @@ export interface Seller {
     businessDetails: BusinessDetails;
     password: string;
     accountStatus?:string;
+    role?: string;
 }
 
 export interface SellerReport {

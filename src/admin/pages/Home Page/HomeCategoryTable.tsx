@@ -119,7 +119,7 @@ const HomeCategoryTable = ({ categories }: Props) => {
                                         backgroundColor: '#f7f7f7',
                                     }}>
                                         <img
-                                            src={category.image}
+                                            src={(category as any).image || (category as any).imageUrl}
                                             alt={category.categoryId}
                                             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                         />

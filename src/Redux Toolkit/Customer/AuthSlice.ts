@@ -35,7 +35,11 @@ export const sendLoginSignupOtp = createAsyncThunk<ApiResponse, { email: string 
             return response.data;
         } catch (error:any) {
             console.log("error",error.response)
-            return rejectWithValue(error.response.data.error||'Failed to send OTP');
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.response?.data?.error ||
+                'Failed to send OTP'
+            );
         }
     }
 );
@@ -67,7 +71,11 @@ export const signin = createAsyncThunk<AuthResponse, LoginRequest>(
             return response.data;
         } catch (error:any) {
             console.log("error ", error.response)
-            return rejectWithValue('Signin failed');
+            return rejectWithValue(
+                error.response?.data?.message ||
+                error.response?.data?.error ||
+                'Signin failed'
+            );
         }
     }
 );
@@ -103,7 +111,13 @@ const authSlice = createSlice({
         logout: (state) => {
             state.jwt = null;
             state.role = null;
+            state.otpSent = false;
+            state.error = null;
             localStorage.clear()
+        },
+        resetOtpState: (state) => {
+            state.otpSent = false;
+            state.error = null;
         },
     },
     extraReducers: (builder) => {
@@ -128,6 +142,8 @@ const authSlice = createSlice({
                 state.jwt = action.payload.jwt;
                 state.role = action.payload.role;
                 state.loading = false;
+                state.otpSent = false;
+                state.error = null;
             })
             .addCase(signup.rejected, (state, action) => {
                 state.loading = false;
@@ -141,6 +157,8 @@ const authSlice = createSlice({
                 state.jwt = action.payload.jwt;
                 state.role = action.payload.role;
                 state.loading = false;
+                state.otpSent = false;
+                state.error = null;
             })
             .addCase(signin.rejected, (state, action) => {
                 state.loading = false;
@@ -171,7 +189,7 @@ const authSlice = createSlice({
     },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, resetOtpState } = authSlice.actions;
 
 export default authSlice.reducer;
 
