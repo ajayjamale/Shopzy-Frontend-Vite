@@ -11,21 +11,21 @@ import UpdateHomeCategoryForm from './UpdateHomeCategoryForm'
 
 const StyledTableCell = styled(TableCell)(() => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#232F3E',
+        backgroundColor: '#1E293B',
         color: '#fff',
-        fontFamily: '"Amazon Ember", Arial, sans-serif',
+        fontFamily: '"Manrope", Arial, sans-serif',
         fontWeight: 700,
         fontSize: 12,
         letterSpacing: '0.6px',
         textTransform: 'uppercase',
-        borderBottom: '3px solid #FF9900',
+        borderBottom: '3px solid #0F766E',
         padding: '14px 18px',
         whiteSpace: 'nowrap',
     },
     [`&.${tableCellClasses.body}`]: {
         fontSize: 13,
-        fontFamily: '"Amazon Ember", Arial, sans-serif',
-        color: '#0F1111',
+        fontFamily: '"Manrope", Arial, sans-serif',
+        color: '#0F172A',
         padding: '12px 18px',
         borderBottom: '1px solid #f0f0f0',
     },
@@ -92,7 +92,7 @@ const HomeCategoryTable = ({ categories }: Props) => {
                             <StyledTableRow key={category.categoryId}>
                                 {/* # */}
                                 <StyledTableCell>
-                                    <Typography sx={{ fontWeight: 600, fontSize: 13, color: '#565959', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                                    <Typography sx={{ fontWeight: 600, fontSize: 13, color: '#64748B', fontFamily: '"Manrope", Arial, sans-serif' }}>
                                         {index + 1}
                                     </Typography>
                                 </StyledTableCell>
@@ -101,7 +101,7 @@ const HomeCategoryTable = ({ categories }: Props) => {
                                 <StyledTableCell>
                                     <Box sx={{
                                         display: 'inline-block',
-                                        backgroundColor: '#f0f0f0', color: '#565959',
+                                        backgroundColor: '#f0f0f0', color: '#64748B',
                                         fontFamily: '"Courier New", monospace',
                                         fontSize: 12, fontWeight: 600,
                                         px: 1, py: 0.3, borderRadius: '3px',
@@ -128,7 +128,7 @@ const HomeCategoryTable = ({ categories }: Props) => {
 
                                 {/* Category ID */}
                                 <StyledTableCell>
-                                    <Typography sx={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13, fontWeight: 600 }}>
+                                    <Typography sx={{ fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13, fontWeight: 600 }}>
                                         {category.categoryId}
                                     </Typography>
                                 </StyledTableCell>
@@ -140,10 +140,10 @@ const HomeCategoryTable = ({ categories }: Props) => {
                                             size="small"
                                             onClick={() => setSelectedCategory(category)}
                                             sx={{
-                                                color: '#FF9900', border: '1px solid #FF9900',
+                                                color: '#0F766E', border: '1px solid #0F766E',
                                                 borderRadius: '4px', p: 0.7,
                                                 transition: 'all 0.15s ease',
-                                                '&:hover': { backgroundColor: '#FF9900', color: '#fff' },
+                                                '&:hover': { backgroundColor: '#0F766E', color: '#fff' },
                                             }}
                                         >
                                             <EditIcon sx={{ fontSize: 16 }} />
@@ -159,7 +159,7 @@ const HomeCategoryTable = ({ categories }: Props) => {
                 {categories.length === 0 && (
                     <Box sx={{ textAlign: 'center', py: 7 }}>
                         <CategoryIcon sx={{ fontSize: 44, color: '#ddd', mb: 1.5 }} />
-                        <Typography sx={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 14, fontWeight: 600, color: '#565959' }}>
+                        <Typography sx={{ fontFamily: '"Manrope", Arial, sans-serif', fontSize: 14, fontWeight: 600, color: '#64748B' }}>
                             No categories found
                         </Typography>
                     </Box>
@@ -178,12 +178,12 @@ const HomeCategoryTable = ({ categories }: Props) => {
                         boxShadow: '0 8px 32px rgba(0,0,0,0.18)',
                     }}>
                         <Box sx={{
-                            backgroundColor: '#232F3E', px: 3, py: 2,
-                            borderBottom: '3px solid #FF9900',
+                            backgroundColor: '#1E293B', px: 3, py: 2,
+                            borderBottom: '3px solid #0F766E',
                             display: 'flex', alignItems: 'center', gap: 1,
                         }}>
-                            <EditIcon sx={{ color: '#FF9900', fontSize: 18 }} />
-                            <Typography sx={{ color: '#fff', fontFamily: '"Amazon Ember", Arial, sans-serif', fontWeight: 700, fontSize: 15 }}>
+                            <EditIcon sx={{ color: '#0F766E', fontSize: 18 }} />
+                            <Typography sx={{ color: '#fff', fontFamily: '"Manrope", Arial, sans-serif', fontWeight: 700, fontSize: 15 }}>
                                 Edit Category
                             </Typography>
                         </Box>

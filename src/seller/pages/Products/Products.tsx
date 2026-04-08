@@ -1,12 +1,11 @@
-import React from 'react'
-import ProductTable from './ProductTable'
+import ProductTable from "./ProductTable";
 
 const Products = () => {
   return (
-    <div style={{ fontFamily: "'Helvetica Neue', Arial, sans-serif", background: '#f3f3f3', minHeight: '100vh' }}>
+    <div className="surface p-4" style={{ borderRadius: 16 }}>
       <ProductTable />
     </div>
-  )
-}
+  );
+};
 
-export default Products
+export default Products;

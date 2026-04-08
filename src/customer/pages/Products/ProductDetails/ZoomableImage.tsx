@@ -1,108 +1,46 @@
-import React, { useState, useRef, useEffect, MouseEvent } from 'react';
+import { MouseEvent, useState } from "react";
 
 interface ZoomableImageProps {
-  src: string | undefined;
+  src?: string;
   alt: string;
 }
 
-interface Offset {
-  x: number;
-  y: number;
-}
+const ZoomableImage = ({ src, alt }: ZoomableImageProps) => {
+  const [zoom, setZoom] = useState(false);
+  const [origin, setOrigin] = useState("50% 50%");
 
-const ZoomableImage: React.FC<ZoomableImageProps> = ({ src, alt }) => {
-  const [isZoomed, setIsZoomed] = useState<boolean>(false);
-  const [offset, setOffset] = useState<Offset>({ x: 0, y: 0 });
-  const [start, setStart] = useState<Offset>({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const imgRef = useRef<HTMLImageElement>(null);
-
-  const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
-    if (e.button === 0) {
-      setStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
-      setIsDragging(true);
-      e.preventDefault();
-    }
+  const onMove = (event: MouseEvent<HTMLDivElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = ((event.clientX - bounds.left) / bounds.width) * 100;
+    const y = ((event.clientY - bounds.top) / bounds.height) * 100;
+    setOrigin(`${x}% ${y}%`);
   };
-
-  const handleMouseMove = (e: MouseEvent<HTMLDivElement>) => {
-    if (isDragging) {
-      setOffset({
-        x: e.clientX - start.x,
-        y: e.clientY - start.y,
-      });
-    }
-  };
-
-  const handleMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
-    e.preventDefault();
-  };
-
-  const toggleZoom = () => {
-    setIsZoomed(prev => !prev);
-    setOffset({ x: 0, y: 0 });
-  };
-
-  useEffect(() => {
-    if (imgRef.current) {
-      imgRef.current.style.cursor = isDragging ? 'grabbing' : 'grab';
-    }
-  }, [isDragging]);
 
   return (
     <div
+      onMouseMove={onMove}
+      onClick={() => setZoom((v) => !v)}
       style={{
-        overflow: 'hidden',
-        cursor: isZoomed ? (isDragging ? 'grabbing' : 'zoom-out') : 'zoom-in',
-        width: '100%',
-        height: '100%',
-        position: 'relative',
-        background: '#f5f5f5',
-        borderRadius: '8px',
+        width: "min(92vw, 860px)",
+        height: "min(82vh, 620px)",
+        overflow: "hidden",
+        borderRadius: 18,
+        background: "#fff",
+        border: "1px solid #D9E6EA",
+        cursor: zoom ? "zoom-out" : "zoom-in",
       }}
-      onClick={!isDragging ? toggleZoom : undefined}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onContextMenu={handleContextMenu}
     >
-      {/* Zoom hint badge */}
-      {!isZoomed && (
-        <div style={{
-          position: 'absolute',
-          bottom: 12,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          background: 'rgba(0,0,0,0.55)',
-          color: '#fff',
-          fontSize: 11,
-          padding: '4px 10px',
-          borderRadius: 20,
-          pointerEvents: 'none',
-          zIndex: 10,
-          letterSpacing: 0.3,
-        }}>
-          🔍 Click to zoom
-        </div>
-      )}
-
       <img
-        ref={imgRef}
         src={src}
         alt={alt}
-        draggable={false}
         style={{
-          width: isZoomed ? '220%' : '100%',
-          height: isZoomed ? '220%' : 'auto',
-          transform: `translate(${offset.x}px, ${offset.y}px)`,
-          transition: isDragging ? 'none' : 'width 0.3s ease, height 0.3s ease, transform 0.3s ease',
-          userSelect: 'none',
-          display: 'block',
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
+          transformOrigin: origin,
+          transform: zoom ? "scale(2)" : "scale(1)",
+          transition: "transform 0.2s ease",
+          userSelect: "none",
         }}
       />
     </div>

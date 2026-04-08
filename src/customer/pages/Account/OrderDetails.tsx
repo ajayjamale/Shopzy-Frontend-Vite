@@ -167,7 +167,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         style={{
           background: "#fff", borderRadius: 4, border: "1px solid #d5d9d9",
           width: "100%", maxWidth: 540, maxHeight: "92vh", overflowY: "auto",
-          fontFamily: "'Amazon Ember','Helvetica Neue',Arial,sans-serif",
+          fontFamily: "'Manrope','Helvetica Neue',Arial,sans-serif",
           boxShadow: "0 8px 32px rgba(0,0,0,0.22)",
         }}
       >
@@ -198,7 +198,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                 <div style={{ fontSize: "1.125rem", fontWeight: 700, color: "#0f1111" }}>
                   Thank you for your review!
                 </div>
-                <div style={{ fontSize: "0.875rem", color: "#565959", marginTop: 6 }}>
+                <div style={{ fontSize: "0.875rem", color: "#64748B", marginTop: 6 }}>
                   Your feedback helps others make informed decisions.
                 </div>
               </div>
@@ -211,12 +211,12 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
               }}>
                 <img src={productImage} alt={productTitle} style={{ width: 56, height: 56, objectFit: "contain", borderRadius: 3, border: "1px solid #d5d9d9", background: "#fff" }} />
                 <div>
-                  {sellerName && <div style={{ fontSize: "0.75rem", color: "#565959" }}>Sold by {sellerName}</div>}
+                  {sellerName && <div style={{ fontSize: "0.75rem", color: "#64748B" }}>Sold by {sellerName}</div>}
                   <div style={{ fontSize: "0.875rem", fontWeight: 700, color: "#0f1111" }}>{productTitle}</div>
                   <div style={{ display: "flex", gap: 2, marginTop: 4 }}>
                     {[1, 2, 3, 4, 5].map((s) => (
                       s <= formik.values.reviewRating
-                        ? <StarIcon key={s} style={{ fontSize: "0.75rem", color: "#ff9900" }} />
+                        ? <StarIcon key={s} style={{ fontSize: "0.75rem", color: "#0f766e" }} />
                         : <StarBorderIcon key={s} style={{ fontSize: "0.75rem", color: "#d5d9d9" }} />
                     ))}
                   </div>
@@ -239,7 +239,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                 style={{ width: 56, height: 56, objectFit: "contain", borderRadius: 3, border: "1px solid #d5d9d9", background: "#fff", flexShrink: 0 }}
               />
               <div>
-                {sellerName && <div style={{ fontSize: "0.75rem", color: "#565959", marginBottom: 2 }}>Sold by {sellerName}</div>}
+                {sellerName && <div style={{ fontSize: "0.75rem", color: "#64748B", marginBottom: 2 }}>Sold by {sellerName}</div>}
                 <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#0f1111", lineHeight: 1.4 }}>{productTitle}</div>
               </div>
             </div>
@@ -264,12 +264,12 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                     }}
                   >
                     {activeRating >= star
-                      ? <StarIcon style={{ fontSize: "2rem", color: "#ff9900" }} />
+                      ? <StarIcon style={{ fontSize: "2rem", color: "#0f766e" }} />
                       : <StarBorderIcon style={{ fontSize: "2rem", color: "#adb1b8" }} />}
                   </button>
                 ))}
                 {activeRating > 0 && (
-                  <span style={{ fontSize: "0.875rem", color: "#565959", marginLeft: 8 }}>
+                  <span style={{ fontSize: "0.875rem", color: "#64748B", marginLeft: 8 }}>
                     {RATING_LABELS[activeRating]}
                   </span>
                 )}
@@ -304,7 +304,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             {/* ── Photo upload ── */}
             <div style={{ marginBottom: 18 }}>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0f1111", marginBottom: 8 }}>
-                Add photos <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "#565959" }}>(optional)</span>
+                Add photos <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "#64748B" }}>(optional)</span>
               </label>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "flex-start" }}>
 
@@ -316,13 +316,13 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                     border: "1px dashed #adb1b8", borderRadius: 3,
                     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                     cursor: "pointer", background: "#fafafa", gap: 4,
-                    fontSize: "0.625rem", color: "#565959",
+                    fontSize: "0.625rem", color: "#64748B",
                     transition: "border-color 0.15s, background 0.15s",
                   }}
                 >
                   {uploadingImg
                     ? <span style={{ width: 18, height: 18, border: "2px solid rgba(0,0,0,0.15)", borderTopColor: "#111", borderRadius: "50%", animation: "amz-spin 0.7s linear infinite", display: "inline-block" }} />
-                    : <><AddPhotoAlternateIcon style={{ fontSize: "1.5rem", color: "#565959" }} /><span>Add photo</span></>}
+                    : <><AddPhotoAlternateIcon style={{ fontSize: "1.5rem", color: "#64748B" }} /><span>Add photo</span></>}
                 </label>
                 <input
                   id="oi-fileInput"
@@ -387,6 +387,8 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
    OrderDetails page
    ══════════════════════════════════════════════════════ */
 
+const CANCELLABLE_ORDER_STATUSES = new Set(["PENDING", "PLACED", "CONFIRMED"]);
+
 const OrderDetails = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -398,12 +400,15 @@ const OrderDetails = () => {
   const loading      = useAppSelector((s) => s.orders.loading);
 
   const [reviewOpen, setReviewOpen] = useState(false);
+  const parsedOrderId = Number(orderId);
+  const parsedOrderItemId = Number(orderItemId);
+  const authToken = jwt || localStorage.getItem("jwt") || "";
 
   useEffect(() => {
-    const token = localStorage.getItem("jwt") || "";
-    dispatch(fetchOrderItemById({ orderItemId: Number(orderItemId), jwt: token }));
-    dispatch(fetchOrderById({ orderId: Number(orderId), jwt: token }));
-  }, [jwt]);
+    if (!Number.isFinite(parsedOrderId) || !Number.isFinite(parsedOrderItemId) || !authToken) return;
+    dispatch(fetchOrderItemById({ orderItemId: parsedOrderItemId, jwt: authToken }));
+    dispatch(fetchOrderById({ orderId: parsedOrderId, jwt: authToken }));
+  }, [authToken, dispatch, parsedOrderId, parsedOrderItemId]);
 
   /* Loading */
   if (loading) {
@@ -412,7 +417,7 @@ const OrderDetails = () => {
         {[200, 120, 100, 160].map((h, i) => (
           <div key={i} className="amz-card">
             <div className="amz-card-body">
-              <div style={{ height: h, background: "#f0f2f2", borderRadius: 3, animation: "pulse 1.5s ease-in-out infinite" }} />
+              <div style={{ height: h, background: "#F4FAFB", borderRadius: 3, animation: "pulse 1.5s ease-in-out infinite" }} />
             </div>
           </div>
         ))}
@@ -435,10 +440,10 @@ const OrderDetails = () => {
     );
   }
 
-  const status      = currentOrder.orderStatus;
+  const status      = (currentOrder.orderStatus || "").toUpperCase();
   const isDelivered = status === "DELIVERED";
   const isCancelled = status === "CANCELLED";
-  const canCancel   = !isCancelled && !isDelivered;
+  const canCancel   = CANCELLABLE_ORDER_STATUSES.has(status);
 
   return (
     <>
@@ -489,7 +494,7 @@ const OrderDetails = () => {
                   Sold by: {orderItem.product.seller?.businessDetails?.businessName}
                 </div>
                 <div className="amz-order-details-title">{orderItem.product.title}</div>
-                <div style={{ fontSize: "0.8125rem", color: "#565959", marginBottom: 14 }}>
+                <div style={{ fontSize: "0.8125rem", color: "#64748B", marginBottom: 14 }}>
                   Size: M &nbsp;|&nbsp; Qty: {orderItem.quantity ?? 1}
                 </div>
 
@@ -525,7 +530,7 @@ const OrderDetails = () => {
               <div style={{ fontWeight: 700 }}>{currentOrder.shippingAddress?.name}</div>
               <div>{currentOrder.shippingAddress?.address}, {currentOrder.shippingAddress?.city},{" "}
                 {currentOrder.shippingAddress?.state} — {currentOrder.shippingAddress?.pinCode}</div>
-              <div style={{ color: "#565959" }}>Mobile: {currentOrder.shippingAddress?.mobile}</div>
+              <div style={{ color: "#64748B" }}>Mobile: {currentOrder.shippingAddress?.mobile}</div>
             </div>
           </div>
         </div>
@@ -555,7 +560,7 @@ const OrderDetails = () => {
 
             <div className="amz-divider" />
 
-            <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.875rem", color: "#565959" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: "0.875rem", color: "#64748B" }}>
               <PaymentsIcon style={{ fontSize: "1.125rem" }} />
               <span>Pay On Delivery</span>
             </div>
@@ -567,8 +572,8 @@ const OrderDetails = () => {
                   onClick={() =>
                     dispatch(
                       cancelOrder({
-                        orderId: Number(orderId),
-                        jwt: localStorage.getItem("jwt") || "",
+                        orderId: parsedOrderId,
+                        jwt: authToken,
                       })
                     )
                   }

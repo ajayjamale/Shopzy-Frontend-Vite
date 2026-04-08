@@ -52,17 +52,17 @@ const AdminAuth = () => {
           box-shadow: 0 24px 64px rgba(0,0,0,0.5);
         }
 
-        .aa-accent { height: 4px; background: linear-gradient(to right, #FF9900, #FF6600); }
+        .aa-accent { height: 4px; background: linear-gradient(to right, #0F766E, #FF6600); }
 
         .aa-header {
-          background: #131921;
+          background: #0F172A;
           padding: 24px 32px 20px;
           text-align: center;
         }
         .aa-logo {
           font-size: 24px;
           font-weight: 900;
-          color: #FF9900;
+          color: #0F766E;
           letter-spacing: -1px;
           margin-bottom: 4px;
         }
@@ -70,7 +70,7 @@ const AdminAuth = () => {
           display: inline-block;
           background: rgba(255,153,0,0.15);
           border: 1px solid rgba(255,153,0,0.3);
-          color: #FF9900;
+          color: #0F766E;
           font-size: 10px;
           font-weight: 700;
           letter-spacing: 1.5px;
@@ -84,7 +84,7 @@ const AdminAuth = () => {
         .aa-title {
           font-size: 20px;
           font-weight: 700;
-          color: #0F1111;
+          color: #0F172A;
           margin: 0 0 4px;
         }
         .aa-sub {
@@ -100,7 +100,7 @@ const AdminAuth = () => {
           color: #aaa;
           line-height: 1.6;
         }
-        .aa-footer a { color: #FF9900; text-decoration: none; }
+        .aa-footer a { color: #0F766E; text-decoration: none; }
         .aa-footer a:hover { text-decoration: underline; }
       `}</style>
 

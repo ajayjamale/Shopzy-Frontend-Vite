@@ -4,10 +4,10 @@ import SellerAccountForm from "./SellerAccountForm";
 import SellerLoginForm from "./SellerLoginForm";
 
 const C = {
-  orange:"#FF9900", navy:"#131921", navyMid:"#232F3E",
+  orange:"#0F766E", navy:"#0F172A", navyMid:"#1E293B",
   blue:"#0F6094",   red:"#C40000",  green:"#007600",
   greenBg:"#EAF7EA", white:"#FFFFFF", bg:"#F3F3F3",
-  border:"#CCCCCC", text:"#0F1111", textMid:"#565959",
+  border:"#CCCCCC", text:"#0F172A", textMid:"#64748B",
   textLight:"#8D8D8D", divider:"#E7E7E7",
 };
 
@@ -123,7 +123,7 @@ const BecomeSeller = () => {
 
       <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", background:C.bg, fontFamily:"'DM Sans',sans-serif" }}>
 
-        {/* Amazon-style header */}
+        {/* Seller header */}
         <header style={{ background:C.navy, padding:"8px 24px", display:"flex", alignItems:"center", gap:16, borderBottom:`2px solid ${C.orange}` }}>
           <div style={{ display:"flex", alignItems:"baseline", gap:4 }}>
             <span className="logo" style={{ fontSize: 22, color: "#ffffff", fontWeight: 800 }}>Shopzy</span>

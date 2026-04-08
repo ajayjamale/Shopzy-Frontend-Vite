@@ -5,11 +5,11 @@ import { sendLoginOtp, verifyLoginOtp } from "../../../Redux Toolkit/Seller/sell
 
 /* ─── design tokens (shared) ─────────────────────────── */
 const C = {
-  orange:"#FF9900", navy:"#131921", blue:"#0F6094",
+  orange:"#0F766E", navy:"#0F172A", blue:"#0F6094",
   red:"#C40000",    green:"#007600", greenBg:"#EAF7EA",
   white:"#FFFFFF",  bg:"#F3F3F3",   border:"#CCCCCC",
   borderFoc:"#E77600", shadowFoc:"rgba(231,118,0,0.35)",
-  text:"#0F1111",   textMid:"#565959", textLight:"#8D8D8D",
+  text:"#0F172A",   textMid:"#64748B", textLight:"#8D8D8D",
   divider:"#E7E7E7", lightBlue:"#E8F4FD",
 };
 
@@ -171,7 +171,7 @@ const SellerLoginForm = () => {
           disabled={loading || !email}
           style={{
             width:"100%", padding:"11px", fontSize:13.5, fontWeight:600,
-            background:"linear-gradient(to bottom,#f7dfa5,#f0c14b)",
+            background:"linear-gradient(135deg,#0F766E,#14B8A6)",
             border:"1px solid #a88734", borderRadius:3, cursor: loading||!email ? "not-allowed":"pointer",
             opacity: loading||!email ? .6 : 1,
             display:"flex", alignItems:"center", justifyContent:"center", gap:8,

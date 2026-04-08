@@ -1,185 +1,161 @@
-import * as React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  Box, List, ListItem, ListItemButton, ListItemIcon,
-  ListItemText, Divider, Typography
-} from "@mui/material";
-import DashboardIcon from '@mui/icons-material/Dashboard';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import AddIcon from '@mui/icons-material/Add';
-import HomeIcon from '@mui/icons-material/Home';
-import ElectricBoltIcon from '@mui/icons-material/ElectricBolt';
-import IntegrationInstructionsIcon from '@mui/icons-material/IntegrationInstructions';
-import { Category } from "@mui/icons-material";
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
-import LogoutIcon from '@mui/icons-material/Logout';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import SlideshowIcon from '@mui/icons-material/Slideshow';
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
-import AssignmentReturnIcon from '@mui/icons-material/AssignmentReturn';
+import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
+import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
+import ConfirmationNumberRoundedIcon from "@mui/icons-material/ConfirmationNumberRounded";
+import DashboardCustomizeRoundedIcon from "@mui/icons-material/DashboardCustomizeRounded";
+import HomeRepairServiceRoundedIcon from "@mui/icons-material/HomeRepairServiceRounded";
+import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
+import AccountBalanceWalletRoundedIcon from "@mui/icons-material/AccountBalanceWalletRounded";
+import AssignmentReturnRoundedIcon from "@mui/icons-material/AssignmentReturnRounded";
+import type { ReactNode } from "react";
 
-const menu = [
-  { name: "Manage Seller",            path: "/admin",                      icon: <DashboardIcon /> },
-  { name: "Coupons",              path: "/admin/coupon",               icon: <IntegrationInstructionsIcon /> },
-  { name: "Add New Coupon",       path: "/admin/add-coupon",           icon: <AddIcon /> },
-  { name: "Home Page",            path: "/admin/home-grid",            icon: <HomeIcon /> },
-  { name: "Home Content CMS",     path: "/admin/home-content",         icon: <SlideshowIcon /> },
-  { name: "Electronics Category", path: "/admin/electronics-category", icon: <ElectricBoltIcon /> },
-  { name: "Shop By Category",     path: "/admin/shop-by-category",     icon: <Category /> },
-  { name: "Deals",                path: "/admin/deals",                icon: <LocalOfferIcon /> },
-  { name: "Settlements",          path: "/admin/settlements",          icon: <AccountBalanceWalletIcon /> },
-  { name: "Returns",              path: "/admin/returns",              icon: <AssignmentReturnIcon /> },
-  { name: "Users",                path: "/admin/users",                icon: <PeopleAltIcon /> },
+type NavItem = { label: string; path: string; icon: ReactNode };
+type NavGroup = { title: string; items: NavItem[] };
+
+const menuGroups: NavGroup[] = [
+  {
+    title: "Commerce",
+    items: [
+      { label: "Users & Sellers", path: "/admin/users?tab=sellers", icon: <StorefrontRoundedIcon sx={{ fontSize: 16 }} /> },
+      { label: "Customers", path: "/admin/users?tab=customers", icon: <GroupRoundedIcon sx={{ fontSize: 16 }} /> },
+      { label: "Coupons", path: "/admin/coupon", icon: <ConfirmationNumberRoundedIcon sx={{ fontSize: 16 }} /> },
+      { label: "Create Coupon", path: "/admin/add-coupon", icon: <DashboardCustomizeRoundedIcon sx={{ fontSize: 16 }} /> },
+    ],
+  },
+  {
+    title: "Homepage",
+    items: [
+      { label: "Home Content Studio", path: "/admin/home-content", icon: <HomeRepairServiceRoundedIcon sx={{ fontSize: 16 }} /> },
+      { label: "Daily Discounts", path: "/admin/daily-discounts", icon: <LocalOfferRoundedIcon sx={{ fontSize: 16 }} /> },
+    ],
+  },
+  {
+    title: "Operations",
+    items: [
+      { label: "Settlements", path: "/admin/settlements", icon: <AccountBalanceWalletRoundedIcon sx={{ fontSize: 16 }} /> },
+      { label: "Returns", path: "/admin/returns", icon: <AssignmentReturnRoundedIcon sx={{ fontSize: 16 }} /> },
+    ],
+  },
 ];
 
-const menu2 = [
-  { name: "Account", path: "/admin/users", icon: <AccountBoxIcon /> },
-  { name: "Logout",  path: "__logout__",    icon: <LogoutIcon /> },
-];
-
-interface DrawerListProps {
-  toggleDrawer?: () => void;
-}
-
-const AdminDrawerList = ({ toggleDrawer }: DrawerListProps) => {
-  const location = useLocation();
+const AdminDrawerList = () => {
   const navigate = useNavigate();
-
-  const handleNav = (path: string) => {
-    if (path === "__logout__") {
-      localStorage.removeItem("jwt");
-      localStorage.removeItem("seller_jwt");
-      navigate("/");
-      toggleDrawer?.();
-      return;
-    }
-    navigate(path);
-    toggleDrawer?.();
-  };
-
-  const NavItem = ({ item }: { item: typeof menu[0] }) => {
-    const isRoot = item.path === "/admin";
-    const isActive = isRoot
-      ? location.pathname === "/admin" || location.pathname === "/admin/"
-      : location.pathname === item.path || location.pathname.startsWith(item.path + "/");
-    return (
-      <ListItem disablePadding sx={{ mb: 0.5 }}>
-        <ListItemButton
-          onClick={() => handleNav(item.path)}
-          sx={{
-            mx: 1,
-            borderRadius: '4px',
-            px: 1.5, py: 1,
-            backgroundColor: isActive ? '#FF9900' : 'transparent',
-            borderLeft: isActive ? '3px solid #fff' : '3px solid transparent',
-            transition: 'all 0.15s ease',
-            '&:hover': {
-              backgroundColor: isActive ? '#e88b00' : 'rgba(255,153,0,0.12)',
-            },
-          }}
-        >
-          <ListItemIcon sx={{
-            minWidth: 34,
-            color: isActive ? '#131921' : '#adb5bd',
-            '& svg': { fontSize: 19 },
-          }}>
-            {item.icon}
-          </ListItemIcon>
-          <ListItemText
-            primary={item.name}
-            primaryTypographyProps={{
-              fontSize: 13,
-              fontWeight: isActive ? 700 : 400,
-              fontFamily: '"Amazon Ember", Arial, sans-serif',
-              color: isActive ? '#131921' : '#d5d9d9',
-              letterSpacing: '0.1px',
-            }}
-          />
-          {isActive && (
-            <Box sx={{
-              width: 6, height: 6, borderRadius: '50%',
-              backgroundColor: '#131921', ml: 1,
-            }} />
-          )}
-        </ListItemButton>
-      </ListItem>
-    );
-  };
+  const location = useLocation();
 
   return (
-    <Box sx={{
-      width: 230,
-      height: '100%',
-      backgroundColor: '#131921',
-      display: 'flex',
-      flexDirection: 'column',
-    }}>
-      {/* Branding strip */}
-      <Box sx={{
-        px: 2.5, py: 2,
-        borderBottom: '1px solid rgba(255,153,0,0.3)',
-        display: 'flex', alignItems: 'center', gap: 1,
-      }}>
-        <Box sx={{
-          width: 28, height: 28,
-          backgroundColor: '#FF9900',
-          borderRadius: '3px',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <Typography sx={{ fontSize: 14, fontWeight: 900, color: '#131921', fontFamily: 'Arial, sans-serif', lineHeight: 1 }}>
-            a
-          </Typography>
-        </Box>
-        <Box>
-          <Typography sx={{
-            fontSize: 13, fontWeight: 700,
-            color: '#fff',
-            fontFamily: '"Amazon Ember", Arial, sans-serif',
-            lineHeight: 1.1,
-          }}>
-            Seller Central
-          </Typography>
-          <Typography sx={{ fontSize: 10, color: '#FF9900', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
-            Admin Console
-          </Typography>
-        </Box>
-      </Box>
+    <aside
+      style={{
+        width: 260,
+        minHeight: "100%",
+        background: "#ffffff",
+        borderRight: "1px solid #DCE8EC",
+        display: "grid",
+        gridTemplateRows: "auto 1fr auto",
+      }}
+    >
+      <div style={{ padding: "18px 16px", borderBottom: "1px solid #E7EFF2" }}>
+        <p style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#64748B", fontWeight: 700 }}>Admin Console</p>
+        <h2 style={{ fontSize: "1.3rem", marginTop: 4 }}>Shopzy Control</h2>
+        <p style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>Unified operations and minimal home-content controls</p>
+      </div>
 
-      {/* Section label */}
-      <Box sx={{ px: 2.5, pt: 2, pb: 0.5 }}>
-        <Typography sx={{
-          fontSize: 10, fontWeight: 700, letterSpacing: '1px',
-          color: '#6c757d', textTransform: 'uppercase',
-          fontFamily: '"Amazon Ember", Arial, sans-serif',
-        }}>
-          Main Menu
-        </Typography>
-      </Box>
+      <nav style={{ padding: 10, display: "grid", gap: 12, alignContent: "start", overflowY: "auto" }}>
+        {menuGroups.map((group) => (
+          <div key={group.title} style={{ display: "grid", gap: 5 }}>
+            <p
+              style={{
+                margin: "2px 8px 1px",
+                fontSize: 10,
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+                color: "#94A3B8",
+                fontWeight: 800,
+              }}
+            >
+              {group.title}
+            </p>
 
-      {/* Primary nav */}
-      <List sx={{ flex: 1, py: 0.5 }}>
-        {menu.map((item) => <NavItem key={item.path} item={item} />)}
-      </List>
+            {group.items.map(({ label, path, icon }) => {
+              const [cleanPath] = path.split("?");
+              const queryString = path.includes("?") ? path.split("?")[1] : "";
+              const expectedParams = new URLSearchParams(queryString);
+              const currentParams = new URLSearchParams(location.search);
+              const isRoot = cleanPath === "/admin";
+              const queryMatches =
+                !queryString ||
+                Array.from(expectedParams.entries()).every(
+                  ([key, value]) => currentParams.get(key) === value
+                );
+              const active = isRoot
+                ? location.pathname === "/admin" || location.pathname === "/admin/"
+                : (location.pathname === cleanPath || location.pathname.startsWith(`${cleanPath}/`)) &&
+                  queryMatches;
 
-      {/* Divider */}
-      <Divider sx={{ borderColor: 'rgba(255,153,0,0.2)', mx: 2 }} />
+              return (
+                <button
+                  key={path}
+                  onClick={() => navigate(path)}
+                  style={{
+                    border: "1px solid",
+                    borderColor: active ? "#6FB7B0" : "transparent",
+                    background: active ? "#EAF7F5" : "transparent",
+                    color: active ? "#0F766E" : "#334155",
+                    borderRadius: 11,
+                    textAlign: "left",
+                    padding: "9px 10px",
+                    fontSize: "0.84rem",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 26,
+                      height: 26,
+                      borderRadius: 7,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: active ? "#FFFFFF" : "#F2F7F9",
+                      border: "1px solid #DCE8EC",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {icon}
+                  </span>
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        ))}
+      </nav>
 
-      {/* Section label */}
-      <Box sx={{ px: 2.5, pt: 1.5, pb: 0.5 }}>
-        <Typography sx={{
-          fontSize: 10, fontWeight: 700, letterSpacing: '1px',
-          color: '#6c757d', textTransform: 'uppercase',
-          fontFamily: '"Amazon Ember", Arial, sans-serif',
-        }}>
-          Account
-        </Typography>
-      </Box>
-
-      {/* Secondary nav */}
-      <List sx={{ pb: 2 }}>
-        {menu2.map((item) => <NavItem key={item.path} item={item} />)}
-      </List>
-    </Box>
+      <div style={{ borderTop: "1px solid #E7EFF2", padding: "12px 14px" }}>
+        <button
+          onClick={() => {
+            localStorage.removeItem("jwt");
+            localStorage.removeItem("seller_jwt");
+            navigate("/");
+          }}
+          style={{
+            width: "100%",
+            border: "1px solid #F6CBD6",
+            background: "#FFF1F4",
+            color: "#BE123C",
+            borderRadius: 10,
+            padding: "9px",
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
+        >
+          Logout
+        </button>
+      </div>
+    </aside>
   );
 };
 

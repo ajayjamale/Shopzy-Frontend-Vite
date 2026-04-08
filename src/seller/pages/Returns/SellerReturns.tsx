@@ -94,7 +94,7 @@ const SellerReturns: React.FC = () => {
           onClick={syncSellerData}
           style={{
             border: "none",
-            background: "#FF9900",
+            background: "#0F766E",
             color: "#111827",
             borderRadius: 10,
             padding: "10px 14px",

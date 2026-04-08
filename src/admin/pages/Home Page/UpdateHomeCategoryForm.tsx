@@ -20,26 +20,26 @@ import { useAppDispatch } from '../../../Redux Toolkit/Store'
 import { updateHomeCategory } from '../../../Redux Toolkit/Admin/AdminSlice'
 import type { HomeCategory } from '../../../types/homeDataTypes'
 
-const amazonTextField = {
-    '& label.Mui-focused': { color: '#232F3E' },
+const modernTextField = {
+    '& label.Mui-focused': { color: '#1E293B' },
     '& .MuiOutlinedInput-root': {
-        fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13,
-        '&:hover fieldset': { borderColor: '#FF9900' },
-        '&.Mui-focused fieldset': { borderColor: '#FF9900', borderWidth: 2 },
+        fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13,
+        '&:hover fieldset': { borderColor: '#0F766E' },
+        '&.Mui-focused fieldset': { borderColor: '#0F766E', borderWidth: 2 },
     },
-    '& label': { fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13 },
-    '& .MuiFormHelperText-root': { fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 11 },
+    '& label': { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13 },
+    '& .MuiFormHelperText-root': { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 11 },
 }
 
-const amazonSelect = {
-    '& label.Mui-focused': { color: '#232F3E' },
+const modernSelect = {
+    '& label.Mui-focused': { color: '#1E293B' },
     '& .MuiOutlinedInput-root': {
-        fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13,
-        '&:hover fieldset': { borderColor: '#FF9900' },
-        '&.Mui-focused fieldset': { borderColor: '#FF9900', borderWidth: 2 },
+        fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13,
+        '&:hover fieldset': { borderColor: '#0F766E' },
+        '&.Mui-focused fieldset': { borderColor: '#0F766E', borderWidth: 2 },
     },
-    '& label': { fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13 },
-    '& .MuiFormHelperText-root': { fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 11 },
+    '& label': { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13 },
+    '& .MuiFormHelperText-root': { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 11 },
 }
 
 const categoryTwo: { [key: string]: any[] } = {
@@ -107,10 +107,10 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
                         </Box>
                     )}
                     <Box>
-                        <Typography sx={{ fontSize: 11, color: '#565959', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                        <Typography sx={{ fontSize: 11, color: '#64748B', fontFamily: '"Manrope", Arial, sans-serif' }}>
                             Currently editing
                         </Typography>
-                        <Typography sx={{ fontSize: 13, fontWeight: 700, color: '#0F1111', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                        <Typography sx={{ fontSize: 13, fontWeight: 700, color: '#0F172A', fontFamily: '"Manrope", Arial, sans-serif' }}>
                             {category.categoryId}
                         </Typography>
                     </Box>
@@ -132,15 +132,15 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
-                            <ImageIcon sx={{ fontSize: 16, color: '#565959' }} />
+                            <ImageIcon sx={{ fontSize: 16, color: '#64748B' }} />
                         </InputAdornment>
                     ),
                 }}
-                sx={amazonTextField}
+                sx={modernTextField}
             />
 
             {/* Level 1 */}
-            <FormControl fullWidth error={formik.touched.category && Boolean(formik.errors.category)} sx={amazonSelect}>
+            <FormControl fullWidth error={formik.touched.category && Boolean(formik.errors.category)} sx={modernSelect}>
                 <InputLabel id="cat1-label">Main Category</InputLabel>
                 <Select
                     labelId="cat1-label"
@@ -153,10 +153,10 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
                         formik.setFieldValue('category3', '')
                     }}
                     label="Main Category"
-                    startAdornment={<InputAdornment position="start"><CategoryIcon sx={{ fontSize: 16, color: '#565959' }} /></InputAdornment>}
+                    startAdornment={<InputAdornment position="start"><CategoryIcon sx={{ fontSize: 16, color: '#64748B' }} /></InputAdornment>}
                 >
                     {mainCategory.map((item) => (
-                        <MenuItem key={item.categoryId} value={item.categoryId} sx={{ fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                        <MenuItem key={item.categoryId} value={item.categoryId} sx={{ fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' }}>
                             {item.name}
                         </MenuItem>
                     ))}
@@ -167,7 +167,7 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
             </FormControl>
 
             {/* Level 2 */}
-            <FormControl fullWidth disabled={!formik.values.category} sx={amazonSelect}>
+            <FormControl fullWidth disabled={!formik.values.category} sx={modernSelect}>
                 <InputLabel id="cat2-label">Second Category</InputLabel>
                 <Select
                     labelId="cat2-label"
@@ -180,12 +180,12 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
                     }}
                     label="Second Category"
                 >
-                    <MenuItem value="" sx={{ fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                    <MenuItem value="" sx={{ fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' }}>
                         <em>None</em>
                     </MenuItem>
                     {formik.values.category &&
                         categoryTwo[formik.values.category]?.map((item) => (
-                            <MenuItem key={item.categoryId} value={item.categoryId} sx={{ fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                            <MenuItem key={item.categoryId} value={item.categoryId} sx={{ fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' }}>
                                 {item.name}
                             </MenuItem>
                         ))}
@@ -193,7 +193,7 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
             </FormControl>
 
             {/* Level 3 */}
-            <FormControl fullWidth disabled={!formik.values.category2} sx={amazonSelect}>
+            <FormControl fullWidth disabled={!formik.values.category2} sx={modernSelect}>
                 <InputLabel id="cat3-label">Third Category</InputLabel>
                 <Select
                     labelId="cat3-label"
@@ -203,7 +203,7 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
                     onChange={formik.handleChange}
                     label="Third Category"
                 >
-                    <MenuItem value="" sx={{ fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                    <MenuItem value="" sx={{ fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' }}>
                         <em>None</em>
                     </MenuItem>
                     {formik.values.category2 &&
@@ -211,7 +211,7 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
                             categoryThree[formik.values.category] ?? [],
                             formik.values.category2
                         ).map((item: any) => (
-                            <MenuItem key={item.categoryId} value={item.categoryId} sx={{ fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                            <MenuItem key={item.categoryId} value={item.categoryId} sx={{ fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' }}>
                                 {item.name}
                             </MenuItem>
                         ))}
@@ -220,7 +220,7 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
 
             {/* Note */}
             <Box sx={{ backgroundColor: '#FFF3CD', border: '1px solid #FFEAA7', borderRadius: '3px', px: 2, py: 1 }}>
-                <Typography sx={{ fontSize: 12, color: '#856404', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                <Typography sx={{ fontSize: 12, color: '#856404', fontFamily: '"Manrope", Arial, sans-serif' }}>
                     <strong>Note:</strong> If no second or third category is selected, the main category will be used. Changes will reflect on the homepage immediately.
                 </Typography>
             </Box>
@@ -231,9 +231,9 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
                     onClick={handleClose}
                     fullWidth
                     sx={{
-                        fontFamily: '"Amazon Ember", Arial, sans-serif',
+                        fontFamily: '"Manrope", Arial, sans-serif',
                         fontSize: 13, textTransform: 'none',
-                        color: '#0F1111', border: '1px solid #ccc',
+                        color: '#0F172A', border: '1px solid #ccc',
                         borderRadius: '20px', py: 1,
                         '&:hover': { backgroundColor: '#f5f5f5' },
                     }}
@@ -245,13 +245,13 @@ const UpdateHomeCategoryForm = ({ category, handleClose }: Props) => {
                     type="submit"
                     fullWidth
                     sx={{
-                        backgroundColor: '#FF9900', color: '#0F1111',
-                        fontFamily: '"Amazon Ember", Arial, sans-serif',
+                        backgroundColor: '#0F766E', color: '#0F172A',
+                        fontFamily: '"Manrope", Arial, sans-serif',
                         fontWeight: 700, fontSize: 13, textTransform: 'none',
                         borderRadius: '20px', py: 1,
-                        border: '1px solid #e88b00',
-                        '&:hover': { backgroundColor: '#e88b00' },
-                        '&:active': { backgroundColor: '#d47f00' },
+                        border: '1px solid #0b5f59',
+                        '&:hover': { backgroundColor: '#0b5f59' },
+                        '&:active': { backgroundColor: '#115e59' },
                     }}
                 >
                     Save Changes

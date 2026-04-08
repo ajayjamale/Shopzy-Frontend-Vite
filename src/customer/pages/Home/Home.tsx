@@ -1,65 +1,162 @@
-import React, { useState } from "react";
-import Banner from "./Banner/Banner";
-import HomeCategory from "./HomeCategory/HomeCategory";
-import TopBrand from "./TopBrands/Grid";
-import ElectronicCategory from "./Electronic Category/ElectronicCategory";
-import MainCarousel from "./Main Carousel/MainCarousel";
-import ChatBubbleIcon from "@mui/icons-material/ChatBubble";
 import { Backdrop, Button, CircularProgress } from "@mui/material";
+import ChatBubbleRoundedIcon from "@mui/icons-material/ChatBubbleRounded";
+import LocalShippingRoundedIcon from "@mui/icons-material/LocalShippingRounded";
+import SecurityRoundedIcon from "@mui/icons-material/SecurityRounded";
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import ChatBot from "../ChatBot/ChatBot";
-import { useAppSelector } from "../../../Redux Toolkit/Store";
-import DealSlider from "./Deals/Deals";
+import MainCarousel from "./Main Carousel/MainCarousel";
+import HeroSpotlights from "./HeroSpotlights/HeroSpotlights";
+import ShopCategoryMosaic from "./Sections/ShopCategoryMosaic";
+import TechFeatureRail from "./Sections/TechFeatureRail";
+import BrandShowcasePanel from "./Sections/BrandShowcasePanel";
+import DailyDiscountSection from "./Sections/DailyDiscountSection";
 import type { HomePageContent } from "../../../types/homeContentTypes";
+import { fetchHomePageData } from "../../../Redux Toolkit/Customer/Customer/AsyncThunk";
 
 const Home = () => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [showChatBot, setShowChatBot] = useState(false);
   const { homePage } = useAppSelector((store) => store);
   const data = homePage.homePageData as HomePageContent | null;
 
-  const isVisible = (key: string) =>
-    data?.sections?.find((s) => s.sectionKey === key && s.visible);
+  useEffect(() => {
+    dispatch(fetchHomePageData());
+  }, [dispatch]);
 
-  const handleShowChatBot = () => setShowChatBot(!showChatBot);
-  const handleCloseChatBot = () => setShowChatBot(false);
+  const isVisible = (key: string) =>
+    data?.sections?.find((section) => section.sectionKey === key && section.visible);
+  const hasDailyDiscounts = Boolean((data?.dailyDiscounts?.length || 0) > 0);
+  const hasHeroSpotlights = Boolean((data?.heroSlides?.length || 0) > 1);
+  const hasSectionMeta = Boolean((data?.sections?.length || 0) > 0);
+  const showDailyDiscounts = data ? Boolean(hasDailyDiscounts) : true;
+  const showHeroSpotlights = data
+    ? Boolean(((hasSectionMeta && isVisible("HERO")) || !hasSectionMeta) && hasHeroSpotlights)
+    : true;
+  const showShopByCategory = data ? Boolean(isVisible("SHOP_BY_CATEGORY") || !hasSectionMeta) : true;
+  const showElectronics = data ? Boolean(isVisible("ELECTRONICS") || !hasSectionMeta) : true;
+  const showTopBrands = data ? Boolean(isVisible("TOP_BRAND") || !hasSectionMeta) : true;
+
+  if (homePage.loading) {
+    return (
+      <Backdrop open>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+    );
+  }
 
   return (
-    <>
-      {!homePage.loading ? (
-        // ✅ outer wrapper has NO space-y so carousel touches navbar directly
-        <div className="relative">
+    <div
+      className="pb-14"
+      style={{
+        background:
+          "radial-gradient(circle at 14% -6%, rgba(15,118,110,.12), transparent 36%), radial-gradient(circle at 92% -8%, rgba(15,23,42,.12), transparent 40%), #F2F7F8",
+      }}
+    >
+      <MainCarousel />
 
-          {/* Carousel — flush against navbar, no top margin */}
-          <MainCarousel />
-
-          {/* Everything below carousel gets normal spacing */}
-          <div className="space-y-6 lg:space-y-12 pb-16 bg-[#f5f6f8]">
-            {isVisible("ELECTRONICS") && <ElectronicCategory />}
-            {isVisible("TOP_BRAND") && <TopBrand />}
-            {data?.shopByCategories && isVisible("SHOP_BY_CATEGORY") && <HomeCategory />}
-          </div>
-
-          {/* Chatbot — fixed, always on top */}
-          <section className="fixed bottom-6 right-6 sm:bottom-10 sm:right-10 z-[9999]">
-            {showChatBot ? (
-              <ChatBot handleClose={handleCloseChatBot} />
-            ) : (
-              <Button
-                onClick={handleShowChatBot}
-                sx={{ borderRadius: "2rem" }}
-                variant="contained"
-                className="h-16 w-16 flex justify-center items-center rounded-full"
+      <section className="app-container" style={{ marginTop: 18 }}>
+        <div
+          className="surface-soft"
+          style={{
+            borderRadius: 18,
+            padding: "12px 14px",
+            display: "grid",
+            gap: 10,
+            gridTemplateColumns: "repeat(auto-fit,minmax(190px,1fr))",
+            background: "linear-gradient(125deg, #F6FCFC 0%, #EDF8F9 100%)",
+          }}
+        >
+          {[
+            {
+              icon: <LocalShippingRoundedIcon sx={{ fontSize: 18, color: "#0F766E" }} />,
+              title: "Fast Delivery",
+              desc: "Tracked shipping across all orders",
+              action: () => navigate("/products"),
+            },
+            {
+              icon: <SecurityRoundedIcon sx={{ fontSize: 18, color: "#0F766E" }} />,
+              title: "Secure Checkout",
+              desc: "Trusted payments and fraud protection",
+              action: () => navigate("/cart"),
+            },
+            {
+              icon: <AutorenewRoundedIcon sx={{ fontSize: 18, color: "#0F766E" }} />,
+              title: "Easy Returns",
+              desc: "Quick replacement and refund support",
+              action: () => navigate("/account/orders"),
+            },
+          ].map((item) => (
+            <button
+              key={item.title}
+              onClick={item.action}
+              style={{
+                border: "1px solid #D7E8EA",
+                borderRadius: 14,
+                background: "#fff",
+                textAlign: "left",
+                padding: "11px 12px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <span
+                style={{
+                  width: 30,
+                  height: 30,
+                  borderRadius: 10,
+                  border: "1px solid #D6E8EA",
+                  background: "#EFF9F8",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexShrink: 0,
+                }}
               >
-                <ChatBubbleIcon sx={{ color: "white", fontSize: "2rem" }} />
-              </Button>
-            )}
-          </section>
+                {item.icon}
+              </span>
+              <span style={{ minWidth: 0 }}>
+                <p style={{ fontWeight: 800, fontSize: 13, color: "#0F172A" }}>{item.title}</p>
+                <p style={{ fontSize: 11, color: "#64748B", marginTop: 2 }}>{item.desc}</p>
+              </span>
+            </button>
+          ))}
         </div>
-      ) : (
-        <Backdrop open={true}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
-    </>
+      </section>
+
+      {showHeroSpotlights && <HeroSpotlights />}
+      {showShopByCategory && <ShopCategoryMosaic data={data} />}
+      {showElectronics && <TechFeatureRail data={data} />}
+      {showTopBrands && <BrandShowcasePanel data={data} />}
+      {showDailyDiscounts && <DailyDiscountSection data={data} />}
+
+      <section className="fixed right-5 bottom-5 sm:right-8 sm:bottom-8 z-[1200]">
+        {showChatBot ? (
+          <ChatBot handleClose={() => setShowChatBot(false)} />
+        ) : (
+          <Button
+            variant="contained"
+            onClick={() => setShowChatBot(true)}
+            sx={{
+              width: 58,
+              minWidth: 58,
+              height: 58,
+              borderRadius: "50%",
+              bgcolor: "#0F766E",
+              boxShadow: "0 12px 20px rgba(15, 118, 110, 0.28)",
+              "&:hover": { bgcolor: "#0B5F59" },
+            }}
+          >
+            <ChatBubbleRoundedIcon sx={{ color: "#fff" }} />
+          </Button>
+        )}
+      </section>
+    </div>
   );
 };
 

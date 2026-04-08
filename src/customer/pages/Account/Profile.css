@@ -1,863 +1,468 @@
-/* ============================================================
-   Profile.css  —  Amazon design system
-   ============================================================ */
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-/* ── Page shell ──────────────────────────────────────────── */
 .amz-profile-page {
-  min-height: 100vh;
-  background: #f0f2f2;
-  font-family: "Amazon Ember", "Helvetica Neue", Arial, sans-serif;
-  color: #0f1111;
+  padding: 28px 0 40px;
 }
 
-/* ── Top nav bar ─────────────────────────────────────────── */
-.amz-profile-topbar {
-  background: #232f3e;
-  padding: 10px 24px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-}
-.amz-profile-topbar-logo {
-  font-size: 1.5rem;
-  font-weight: 900;
-  color: #ffffff;
-  letter-spacing: -0.5px;
-}
-.amz-profile-topbar-logo span { color: #ff9900; }
-
-/* ── Content wrapper ─────────────────────────────────────── */
 .amz-profile-wrapper {
-  max-width: 1100px;
+  width: min(1180px, 94vw);
   margin: 0 auto;
-  padding: 24px 16px 48px;
 }
 
-/* ── Breadcrumb ──────────────────────────────────────────── */
 .amz-breadcrumb {
-  font-size: 0.8125rem;
-  color: #565959;
-  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 10px;
 }
+
 .amz-breadcrumb a {
-  color: #0066c0;
-  text-decoration: none;
+  color: #0f766e;
 }
-.amz-breadcrumb a:hover { color: #c45500; text-decoration: underline; }
-.amz-breadcrumb span { margin: 0 4px; }
 
-/* ── Page title ──────────────────────────────────────────── */
 .amz-page-title {
-  font-size: 1.375rem;
-  font-weight: 700;
-  color: #0f1111;
-  margin-bottom: 20px;
-}
-
-/* ── Two-column layout ───────────────────────────────────── */
-.amz-profile-layout {
-  display: grid;
-  grid-template-columns: 220px 1fr;
-  gap: 20px;
-  align-items: start;
-}
-@media (max-width: 768px) {
-  .amz-profile-layout { grid-template-columns: 1fr; }
-}
-
-/* ── Sidebar ─────────────────────────────────────────────── */
-.amz-sidebar {
-  background: #fff;
-  border: 1px solid #d5d9d9;
-  border-radius: 4px;
-}
-.amz-sidebar-header {
-  background: #232f3e;
-  color: #fff;
-  padding: 12px 16px;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  border-radius: 3px 3px 0 0;
-}
-.amz-sidebar-user {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f2f2;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.amz-sidebar-avatar {
-  width: 36px;
-  height: 36px;
-  background: #232f3e;
-  color: #fff;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.875rem;
-  font-weight: 700;
-  flex-shrink: 0;
-}
-.amz-sidebar-user-name {
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: #0f1111;
-  line-height: 1.3;
-}
-.amz-sidebar-user-email {
-  font-size: 0.75rem;
-  color: #565959;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 140px;
-}
-.amz-sidebar-nav { padding: 8px 0; }
-.amz-sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 16px;
-  font-size: 0.875rem;
-  color: #0f1111;
-  cursor: pointer;
-  transition: background 0.1s ease;
-  border-left: 3px solid transparent;
-  text-decoration: none;
-}
-.amz-sidebar-item:hover { background: #f7f8f8; }
-.amz-sidebar-item.active {
-  background: #fef9f0;
-  border-left-color: #ff9900;
-  font-weight: 700;
-  color: #c45500;
-}
-.amz-sidebar-item svg { font-size: 1rem; flex-shrink: 0; }
-.amz-sidebar-divider { height: 1px; background: #f0f2f2; margin: 4px 0; }
-
-/* ── Card (shared panel) ─────────────────────────────────── */
-.amz-card {
-  background: #fff;
-  border: 1px solid #d5d9d9;
-  border-radius: 4px;
-  overflow: hidden;
-}
-.amz-card-header {
-  background: #f0f2f2;
-  border-bottom: 1px solid #d5d9d9;
-  padding: 12px 18px;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #0f1111;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.amz-card-body { padding: 18px; }
-
-/* ── Section title inside cards ──────────────────────────── */
-.amz-section-title {
-  font-size: 1.125rem;
-  font-weight: 700;
-  color: #0f1111;
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #e7e7e7;
-}
-
-/* ── Amazon-style yellow button ──────────────────────────── */
-.amz-btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 16px;
-  background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
-  color: #111;
-  border: 1px solid #a88734;
-  border-radius: 3px;
-  font-size: 0.875rem;
-  font-weight: normal;
-  cursor: pointer;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
-  transition: background 0.15s ease, border-color 0.15s ease;
-  text-decoration: none;
-  font-family: inherit;
-}
-.amz-btn-primary:hover {
-  background: linear-gradient(to bottom, #f5d78e, #eeb933);
-  border-color: #a0801a;
-}
-.amz-btn-primary:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(228,121,17,0.5);
-}
-
-/* ── Grey secondary button ───────────────────────────────── */
-.amz-btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 16px;
-  background: linear-gradient(to bottom, #f7f8f8, #e7e9ec);
-  color: #0f1111;
-  border: 1px solid #adb1b8;
-  border-radius: 3px;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  font-family: inherit;
-}
-.amz-btn-secondary:hover { background: linear-gradient(to bottom, #e7e9ec, #d9dce1); }
-
-/* ── Red danger button ───────────────────────────────────── */
-.amz-btn-danger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 6px 16px;
-  background: linear-gradient(to bottom, #f5cbcb, #e8a1a1);
-  color: #c40000;
-  border: 1px solid #c40000;
-  border-radius: 3px;
-  font-size: 0.875rem;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  font-family: inherit;
-}
-.amz-btn-danger:hover { background: linear-gradient(to bottom, #f0b8b8, #e09090); }
-.amz-btn-danger:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* ── Badge / pill ────────────────────────────────────────── */
-.amz-badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: 3px;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-.amz-badge-green  { background: #e8f5e9; color: #067d62; border: 1px solid #b2dfdb; }
-.amz-badge-orange { background: #fef9f0; color: #c45500; border: 1px solid #f0c14b; }
-.amz-badge-red    { background: #fff5f5; color: #c40000; border: 1px solid #f5cbcb; }
-.amz-badge-grey   { background: #f0f2f2; color: #565959; border: 1px solid #d5d9d9; }
-
-/* ── Divider ─────────────────────────────────────────────── */
-.amz-divider {
-  height: 1px;
-  background: #e7e7e7;
-  margin: 16px 0;
-}
-
-/* ── Info row (label / value pairs) ─────────────────────── */
-.amz-info-row {
-  display: flex;
-  gap: 12px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f2f2;
-  font-size: 0.875rem;
-}
-.amz-info-row:last-child { border-bottom: none; }
-.amz-info-label {
-  width: 120px;
-  flex-shrink: 0;
-  color: #565959;
-  font-weight: normal;
-}
-.amz-info-value { color: #0f1111; font-weight: 700; }
-
-/* ── Order card ──────────────────────────────────────────── */
-.amz-order-card {
-  background: #fff;
-  border: 1px solid #d5d9d9;
-  border-radius: 4px;
-  margin-bottom: 16px;
-  overflow: hidden;
-}
-.amz-order-card-header {
-  background: #f0f2f2;
-  border-bottom: 1px solid #d5d9d9;
-  padding: 10px 18px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  font-size: 0.8125rem;
-}
-.amz-order-meta { display: flex; flex-direction: column; gap: 2px; }
-.amz-order-meta-label { color: #565959; text-transform: uppercase; font-size: 0.6875rem; letter-spacing: 0.5px; }
-.amz-order-meta-value { font-weight: 700; color: #0f1111; }
-.amz-order-card-body { padding: 16px 18px; }
-
-/* ── Order item row ──────────────────────────────────────── */
-.amz-order-item-row {
-  display: flex;
-  gap: 16px;
-  padding: 12px 0;
-  border-bottom: 1px solid #f0f2f2;
-  cursor: pointer;
-  transition: background 0.1s ease;
-  margin: 0 -18px;
-  padding-left: 18px;
-  padding-right: 18px;
-}
-.amz-order-item-row:last-child { border-bottom: none; }
-.amz-order-item-row:hover { background: #f7f8f8; }
-.amz-order-item-img {
-  width: 80px;
-  height: 80px;
-  object-fit: contain;
-  border: 1px solid #d5d9d9;
-  border-radius: 3px;
-  flex-shrink: 0;
-  background: #fff;
-}
-.amz-order-item-info { flex: 1; }
-.amz-order-item-seller { font-size: 0.75rem; color: #565959; margin-bottom: 2px; }
-.amz-order-item-title { font-size: 0.9375rem; color: #0066c0; font-weight: normal; margin-bottom: 4px; }
-.amz-order-item-title:hover { color: #c45500; text-decoration: underline; }
-.amz-order-item-size { font-size: 0.8125rem; color: #565959; }
-.amz-order-item-price { font-size: 1rem; font-weight: 700; color: #0f1111; }
-
-/* ── Stepper ─────────────────────────────────────────────── */
-.amz-stepper {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  position: relative;
-  padding: 16px 0 8px;
-}
-.amz-stepper-track {
-  position: absolute;
-  top: 28px;
-  left: 24px;
-  right: 24px;
-  height: 3px;
-  background: #d5d9d9;
-  z-index: 0;
-}
-.amz-stepper-fill {
-  height: 100%;
-  background: #067d62;
-  transition: width 0.4s ease;
-}
-.amz-stepper-fill.cancelled { background: #c40000; }
-.amz-stepper-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  z-index: 1;
-  flex: 1;
-}
-.amz-stepper-circle {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid #d5d9d9;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: #888c8c;
-  transition: all 0.2s ease;
-}
-.amz-stepper-circle.done { background: #067d62; border-color: #067d62; color: #fff; }
-.amz-stepper-circle.current { background: #ff9900; border-color: #ff9900; color: #fff; }
-.amz-stepper-circle.cancelled { background: #c40000; border-color: #c40000; color: #fff; }
-.amz-stepper-label {
-  font-size: 0.6875rem;
-  text-align: center;
-  color: #565959;
-  line-height: 1.3;
-  max-width: 70px;
-}
-.amz-stepper-label.active { color: #0f1111; font-weight: 700; }
-.amz-stepper-label.cancelled { color: #c40000; font-weight: 700; }
-
-/* ── Address card ────────────────────────────────────────── */
-.amz-address-card {
-  background: #fff;
-  border: 1px solid #d5d9d9;
-  border-radius: 4px;
-  padding: 16px;
-  font-size: 0.875rem;
-  color: #0f1111;
-  line-height: 1.6;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.amz-address-card:hover {
-  border-color: #a88734;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-.amz-address-card-name { font-weight: 700; font-size: 0.9375rem; margin-bottom: 4px; }
-.amz-address-card-text { color: #333; margin-bottom: 2px; }
-.amz-address-card-mobile { color: #565959; }
-.amz-address-card-actions { display: flex; gap: 10px; margin-top: 12px; }
-
-/* ── Order Details page ──────────────────────────────────── */
-.amz-order-details-product {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-.amz-order-details-product-img {
-  width: 100px;
-  height: 100px;
-  object-fit: contain;
-  border: 1px solid #d5d9d9;
-  border-radius: 3px;
-  background: #fff;
-  flex-shrink: 0;
-}
-.amz-order-details-product-info { flex: 1; }
-.amz-order-details-seller { font-size: 0.8125rem; color: #565959; margin-bottom: 4px; }
-.amz-order-details-title { font-size: 1rem; color: #0f1111; font-weight: 700; margin-bottom: 6px; }
-
-/* ── Price summary ───────────────────────────────────────── */
-.amz-price-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 0;
-  font-size: 0.875rem;
-}
-.amz-price-row.total {
-  font-size: 1rem;
-  font-weight: 700;
-  border-top: 1px solid #e7e7e7;
-  margin-top: 6px;
-  padding-top: 10px;
-}
-.amz-price-save { color: #c45500; font-size: 0.8125rem; }
-
-/* ── Saved Cards ─────────────────────────────────────────── */
-.amz-saved-cards-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
-  gap: 16px;
-}
-.amz-saved-cards-icon {
-  width: 72px;
-  height: 72px;
-  background: #f0f2f2;
-  border: 1px solid #d5d9d9;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.amz-saved-cards-icon svg { font-size: 2.5rem; color: #565959; }
-.amz-saved-cards-title { font-size: 1rem; font-weight: 700; color: #0f1111; }
-.amz-saved-cards-desc { font-size: 0.875rem; color: #565959; max-width: 340px; line-height: 1.6; }
-
-/* ── UserDetails ─────────────────────────────────────────── */
-.amz-user-avatar-circle {
-  width: 60px;
-  height: 60px;
-  background: #232f3e;
-  color: #ff9900;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.375rem;
-  font-weight: 900;
-  flex-shrink: 0;
-}
-
-/* ── Snackbar ────────────────────────────────────────────── */
-.amz-snackbar-success { background: #067d62 !important; border-radius: 3px !important; }
-.amz-snackbar-error   { background: #c40000 !important; border-radius: 3px !important; }
-
-/* ── Empty state ─────────────────────────────────────────── */
-.amz-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  text-align: center;
-  gap: 12px;
-}
-.amz-empty-icon {
-  font-size: 3rem;
-  color: #d5d9d9;
-}
-.amz-empty-title { font-size: 1rem; font-weight: 700; color: #0f1111; }
-.amz-empty-desc  { font-size: 0.875rem; color: #565959; }
-
-/* ── Responsive tweaks ───────────────────────────────────── */
-@media (max-width: 640px) {
-  .amz-order-card-header { gap: 12px; }
-  .amz-stepper-label { max-width: 52px; font-size: 0.625rem; }
-  .amz-order-details-product { flex-direction: column; }
-}
-
-/* ============================================================
-   Return & Review — additions to Amazon design system
-   ============================================================ */
-
-/* ── Modal backdrop ──────────────────────────────────────── */
-.amz-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 17, 17, 0.65);
-  z-index: 1200;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  animation: amz-fade-in 0.15s ease;
-}
-@keyframes amz-fade-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-/* ── Modal box ───────────────────────────────────────────── */
-.amz-modal {
-  background: #fff;
-  border: 1px solid #d5d9d9;
-  border-radius: 4px;
-  width: 100%;
-  max-width: 520px;
-  max-height: 92vh;
-  overflow-y: auto;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.22);
-  animation: amz-slide-up 0.2s ease;
-}
-@keyframes amz-slide-up {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.amz-modal-header {
-  background: #232f3e;
-  color: #fff;
-  padding: 14px 20px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 3px 3px 0 0;
-}
-.amz-modal-title {
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-}
-.amz-modal-close {
-  background: none;
-  border: none;
-  color: #d5d9d9;
-  cursor: pointer;
-  padding: 2px;
-  display: flex;
-  align-items: center;
-  transition: color 0.15s;
-  font-size: 1.25rem;
-  line-height: 1;
-}
-.amz-modal-close:hover { color: #fff; }
-.amz-modal-body  { padding: 20px; }
-.amz-modal-footer {
-  padding: 14px 20px;
-  border-top: 1px solid #e7e7e7;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  background: #f7f8f8;
-  border-radius: 0 0 3px 3px;
-}
-
-/* ── Product mini preview inside modal ───────────────────── */
-.amz-modal-product {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 12px;
-  background: #f7f8f8;
-  border: 1px solid #e7e7e7;
-  border-radius: 3px;
-  margin-bottom: 20px;
-}
-.amz-modal-product-img {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  border: 1px solid #d5d9d9;
-  border-radius: 3px;
-  background: #fff;
-  flex-shrink: 0;
-}
-.amz-modal-product-title {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #0f1111;
-  line-height: 1.4;
-}
-.amz-modal-product-seller {
-  font-size: 0.75rem;
-  color: #565959;
-  margin-top: 2px;
-}
-
-/* ── Form group inside modal ─────────────────────────────── */
-.amz-form-group {
-  margin-bottom: 16px;
-}
-.amz-form-label {
-  display: block;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: #0f1111;
-  margin-bottom: 6px;
-}
-.amz-form-label span {
-  color: #c40000;
-  margin-left: 2px;
-}
-.amz-form-select,
-.amz-form-textarea {
-  width: 100%;
-  padding: 8px 10px;
-  border: 1px solid #888c8c;
-  border-radius: 3px;
-  font-size: 0.9375rem;
-  font-family: "Amazon Ember", "Helvetica Neue", Arial, sans-serif;
-  color: #0f1111;
-  background: #fff;
-  outline: none;
-  transition: border-color 0.15s, box-shadow 0.15s;
-  resize: vertical;
-}
-.amz-form-select:focus,
-.amz-form-textarea:focus {
-  border-color: #e77600;
-  box-shadow: 0 0 0 3px rgba(228,121,17,0.5);
-}
-.amz-form-textarea { min-height: 90px; line-height: 1.5; }
-.amz-form-hint {
-  font-size: 0.75rem;
-  color: #565959;
-  margin-top: 4px;
-}
-.amz-form-error {
-  font-size: 0.75rem;
-  color: #c40000;
-  margin-top: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-/* ── Star rating widget ──────────────────────────────────── */
-.amz-star-row {
-  display: flex;
-  gap: 4px;
-  margin-bottom: 4px;
-}
-.amz-star {
-  font-size: 2rem;
-  cursor: pointer;
-  color: #d5d9d9;
-  transition: color 0.1s ease, transform 0.1s ease;
-  line-height: 1;
-  user-select: none;
-}
-.amz-star.filled  { color: #ff9900; }
-.amz-star.hovered { color: #ff9900; transform: scale(1.15); }
-.amz-star-label {
-  font-size: 0.8125rem;
-  color: #565959;
-  margin-top: 4px;
-  min-height: 18px;
-}
-
-/* ── Return reason chips ─────────────────────────────────── */
-.amz-reason-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 6px;
-}
-.amz-reason-chip {
-  padding: 5px 12px;
-  border: 1px solid #888c8c;
-  border-radius: 3px;
-  font-size: 0.8125rem;
-  color: #0f1111;
-  cursor: pointer;
-  background: #fff;
-  transition: all 0.15s ease;
-  font-family: inherit;
-}
-.amz-reason-chip:hover   { border-color: #e77600; background: #fef9f0; }
-.amz-reason-chip.selected {
-  border-color: #e77600;
-  background: #fef9f0;
-  color: #c45500;
-  font-weight: 700;
-}
-
-/* ── Refund method row ───────────────────────────────────── */
-.amz-refund-option {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px;
-  border: 1px solid #d5d9d9;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
-  margin-bottom: 8px;
-  background: #fff;
-}
-.amz-refund-option.selected {
-  border-color: #e77600;
-  background: #fef9f0;
-}
-.amz-refund-option input[type="radio"] {
-  margin-top: 2px;
-  accent-color: #e77600;
-  flex-shrink: 0;
-}
-.amz-refund-option-label { font-size: 0.875rem; font-weight: 700; color: #0f1111; }
-.amz-refund-option-desc  { font-size: 0.75rem; color: #565959; margin-top: 2px; }
-
-/* ── Success state inside modal ──────────────────────────── */
-.amz-modal-success {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 32px 20px;
-  gap: 12px;
-}
-.amz-modal-success-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.75rem;
-}
-.amz-modal-success-icon.green { background: #e8f5e9; color: #067d62; }
-.amz-modal-success-icon.orange { background: #fef9f0; color: #c45500; }
-.amz-modal-success-title { font-size: 1.125rem; font-weight: 700; color: #0f1111; }
-.amz-modal-success-desc  { font-size: 0.875rem; color: #565959; line-height: 1.6; max-width: 340px; }
-
-/* ── Action buttons row on OrderDetails ──────────────────── */
-.amz-order-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-/* ── "DELIVERED" banner on product card ──────────────────── */
-.amz-delivered-banner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #e8f5e9;
-  border: 1px solid #b2dfdb;
-  border-radius: 3px;
-  padding: 8px 12px;
-  font-size: 0.875rem;
-  color: #067d62;
-  font-weight: 700;
+  font-size: clamp(1.5rem, 3vw, 2rem);
   margin-bottom: 14px;
 }
 
-/* ── Review display card (read-only) ─────────────────────── */
-.amz-review-card {
-  background: #f7f8f8;
-  border: 1px solid #e7e7e7;
-  border-radius: 3px;
-  padding: 14px 16px;
-  margin-top: 10px;
+.amz-profile-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 18px;
+  align-items: start;
 }
-.amz-review-card-stars { display: flex; gap: 2px; margin-bottom: 6px; }
-.amz-review-card-star  { color: #ff9900; font-size: 1rem; }
-.amz-review-card-title { font-size: 0.875rem; font-weight: 700; color: #0f1111; margin-bottom: 4px; }
-.amz-review-card-body  { font-size: 0.8125rem; color: #333; line-height: 1.6; }
-.amz-review-card-meta  { font-size: 0.75rem; color: #888c8c; margin-top: 6px; }
 
-/* ── Step indicator inside Return modal ──────────────────── */
-.amz-return-steps {
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin-bottom: 20px;
-}
-.amz-return-step {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  flex: 1;
-}
-.amz-return-step-dot {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  border: 2px solid #d5d9d9;
+.amz-sidebar {
   background: #fff;
+  border: 1px solid #dce8ec;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+}
+
+.amz-sidebar-header {
+  padding: 14px 18px;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 700;
+  background: #0f172a;
+  color: #d6e7f0;
+}
+
+.amz-sidebar-user {
+  padding: 14px 16px;
+  border-bottom: 1px solid #e8eff2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.amz-sidebar-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.6875rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #888c8c;
-  transition: all 0.2s;
+  color: #fff;
+  background: linear-gradient(140deg, #14b8a6, #0f766e);
 }
-.amz-return-step-dot.active { background: #ff9900; border-color: #ff9900; color: #fff; }
-.amz-return-step-dot.done   { background: #067d62; border-color: #067d62; color: #fff; }
-.amz-return-step-label {
-  font-size: 0.625rem;
-  color: #565959;
+
+.amz-sidebar-user-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.amz-sidebar-user-email {
+  font-size: 0.76rem;
+  color: #64748b;
+}
+
+.amz-sidebar-nav {
+  padding: 8px;
+}
+
+.amz-sidebar-item {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 11px;
+  cursor: pointer;
+  color: #334155;
+  font-size: 0.86rem;
+  font-weight: 700;
+  text-align: left;
+}
+
+.amz-sidebar-item:hover {
+  background: #f5fafb;
+}
+
+.amz-sidebar-item.active {
+  background: #eaf7f5;
+  color: #0f766e;
+}
+
+.amz-sidebar-divider {
+  height: 1px;
+  background: #e8eff2;
+  margin: 6px 0;
+}
+
+.amz-card {
+  border: 1px solid #dce8ec;
+  border-radius: 18px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+}
+
+.amz-card-header {
+  padding: 13px 18px;
+  border-bottom: 1px solid #e8eff2;
+  background: #f8fbfc;
+  color: #0f172a;
+  font-size: 0.92rem;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.amz-card-body {
+  padding: 18px;
+}
+
+.amz-btn-primary,
+.amz-btn-secondary,
+.amz-btn-danger {
+  border-radius: 999px;
+  padding: 7px 15px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+  border: 1px solid transparent;
+}
+
+.amz-btn-primary {
+  background: linear-gradient(130deg, #0f766e, #14b8a6);
+  color: #fff;
+}
+
+.amz-btn-secondary {
+  background: #fff;
+  border-color: #d7e3e8;
+  color: #334155;
+}
+
+.amz-btn-danger {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #be123c;
+}
+
+.amz-empty-state {
   text-align: center;
+  padding: 34px 20px;
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+}
+
+.amz-empty-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.amz-empty-desc {
+  font-size: 0.86rem;
+  color: #64748b;
+}
+
+.amz-order-card {
+  border: 1px solid #dce8ec;
+  border-radius: 18px;
+  background: #fff;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
+}
+
+.amz-order-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 13px 16px;
+  background: #f8fbfc;
+  border-bottom: 1px solid #e8eff2;
+}
+
+.amz-order-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.amz-order-meta-label {
+  font-size: 0.67rem;
+  letter-spacing: 0.11em;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
-}
-.amz-return-step-label.active { color: #c45500; font-weight: 700; }
-.amz-return-step-connector {
-  flex: 1;
-  height: 2px;
-  background: #d5d9d9;
-  margin-bottom: 18px;
-  max-width: 40px;
-}
-.amz-return-step-connector.done { background: #067d62; }
-
-/* ── Responsive ──────────────────────────────────────────── */
-@media (max-width: 480px) {
-  .amz-modal { max-height: 100vh; border-radius: 0; }
-  .amz-modal-backdrop { padding: 0; align-items: flex-end; }
-  .amz-star { font-size: 1.75rem; }
+  color: #64748b;
+  font-weight: 700;
 }
 
-/* ── Review modal spin animation ────────────────────────── */
-@keyframes amz-spin {
-  to { transform: rotate(360deg); }
+.amz-order-meta-value {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
-/* ── Review modal — star hover micro-interaction ─────────── */
-.amz-star-btn { transition: transform 0.1s ease; }
-.amz-star-btn:hover { transform: scale(1.2); }
+.amz-order-item-row {
+  padding: 12px 16px;
+  display: flex;
+  gap: 14px;
+  border-bottom: 1px solid #e8eff2;
+}
+
+.amz-order-item-row:last-child {
+  border-bottom: 0;
+}
+
+.amz-order-item-img {
+  width: 88px;
+  height: 88px;
+  border-radius: 12px;
+  border: 1px solid #dce8ec;
+  object-fit: cover;
+}
+
+.amz-order-item-title {
+  color: #0f172a;
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.amz-order-item-seller,
+.amz-order-item-size {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.amz-order-item-price {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.amz-badge {
+  border-radius: 999px;
+  font-size: 0.68rem;
+  padding: 3px 8px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.amz-badge-green {
+  background: #ecfdf3;
+  color: #15803d;
+}
+
+.amz-badge-orange {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.amz-badge-red {
+  background: #fff1f2;
+  color: #be123c;
+}
+
+.amz-badge-grey {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.amz-user-avatar-circle {
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  background: linear-gradient(140deg, #14b8a6, #0f766e);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.amz-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.87rem;
+  color: #334155;
+}
+
+.amz-price-row.total {
+  border-top: 1px solid #e8eff2;
+  margin-top: 7px;
+  padding-top: 10px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.amz-divider {
+  height: 1px;
+  background: #e8eff2;
+  margin: 14px 0;
+}
+
+.amz-order-details-product {
+  display: flex;
+  gap: 14px;
+}
+
+.amz-order-details-product-img {
+  width: 104px;
+  height: 104px;
+  border-radius: 14px;
+  border: 1px solid #dce8ec;
+  object-fit: cover;
+}
+
+.amz-order-details-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.amz-order-details-seller {
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 4px;
+}
+
+/* Shipment stepper */
+.amz-stepper {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(var(--amz-step-count, 4), minmax(0, 1fr));
+  gap: 8px;
+  align-items: start;
+  padding-top: 4px;
+}
+
+.amz-stepper-track {
+  position: absolute;
+  left: 44px;
+  right: 44px;
+  top: 17px;
+  height: 4px;
+  background: #e5edf0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.amz-stepper-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #0f766e, #14b8a6);
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.amz-stepper-fill.cancelled {
+  background: linear-gradient(135deg, #be123c, #e11d48);
+}
+
+.amz-stepper-step {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  z-index: 1;
+}
+
+.amz-stepper-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 2px solid #d9e5e8;
+  background: #fff;
+  color: #64748b;
+  font-size: 0.76rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.amz-stepper-circle.done,
+.amz-stepper-circle.current {
+  border-color: #0f766e;
+  background: #0f766e;
+  color: #fff;
+}
+
+.amz-stepper-circle.cancelled {
+  border-color: #be123c;
+  background: #be123c;
+  color: #fff;
+}
+
+.amz-stepper-label {
+  font-size: 0.73rem;
+  color: #64748b;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.amz-stepper-label-sub {
+  display: block;
+  font-weight: 500;
+  opacity: 0.72;
+}
+
+.amz-stepper-label.active {
+  color: #0f172a;
+}
+
+.amz-stepper-label.cancelled {
+  color: #be123c;
+}
+
+@media (max-width: 980px) {
+  .amz-profile-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .amz-stepper {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 14px;
+  }
+
+  .amz-stepper-track {
+    display: none;
+  }
+
+  .amz-order-item-row {
+    flex-direction: column;
+  }
+
+  .amz-order-details-product {
+    flex-direction: column;
+  }
+}

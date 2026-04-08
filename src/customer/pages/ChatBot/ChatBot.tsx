@@ -21,8 +21,15 @@ const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
 
   const handleGivePrompt = (e: any) => {
     e.stopPropagation();
-    if (!prompt.trim()) return;
-    dispatch(chatBot({ prompt: { prompt }, productId, userId: null }));
+    if (!prompt.trim() || aiChatBot.loading) return;
+    dispatch(
+      chatBot({
+        prompt: { prompt: prompt.trim() },
+        productId,
+        // Temporarily avoid sending userId until backend user-context query is stable.
+        userId: null,
+      })
+    );
     setPrompt("");
   };
 
@@ -33,7 +40,7 @@ const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
   useEffect(() => {
     // Clear previous chat history every time the chatbot is opened
     dispatch(clearMessages());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     chatBottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -98,11 +105,11 @@ const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
         />
         <button
           onClick={handleGivePrompt}
-          disabled={!prompt.trim()}
+          disabled={!prompt.trim() || aiChatBot.loading}
           style={{
             ...styles.sendBtn,
-            opacity: prompt.trim() ? 1 : 0.4,
-            cursor: prompt.trim() ? "pointer" : "not-allowed",
+            opacity: prompt.trim() && !aiChatBot.loading ? 1 : 0.4,
+            cursor: prompt.trim() && !aiChatBot.loading ? "pointer" : "not-allowed",
           }}
         >
           <SendIcon style={{ fontSize: 17, color: "#fff" }} />

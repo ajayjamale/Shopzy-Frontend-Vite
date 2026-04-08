@@ -28,12 +28,12 @@ import { fetchProductById } from "../../../Redux Toolkit/Customer/ProductSlice";
 import type { Seller } from "../../../types/sellerTypes";
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
-const AMZ = {
-  navy: '#131921', navyLight: '#232f3e', orange: '#ff9900',
-  blue: '#007185', green: '#067d62', red: '#cc0c39',
-  bg: '#f3f3f3', white: '#ffffff', border: '#dddddd',
-  borderDark: '#aaaaaa', text: '#0f1111', textMuted: '#565959',
-  headerBg: '#f0f2f2', linkBlue: '#007185',
+const UI = {
+  navy: '#0F172A', navyLight: '#232f3e', orange: '#0f766e',
+  blue: '#0E7490', green: '#067d62', red: '#cc0c39',
+  bg: '#F3F7F8', white: '#ffffff', border: '#DCE5E8',
+  borderDark: '#B7C8CE', text: '#0f1111', textMuted: '#64748B',
+  headerBg: '#F4FAFB', linkBlue: '#0E7490',
 };
 
 // ─── Category Maps ────────────────────────────────────────────────────────────
@@ -84,12 +84,12 @@ interface FormValues {
 // ─── Styled Components ────────────────────────────────────────────────────────
 
 const PageWrap = styled('div')({
-  background: AMZ.bg, minHeight: '100vh',
+  background: UI.bg, minHeight: '100vh',
   fontFamily: "'Helvetica Neue', Arial, sans-serif",
 });
 
 const TopBar = styled('div')({
-  background: AMZ.navy, padding: '8px 24px',
+  background: UI.navy, padding: '8px 24px',
   display: 'flex', alignItems: 'center', gap: 16,
 });
 
@@ -98,64 +98,64 @@ const ContentWrap = styled('div')({
 });
 
 const SectionCard = styled(Paper)({
-  borderRadius: '4px', border: `1px solid ${AMZ.border}`,
-  boxShadow: '0 1px 2px rgba(0,0,0,0.05)', background: AMZ.white,
+  borderRadius: '4px', border: `1px solid ${UI.border}`,
+  boxShadow: '0 1px 2px rgba(0,0,0,0.05)', background: UI.white,
   marginBottom: '16px', overflow: 'hidden',
 });
 
 const SectionHeader = styled('div')({
-  background: AMZ.headerBg, padding: '10px 18px',
-  borderBottom: `1px solid ${AMZ.border}`,
+  background: UI.headerBg, padding: '10px 18px',
+  borderBottom: `1px solid ${UI.border}`,
   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
 });
 
 const SectionBody = styled('div')({ padding: '20px 18px' });
 
 const FieldLabel = styled(Typography)({
-  fontSize: '13px', fontWeight: 700, color: AMZ.text,
+  fontSize: '13px', fontWeight: 700, color: UI.text,
   fontFamily: "'Helvetica Neue', Arial, sans-serif", marginBottom: '4px',
 });
 
-const RequiredStar = styled('span')({ color: AMZ.red });
+const RequiredStar = styled('span')({ color: UI.red });
 
-const AmazonField = styled(TextField)({
+const PremiumField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
     borderRadius: '3px', fontSize: '13px',
     fontFamily: "'Helvetica Neue', Arial, sans-serif", background: '#fff',
-    '& fieldset': { borderColor: AMZ.borderDark },
-    '&:hover fieldset': { borderColor: '#007185' },
+    '& fieldset': { borderColor: UI.borderDark },
+    '&:hover fieldset': { borderColor: '#0E7490' },
     '&.Mui-focused fieldset': { borderColor: '#e77600', borderWidth: '2px', boxShadow: '0 0 0 3px rgba(228,121,17,0.15)' },
   },
   '& .MuiInputBase-input': { padding: '8px 10px', fontSize: '13px' },
   '& .MuiInputLabel-root': { display: 'none' },
-  '& .MuiFormHelperText-root': { fontSize: '12px', color: AMZ.red, margin: '4px 0 0 0' },
+  '& .MuiFormHelperText-root': { fontSize: '12px', color: UI.red, margin: '4px 0 0 0' },
 });
 
-const AmazonSelect = styled(FormControl)({
+const PremiumSelect = styled(FormControl)({
   '& .MuiOutlinedInput-root': {
     borderRadius: '3px', fontSize: '13px',
     fontFamily: "'Helvetica Neue', Arial, sans-serif", background: '#fff',
-    '& fieldset': { borderColor: AMZ.borderDark },
-    '&:hover fieldset': { borderColor: '#007185' },
+    '& fieldset': { borderColor: UI.borderDark },
+    '&:hover fieldset': { borderColor: '#0E7490' },
     '&.Mui-focused fieldset': { borderColor: '#e77600', borderWidth: '2px', boxShadow: '0 0 0 3px rgba(228,121,17,0.15)' },
   },
   '& .MuiSelect-select': { padding: '8px 10px', fontSize: '13px' },
   '& .MuiInputLabel-root': { display: 'none' },
-  '& .MuiFormHelperText-root': { fontSize: '12px', color: AMZ.red, margin: '4px 0 0 0' },
+  '& .MuiFormHelperText-root': { fontSize: '12px', color: UI.red, margin: '4px 0 0 0' },
 });
 
 const UploadBox = styled('label')({
   width: 96, height: 96, borderRadius: '3px',
-  border: `2px dashed ${AMZ.borderDark}`, background: AMZ.headerBg,
+  border: `2px dashed ${UI.borderDark}`, background: UI.headerBg,
   display: 'flex', flexDirection: 'column', alignItems: 'center',
   justifyContent: 'center', cursor: 'pointer', transition: 'all 0.15s',
-  color: AMZ.textMuted, flexShrink: 0, gap: 4,
+  color: UI.textMuted, flexShrink: 0, gap: 4,
   '&:hover': { borderColor: '#e77600', background: '#fffbf2', color: '#e77600' },
 });
 
 const ThumbWrap = styled('div')({
   position: 'relative', width: 96, height: 96, borderRadius: '3px',
-  border: `1px solid ${AMZ.border}`, overflow: 'hidden',
+  border: `1px solid ${UI.border}`, overflow: 'hidden',
   '& img': { width: '100%', height: '100%', objectFit: 'cover' },
   '& .rmv': {
     position: 'absolute', top: 2, right: 2, opacity: 0, transition: 'opacity 0.15s',
@@ -282,7 +282,7 @@ const UpdateProductForm = () => {
     <PageWrap>
       {/* Top Bar */}
       <TopBar>
-        <Typography sx={{ color: AMZ.orange, fontWeight: 700, fontSize: '20px', fontFamily: "'Helvetica Neue', Arial" }}>
+        <Typography sx={{ color: UI.orange, fontWeight: 700, fontSize: '20px', fontFamily: "'Helvetica Neue', Arial" }}>
           seller<span style={{ color: '#fff' }}>central</span>
         </Typography>
         <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.2)' }} />
@@ -292,7 +292,7 @@ const UpdateProductForm = () => {
       <ContentWrap>
         {/* Breadcrumb & Title */}
         <Box mb={1.5} mt={0.5}>
-          <Typography sx={{ fontSize: '12px', color: AMZ.linkBlue, fontFamily: "'Helvetica Neue', Arial", cursor: 'pointer' }}
+          <Typography sx={{ fontSize: '12px', color: UI.linkBlue, fontFamily: "'Helvetica Neue', Arial", cursor: 'pointer' }}
             onClick={() => navigate('/seller/products')}>
             ‹ Back to Manage Inventory
           </Typography>
@@ -300,10 +300,10 @@ const UpdateProductForm = () => {
 
         <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2.5} flexWrap="wrap" gap={1}>
           <Box>
-            <Typography sx={{ fontSize: '20px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
+            <Typography sx={{ fontSize: '20px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
               Edit Product Listing
             </Typography>
-            <Typography sx={{ fontSize: '12px', color: AMZ.textMuted, mt: 0.3, fontFamily: "'Helvetica Neue', Arial" }}>
+            <Typography sx={{ fontSize: '12px', color: UI.textMuted, mt: 0.3, fontFamily: "'Helvetica Neue', Arial" }}>
               ASIN: #{String(productId).padStart(10, '0')} &nbsp;·&nbsp; {formik.values.title && `"${formik.values.title.slice(0, 50)}..."`}
             </Typography>
           </Box>
@@ -325,15 +325,15 @@ const UpdateProductForm = () => {
           {/* ── Images ── */}
           <SectionCard elevation={0}>
             <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
+              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
                 Product Images
               </Typography>
-              <Typography sx={{ fontSize: '12px', color: AMZ.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>
+              <Typography sx={{ fontSize: '12px', color: UI.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>
                 {formik.values.images.length} image(s) uploaded
               </Typography>
             </SectionHeader>
             <SectionBody>
-              <Typography sx={{ fontSize: '12px', color: AMZ.textMuted, mb: 2, fontFamily: "'Helvetica Neue', Arial" }}>
+              <Typography sx={{ fontSize: '12px', color: UI.textMuted, mb: 2, fontFamily: "'Helvetica Neue', Arial" }}>
                 First image is the main listing image. Minimum 500px on longest side.
               </Typography>
               <Box display="flex" flexWrap="wrap" gap={1.5}>
@@ -367,7 +367,7 @@ const UpdateProductForm = () => {
           {/* ── Vital Info ── */}
           <SectionCard elevation={0}>
             <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
+              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
                 Vital Info
               </Typography>
             </SectionHeader>
@@ -375,7 +375,7 @@ const UpdateProductForm = () => {
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12 }}>
                   <FieldRow label="Product name" required>
-                    <AmazonField fullWidth id="title" name="title"
+                    <PremiumField fullWidth id="title" name="title"
                       placeholder="Product name"
                       value={formik.values.title} onChange={formik.handleChange}
                       error={formik.touched.title && Boolean(formik.errors.title)}
@@ -385,7 +385,7 @@ const UpdateProductForm = () => {
                 </Grid>
                 <Grid size={{ xs: 12 }}>
                   <FieldRow label="Product description" required>
-                    <AmazonField fullWidth multiline rows={5} id="description" name="description"
+                    <PremiumField fullWidth multiline rows={5} id="description" name="description"
                       placeholder="Detailed product description"
                       value={formik.values.description} onChange={formik.handleChange}
                       error={formik.touched.description && Boolean(formik.errors.description)}
@@ -400,7 +400,7 @@ const UpdateProductForm = () => {
           {/* ── Pricing ── */}
           <SectionCard elevation={0}>
             <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
+              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
                 Offer & Pricing
               </Typography>
             </SectionHeader>
@@ -408,7 +408,7 @@ const UpdateProductForm = () => {
               <Grid container spacing={3}>
                 <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="MRP (₹)" required>
-                    <AmazonField fullWidth id="mrp_price" name="mrpPrice" type="number"
+                    <PremiumField fullWidth id="mrp_price" name="mrpPrice" type="number"
                       value={formik.values.mrpPrice} onChange={formik.handleChange}
                       error={formik.touched.mrpPrice && Boolean(formik.errors.mrpPrice)}
                       helperText={formik.touched.mrpPrice && formik.errors.mrpPrice}
@@ -417,7 +417,7 @@ const UpdateProductForm = () => {
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="Your selling price (₹)" required>
-                    <AmazonField fullWidth id="sellingPrice" name="sellingPrice" type="number"
+                    <PremiumField fullWidth id="sellingPrice" name="sellingPrice" type="number"
                       value={formik.values.sellingPrice} onChange={formik.handleChange}
                       error={formik.touched.sellingPrice && Boolean(formik.errors.sellingPrice)}
                       helperText={formik.touched.sellingPrice && formik.errors.sellingPrice}
@@ -428,7 +428,7 @@ const UpdateProductForm = () => {
                 {/* ── Live Discount Preview ── */}
                 <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <Box mb={2.5}>
-                    <FieldLabel>Discount % <span style={{ color: AMZ.textMuted, fontWeight: 400 }}>(auto-calculated)</span></FieldLabel>
+                    <FieldLabel>Discount % <span style={{ color: UI.textMuted, fontWeight: 400 }}>(auto-calculated)</span></FieldLabel>
                     {(() => {
                       const mrp = Number(formik.values.mrpPrice);
                       const sell = Number(formik.values.sellingPrice);
@@ -436,13 +436,13 @@ const UpdateProductForm = () => {
                       return (
                         <Box sx={{
                           height: '37px', borderRadius: '3px',
-                          border: `1px solid ${pct > 0 ? '#a8d5b5' : AMZ.border}`,
-                          background: pct > 0 ? '#e6f4ea' : AMZ.headerBg,
+                          border: `1px solid ${pct > 0 ? '#a8d5b5' : UI.border}`,
+                          background: pct > 0 ? '#e6f4ea' : UI.headerBg,
                           display: 'flex', alignItems: 'center', px: 1.5, gap: 1,
                         }}>
                           <Typography sx={{
                             fontSize: '18px', fontWeight: 700,
-                            color: pct > 0 ? '#1e7e34' : AMZ.textMuted,
+                            color: pct > 0 ? '#1e7e34' : UI.textMuted,
                             fontFamily: "'Helvetica Neue', Arial",
                           }}>
                             {pct > 0 ? `-${pct}%` : '—'}
@@ -455,7 +455,7 @@ const UpdateProductForm = () => {
                         </Box>
                       );
                     })()}
-                    <Typography sx={{ fontSize: '11px', color: AMZ.textMuted, mt: 0.5, fontFamily: "'Helvetica Neue', Arial" }}>
+                    <Typography sx={{ fontSize: '11px', color: UI.textMuted, mt: 0.5, fontFamily: "'Helvetica Neue', Arial" }}>
                       Sent to customer site automatically
                     </Typography>
                   </Box>
@@ -463,7 +463,7 @@ const UpdateProductForm = () => {
 
                 <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="Color" required>
-                    <AmazonSelect fullWidth error={formik.touched.color && Boolean(formik.errors.color)}>
+                    <PremiumSelect fullWidth error={formik.touched.color && Boolean(formik.errors.color)}>
                       <Select name="color" value={formik.values.color} onChange={formik.handleChange} displayEmpty>
                         <MenuItem value=""><em style={{ color: '#999', fontStyle: 'normal' }}>Select color</em></MenuItem>
                         {colors.map(c => (
@@ -476,12 +476,12 @@ const UpdateProductForm = () => {
                         ))}
                       </Select>
                       {formik.touched.color && formik.errors.color && <FormHelperText>{formik.errors.color}</FormHelperText>}
-                    </AmazonSelect>
+                    </PremiumSelect>
                   </FieldRow>
                 </Grid>
                 <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
                   <FieldRow label="Size" required>
-                    <AmazonSelect fullWidth error={formik.touched.sizes && Boolean(formik.errors.sizes)}>
+                    <PremiumSelect fullWidth error={formik.touched.sizes && Boolean(formik.errors.sizes)}>
                       <Select name="sizes" value={formik.values.sizes} onChange={formik.handleChange} displayEmpty>
                         <MenuItem value=""><em style={{ color: '#999', fontStyle: 'normal' }}>Select size</em></MenuItem>
                         {['FREE', 'S', 'M', 'L', 'XL'].map(s => (
@@ -489,7 +489,7 @@ const UpdateProductForm = () => {
                         ))}
                       </Select>
                       {formik.touched.sizes && formik.errors.sizes && <FormHelperText>{formik.errors.sizes}</FormHelperText>}
-                    </AmazonSelect>
+                    </PremiumSelect>
                   </FieldRow>
                 </Grid>
               </Grid>
@@ -497,7 +497,7 @@ const UpdateProductForm = () => {
           </SectionCard>
 
           {/* ── Actions ── */}
-          <Box sx={{ background: AMZ.white, border: `1px solid ${AMZ.border}`, borderRadius: '4px', p: '14px 18px', display: 'flex', gap: 1.5, alignItems: 'center', justifyContent: 'flex-end', mb: 4 }}>
+          <Box sx={{ background: UI.white, border: `1px solid ${UI.border}`, borderRadius: '4px', p: '14px 18px', display: 'flex', gap: 1.5, alignItems: 'center', justifyContent: 'flex-end', mb: 4 }}>
             <GrayBtn onClick={() => navigate('/seller/products')}>Cancel</GrayBtn>
             <SaveBtn type="submit" disabled={sellerProduct.loading} startIcon={!sellerProduct.loading && <SaveOutlinedIcon sx={{ fontSize: 16 }} />}>
               {sellerProduct.loading ? <CircularProgress size={18} sx={{ color: '#333' }} /> : 'Save and finish'}

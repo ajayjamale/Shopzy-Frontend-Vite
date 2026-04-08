@@ -1,38 +1,41 @@
-import React from 'react'
-import MenuIcon from '@mui/icons-material/Menu';
-import { Drawer, IconButton } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { Drawer, IconButton } from "@mui/material";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const Navbar = ({DrawerList}:any) => {
-  const navigate = useNavigate()
-  const [open, setOpen] = React.useState(false);
-
-  const toggleDrawer = (newOpen: any)=>() => {
-    setOpen(newOpen);
-    
-  };
+const Navbar = ({ DrawerList }: any) => {
+  const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   return (
-    <div className='h-[10vh] flex items-center px-5 border-b bg-white'>
-      <div className='flex items-center gap-3 '>
-        <IconButton onClick={toggleDrawer(true)} color='primary'>
-          <MenuIcon color='primary' />
+    <div
+      style={{
+        height: 68,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        padding: "0 14px",
+        borderBottom: "1px solid #DCE8EC",
+        background: "rgba(248,251,252,0.92)",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <IconButton onClick={() => setOpen(true)}>
+          <MenuRoundedIcon />
         </IconButton>
-
-        <h1
+        <button
           onClick={() => navigate("/")}
-          className="logo text-xl cursor-pointer tracking-wide"
+          style={{ border: "none", background: "transparent", fontWeight: 700, cursor: "pointer", color: "#0F172A" }}
         >
           Shopzy
-        </h1>
+        </button>
       </div>
 
-      <Drawer open={open} onClose={toggleDrawer(false)}>
-        <DrawerList toggleDrawer={toggleDrawer} />
+      <Drawer open={open} onClose={() => setOpen(false)}>
+        <DrawerList toggleDrawer={() => () => setOpen(false)} />
       </Drawer>
-
     </div>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

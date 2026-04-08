@@ -1,98 +1,76 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Alert, Snackbar } from '@mui/material';
-import { useAppSelector } from '../../../Redux Toolkit/Store';
-import LoginForm from './LoginForm';
-import SignupForm from './SignupForm';
-import './Auth.css';
-import { ShopzyLogo } from '../../../components/ShopzyLogo';
+import { useEffect, useState } from "react";
+import { Alert, Snackbar } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../../Redux Toolkit/Store";
+import { ShopzyLogo } from "../../../components/ShopzyLogo";
+import LoginForm from "./LoginForm";
+import SignupForm from "./SignupForm";
+import "./Auth.css";
 
 const Auth = () => {
-  const [isLoginPage, setIsLoginPage] = useState(true);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+  const [openToast, setOpenToast] = useState(false);
 
-  // âœ… Select only the primitive fields needed â€” never select the whole slice object
-  const jwt      = useAppSelector((state) => state.auth.jwt);
-  const otpSent  = useAppSelector((state) => state.auth.otpSent);
-  const error    = useAppSelector((state) => state.auth.error);
+  const jwt = useAppSelector((state) => state.auth.jwt);
+  const otpSent = useAppSelector((state) => state.auth.otpSent);
+  const error = useAppSelector((state) => state.auth.error);
 
-  // Redirect if already authenticated
   useEffect(() => {
-    if (jwt) navigate('/');
+    if (jwt) navigate("/");
   }, [jwt, navigate]);
 
-  // Show toast on OTP sent or error
   useEffect(() => {
-    if (otpSent || error) setSnackbarOpen(true);
+    if (otpSent || error) {
+      setOpenToast(true);
+    }
   }, [otpSent, error]);
 
-  const handleCloseSnackbar = () => setSnackbarOpen(false);
-
   return (
-    <div className="auth-horizontal-container">
-
-      {/* Logo */}
-      <div className="auth-brand-logo" onClick={() => navigate('/')} style={{ cursor: 'pointer' }}>
-        <ShopzyLogo size={24} bg="#f4c24d" color="#0f172a" textColor="#0f172a" />
-      </div>
-
-      {/* Form Card */}
-      <div className="auth-form-section-horizontal">
-        <div className="auth-form-header">
-          <h2>{isLoginPage ? 'Sign in' : 'Create account'}</h2>
-          <p>
-            {isLoginPage
-              ? 'Enter your email to receive a one-time password'
-              : 'Fill in your details to get started'}
-          </p>
-        </div>
-
-        {isLoginPage ? <LoginForm /> : <SignupForm />}
-
-        <div className="auth-toggle-horizontal">
-          <span>{isLoginPage ? 'New to Shopzy?' : 'Already have an account?'}</span>
-          <button
-            onClick={() => setIsLoginPage((prev) => !prev)}
-            className="auth-toggle-button-horizontal"
-          >
-            {isLoginPage ? 'Create your account' : 'Sign in'}
+    <div className="auth-page">
+      <div className="auth-shell">
+        <aside className="auth-brand">
+          <button className="bg-transparent border-0 p-0 text-left cursor-pointer" onClick={() => navigate("/")}> 
+            <ShopzyLogo size={23} textColor="#ffffff" color="#ffffff" />
           </button>
-        </div>
+          <h2>Secure login built for seamless shopping.</h2>
+          <p>
+            Sign in with OTP, manage your orders, save your favorites, and enjoy a faster checkout.
+          </p>
+          <div className="auth-points">
+            <span>• One-time password based authentication</span>
+            <span>• Protected account and order history</span>
+            <span>• Smooth access across customer and seller journeys</span>
+          </div>
+        </aside>
+
+        <section className="auth-card">
+          <div>
+            <h1>{isLogin ? "Welcome back" : "Create your account"}</h1>
+            <p>{isLogin ? "Sign in using your email and OTP" : "Register in under a minute"}</p>
+          </div>
+
+          {isLogin ? <LoginForm /> : <SignupForm />}
+
+          <div className="auth-toggle">
+            <span>{isLogin ? "New to Shopzy?" : "Already have an account?"}</span>
+            <button onClick={() => setIsLogin((prev) => !prev)}>
+              {isLogin ? "Create account" : "Sign in"}
+            </button>
+          </div>
+
+          <p className="auth-legal">By continuing, you agree to our terms, privacy and account policy.</p>
+        </section>
       </div>
 
-      {/* Legal footer */}
-      <div className="auth-below-card">
-        <div className="auth-below-divider">
-          <span>Conditions of Use &nbsp;|&nbsp; Privacy Notice &nbsp;|&nbsp; Help</span>
-        </div>
-        <p>Â© 1996â€“2025, Shopzy, Inc. or its affiliates</p>
-      </div>
-
-      {/* Toast */}
       <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-        open={snackbarOpen}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
+        open={openToast}
+        autoHideDuration={3500}
+        onClose={() => setOpenToast(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={error ? 'error' : 'success'}
-          variant="filled"
-          sx={{
-            borderRadius: '3px',
-            backgroundColor: error ? '#c40000' : '#067d62',
-            color: '#ffffff',
-            fontWeight: 500,
-            fontSize: '0.875rem',
-            fontFamily: "var(--font-body)",
-            '& .MuiAlert-icon': { color: '#ffffff' },
-          }}
-        >
-          {error
-            ? typeof error === 'string' ? error : 'Something went wrong. Please try again.'
-            : 'Verification code sent to your email!'}
+        <Alert onClose={() => setOpenToast(false)} severity={error ? "error" : "success"} variant="filled">
+          {error || "OTP sent successfully"}
         </Alert>
       </Snackbar>
     </div>

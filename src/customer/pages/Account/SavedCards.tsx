@@ -1,35 +1,25 @@
-import React from "react";
-import AddCardIcon from "@mui/icons-material/AddCard";
-import LockIcon from "@mui/icons-material/Lock";
+import AddCardRoundedIcon from "@mui/icons-material/AddCardRounded";
+import SecurityRoundedIcon from "@mui/icons-material/SecurityRounded";
 import "./Profile.css";
 
-const SavedCards = () => (
-  <div>
-    <div className="amz-card" style={{ marginBottom: 16 }}>
-      <div className="amz-card-header">Saved Payment Methods</div>
-    </div>
-
+const SavedCards = () => {
+  return (
     <div className="amz-card">
+      <div className="amz-card-header">Saved payment methods</div>
       <div className="amz-empty-state">
-        <div className="amz-empty-icon">
-          <AddCardIcon />
-        </div>
-        <div className="amz-empty-title">No saved cards</div>
-        <div className="amz-empty-desc">
-          Save your credit or debit card for faster checkout. Your payment info is protected with 128-bit SSL encryption.
-        </div>
-
-        <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.8125rem", color: "#565959" }}>
-          <LockIcon style={{ fontSize: "0.875rem" }} />
-          Secured by Shopzy
-        </div>
-
-        <button className="amz-btn-primary" style={{ marginTop: 12, padding: "8px 24px" }}>
-          Add a credit or debit card
-        </button>
+        <AddCardRoundedIcon sx={{ fontSize: 56, color: "#9CB2C2" }} />
+        <p className="amz-empty-title">No saved cards yet</p>
+        <p className="amz-empty-desc">
+          Save a debit or credit card for faster and safer checkout.
+        </p>
+        <p className="text-xs text-slate-500 flex items-center gap-1">
+          <SecurityRoundedIcon sx={{ fontSize: 13 }} />
+          Encrypted and securely stored
+        </p>
+        <button className="amz-btn-primary">Add payment method</button>
       </div>
     </div>
-  </div>
-);
+  );
+};
 
 export default SavedCards;

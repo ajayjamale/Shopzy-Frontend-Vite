@@ -1,7 +1,6 @@
-import React from "react";
-import RemoveIcon from "@mui/icons-material/Remove";
-import AddIcon from "@mui/icons-material/Add";
-import CloseIcon from "@mui/icons-material/Close";
+import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
+import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import type { CartItem } from "../../../types/cartTypes";
 import { useAppDispatch } from "../../../Redux Toolkit/Store";
 import { deleteCartItem, updateCartItem } from "../../../Redux Toolkit/Customer/CartSlice";
@@ -10,20 +9,20 @@ interface CartItemProps {
   item: CartItem;
 }
 
-const CartItemCard: React.FC<CartItemProps> = ({ item }) => {
+const CartItemCard = ({ item }: CartItemProps) => {
   const dispatch = useAppDispatch();
 
-  const handleUpdateQuantity = (value: number) => {
+  const updateQty = (delta: number) => {
     dispatch(
       updateCartItem({
         jwt: localStorage.getItem("jwt"),
         cartItemId: item.id,
-        cartItem: { quantity: item.quantity + value },
+        cartItem: { quantity: item.quantity + delta },
       })
     );
   };
 
-  const handleRemoveCartItem = () => {
+  const remove = () => {
     dispatch(
       deleteCartItem({
         jwt: localStorage.getItem("jwt") || "",
@@ -32,82 +31,41 @@ const CartItemCard: React.FC<CartItemProps> = ({ item }) => {
     );
   };
 
-  const saved = item.product?.mrpPrice - item.sellingPrice;
-
   return (
-    <div className="px-5 py-4 flex flex-col sm:flex-row gap-4 relative">
-
-      {/* Remove button */}
-      <button
-        onClick={handleRemoveCartItem}
-        className="absolute top-3 right-3 text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-red-50"
-        title="Remove item"
-      >
-        <CloseIcon sx={{ fontSize: 17 }} />
-      </button>
-
-      {/* Product image */}
-      <div className="flex-shrink-0">
-        <img
-          className="w-full sm:w-[110px] h-[160px] sm:h-[130px] rounded-lg object-cover object-top border border-gray-100 bg-white"
-          src={item.product.images[0]}
-          alt={item.product?.title}
-        />
+    <article className="p-4 sm:p-5 grid sm:grid-cols-[120px_1fr_auto] gap-4">
+      <div className="rounded-xl overflow-hidden border border-[#D9E5E9] bg-[#F8FBFC]">
+        <img src={item.product.images?.[0]} alt={item.product.title} className="w-full h-full object-cover" />
       </div>
 
-      {/* Details */}
-      <div className="flex-1 space-y-1 pr-0 sm:pr-6">
-        <h1 className="font-semibold text-sm text-gray-900 leading-snug">
-          {item.product?.seller?.businessDetails.businessName}
-        </h1>
-        <p className="text-gray-700 text-sm font-medium">{item.product?.title}</p>
-        <p className="text-xs text-gray-400">
-          <strong className="text-gray-500">Sold by:</strong>{" "}
-          {item.product?.seller?.businessDetails.businessName}
-        </p>
-        <p className="text-xs text-[#007600] font-semibold">In Stock</p>
-        <p className="text-xs text-gray-500">
-          <strong>7 days</strong> replacement available
-        </p>
-
-        {/* Price */}
-        <div className="flex items-baseline gap-2 pt-1">
-          <span className="text-base font-bold text-gray-900">
-            ₹{item.sellingPrice}
-          </span>
-          {item.product?.mrpPrice > item.sellingPrice && (
-            <>
-              <span className="text-xs text-gray-400 line-through">
-                ₹{item.product.mrpPrice}
-              </span>
-              <span className="text-xs text-[#CC0C39] font-semibold">
-                Save ₹{saved}
-              </span>
-            </>
+      <div className="min-w-0">
+        <p className="text-xs text-slate-500">{item.product.seller?.businessDetails?.businessName || "Shopzy Seller"}</p>
+        <h3 className="text-sm sm:text-base font-semibold text-slate-900 mt-1 line-clamp-2">{item.product.title}</h3>
+        <div className="flex items-center gap-2 mt-2 flex-wrap">
+          <strong className="text-slate-900">Rs. {item.sellingPrice?.toLocaleString("en-IN")}</strong>
+          {item.product.mrpPrice > item.sellingPrice && (
+            <span className="text-sm text-slate-400 line-through">Rs. {item.product.mrpPrice?.toLocaleString("en-IN")}</span>
           )}
+          <span className="text-xs text-emerald-700">In stock</span>
         </div>
 
-        {/* Quantity stepper */}
-        <div className="flex items-center gap-0 border border-gray-300 rounded-full w-fit overflow-hidden mt-2">
-          <button
-            disabled={item.quantity === 1}
-            onClick={() => handleUpdateQuantity(-1)}
-            className="px-2.5 py-1 text-gray-600 hover:bg-gray-100 disabled:opacity-30 transition"
-          >
-            <RemoveIcon sx={{ fontSize: 15 }} />
+        <div className="inline-flex items-center border border-[#D4E2E7] rounded-full overflow-hidden mt-3">
+          <button onClick={() => updateQty(-1)} disabled={item.quantity === 1} className="px-2 py-1 disabled:opacity-40">
+            <RemoveRoundedIcon sx={{ fontSize: 16 }} />
           </button>
-          <span className="px-3.5 text-sm font-semibold border-x border-gray-300 py-1">
-            {item.quantity}
-          </span>
-          <button
-            onClick={() => handleUpdateQuantity(1)}
-            className="px-2.5 py-1 text-gray-600 hover:bg-gray-100 transition"
-          >
-            <AddIcon sx={{ fontSize: 15 }} />
+          <span className="px-3 text-sm font-semibold">{item.quantity}</span>
+          <button onClick={() => updateQty(1)} className="px-2 py-1">
+            <AddRoundedIcon sx={{ fontSize: 16 }} />
           </button>
         </div>
       </div>
-    </div>
+
+      <button
+        onClick={remove}
+        className="h-9 w-9 rounded-full border border-[#D6E4E8] flex items-center justify-center text-slate-500 hover:text-rose-700 hover:border-rose-200"
+      >
+        <CloseRoundedIcon sx={{ fontSize: 18 }} />
+      </button>
+    </article>
   );
 };
 

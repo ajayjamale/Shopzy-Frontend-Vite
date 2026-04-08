@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 
 const C = {
-  orange:  "#FF9900",
-  orangeD: "#E47911",
-  border:  "#D5D9D9",
-  focus:   "#FF9900",
-  text:    "#0F1111",
+  orange:  "#0F766E",
+  orangeD: "#0B5F59",
+  border:  "#DCE5E8",
+  focus:   "#0F766E",
+  text:    "#0F172A",
   error:   "#CC0C39",
   bg:      "#FFFFFF",
 };
@@ -71,8 +71,8 @@ export const SaveButton = ({ label = "Save changes" }: { label?: string }) => {
         width:        "100%",
         height:       40,
         background:   hover
-          ? "linear-gradient(to bottom,#f0a030,#df7921)"
-          : "linear-gradient(to bottom,#FFB84D,#FF9900)",
+          ? "linear-gradient(135deg,#0B5F59,#0F766E)"
+          : "linear-gradient(to bottom,#FFB84D,#0F766E)",
         border:       "1px solid #C45500",
         borderRadius: 4,
         color:        "#111",

@@ -5,6 +5,7 @@ interface ResponseMessageProps {
 }
 
 const ResponseMessage = ({ message }: ResponseMessageProps) => {
+  const safeMessage = message || "";
   const [displayed, setDisplayed] = useState("");
   const [done, setDone] = useState(false);
 
@@ -13,8 +14,8 @@ const ResponseMessage = ({ message }: ResponseMessageProps) => {
     setDone(false);
     let i = 0;
     const interval = setInterval(() => {
-      if (i < message.length) {
-        setDisplayed(message.slice(0, i + 1));
+      if (i < safeMessage.length) {
+        setDisplayed(safeMessage.slice(0, i + 1));
         i++;
       } else {
         setDone(true);
@@ -22,7 +23,7 @@ const ResponseMessage = ({ message }: ResponseMessageProps) => {
       }
     }, 18);
     return () => clearInterval(interval);
-  }, [message]);
+  }, [safeMessage]);
 
   return (
     <div className="response-message">

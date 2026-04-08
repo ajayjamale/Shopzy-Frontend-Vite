@@ -1,62 +1,127 @@
-import React, { useEffect, useState } from 'react'
-import { Box, Typography } from '@mui/material'
+import React, { useEffect, useMemo, useState } from 'react'
+import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import TableChartIcon from '@mui/icons-material/TableChart'
-import CategoryIcon from '@mui/icons-material/Category'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
+import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
 import DealsTable from './DealsTable'
-import DealsCategoryTable from './DealsCategoryTable'
 import CreateDealForm from './CreateDealForm'
-import { useAppDispatch } from '../../../Redux Toolkit/Store'
-import { getAllDeals } from '../../../Redux Toolkit/Admin/DealSlice'
+import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store'
+import { getAllDailyDiscounts } from '../../../Redux Toolkit/Admin/DealSlice'
 
 const tabs = [
-    { name: 'Deals',       icon: <TableChartIcon sx={{ fontSize: 15 }} /> },
-    { name: 'Categories',  icon: <CategoryIcon sx={{ fontSize: 15 }} /> },
-    { name: 'Create Deal', icon: <AddCircleOutlineIcon sx={{ fontSize: 15 }} /> },
+    { name: 'Daily Discounts', icon: <TableChartIcon sx={{ fontSize: 15 }} /> },
+    { name: 'Create Discount', icon: <AddCircleOutlineIcon sx={{ fontSize: 15 }} /> },
 ]
 
 const Deal = () => {
     const [activeTab, setActiveTab] = useState(tabs[0].name)
     const dispatch = useAppDispatch()
+    const { deal } = useAppSelector(store => store)
+
+    const syncDealData = () => {
+        dispatch(getAllDailyDiscounts())
+    }
 
     useEffect(() => {
-        dispatch(getAllDeals())
+        syncDealData()
     }, [])
 
+    const activeToday = useMemo(() => {
+        const today = new Date().toISOString().slice(0, 10)
+        return deal.discounts.filter((item) => {
+            if (item.active === false) return false
+            if (!item.startDate || !item.endDate) return true
+            return item.startDate <= today && item.endDate >= today
+        }).length
+    }, [deal.discounts])
+
+    const cards = useMemo(() => ([
+        { label: 'Total Discounts', value: deal.discounts.length, tone: '#0F766E' },
+        { label: 'Active Today', value: activeToday, tone: '#334155' },
+        { label: 'Status', value: deal.loading ? 'Syncing...' : 'Up to date', tone: '#7C3AED' },
+    ]), [activeToday, deal.discounts.length, deal.loading])
+
     return (
-        <Box sx={{ backgroundColor: '#f3f3f3', minHeight: '100vh', p: 3 }}>
+        <Box sx={{ backgroundColor: '#F3F7F8', minHeight: '100vh', p: { xs: 1.5, md: 2.5 } }}>
             {/* Page header */}
             <Box sx={{
-                display: 'flex', alignItems: 'center', gap: 1.5,
-                mb: 3, pb: 2, borderBottom: '2px solid #FF9900',
+                display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap',
+                mb: 2.2, p: { xs: 1.4, md: 1.8 },
+                border: '1px solid #DCE8EC', borderRadius: '14px',
+                background: 'linear-gradient(145deg, #FFFFFF 0%, #F8FCFC 100%)',
             }}>
-                <LocalOfferIcon sx={{ color: '#FF9900', fontSize: 28 }} />
-                <Typography variant="h5" sx={{
-                    fontFamily: '"Amazon Ember", Arial, sans-serif',
-                    fontWeight: 700, color: '#131921', letterSpacing: '-0.3px',
+                <LocalOfferIcon sx={{ color: '#0F766E', fontSize: 24 }} />
+                <Box>
+                <Typography variant="h6" sx={{
+                    fontFamily: '"Manrope", Arial, sans-serif',
+                    fontWeight: 800, color: '#0F172A', letterSpacing: '-0.2px',
                 }}>
-                    Deals Management
+                    Daily Discounts Management
                 </Typography>
+                <Typography sx={{
+                    color: '#64748B', fontSize: 12,
+                    fontFamily: '"Manrope", Arial, sans-serif', mt: 0.25,
+                }}>
+                    Create, update, and publish homepage discount cards from one place.
+                </Typography>
+                </Box>
+
                 <Typography variant="body2" sx={{
-                    color: '#565959', ml: 'auto', fontSize: 12,
-                    fontFamily: '"Amazon Ember", Arial, sans-serif',
+                    color: '#64748B', ml: { xs: 0, md: 'auto' }, fontSize: 11,
+                    fontFamily: '"Manrope", Arial, sans-serif',
                 }}>
-                    Seller Central › Promotions › Deals
+                    Admin Console &gt; Homepage &gt; Daily Discounts
                 </Typography>
+
+                <Tooltip title="Refresh daily discounts">
+                    <IconButton
+                        onClick={syncDealData}
+                        sx={{
+                            ml: 'auto', border: '1px solid #CFE3E6',
+                            color: '#0F766E',
+                            '&:hover': { backgroundColor: '#E9F8F5' },
+                        }}
+                    >
+                        <RefreshRoundedIcon sx={{ fontSize: 18 }} />
+                    </IconButton>
+                </Tooltip>
+            </Box>
+
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' }, gap: 1.5, mb: 2.5 }}>
+                {cards.map((card) => (
+                    <Box key={card.label} sx={{
+                        border: '1px solid #DEEAEE', borderRadius: '12px',
+                        backgroundColor: '#fff', px: 1.7, py: 1.4,
+                    }}>
+                        <Typography sx={{
+                            color: '#64748B', fontSize: 11, fontWeight: 700,
+                            letterSpacing: '.08em', textTransform: 'uppercase', mb: 0.8,
+                        }}>
+                            {card.label}
+                        </Typography>
+                        <Typography sx={{
+                            fontSize: 18, fontWeight: 800, color: card.tone,
+                            fontFamily: '"Manrope", Arial, sans-serif',
+                        }}>
+                            {card.value}
+                        </Typography>
+                    </Box>
+                ))}
             </Box>
 
             {/* Tab bar */}
             <Box sx={{
-                display: 'flex',
+                display: 'flex', flexWrap: 'wrap',
                 backgroundColor: '#fff',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                overflow: 'hidden',
+                border: '1px solid #DEEAEE',
+                borderRadius: '12px',
+                p: 0.8,
+                gap: 0.8,
                 mb: 3,
-                width: 'fit-content',
+                width: 'fit-content', maxWidth: '100%',
             }}>
-                {tabs.map((tab, i) => {
+                {tabs.map((tab) => {
                     const isActive = activeTab === tab.name
                     return (
                         <Box
@@ -64,16 +129,16 @@ const Deal = () => {
                             onClick={() => setActiveTab(tab.name)}
                             sx={{
                                 display: 'flex', alignItems: 'center', gap: 0.8,
-                                px: 2.5, py: 1.2, cursor: 'pointer',
-                                fontFamily: '"Amazon Ember", Arial, sans-serif',
-                                fontSize: 13, fontWeight: isActive ? 700 : 400,
-                                color: isActive ? '#131921' : '#565959',
-                                backgroundColor: isActive ? '#FF9900' : 'transparent',
-                                borderRight: i < tabs.length - 1 ? '1px solid #ddd' : 'none',
-                                borderBottom: isActive ? '3px solid #e88b00' : '3px solid transparent',
-                                transition: 'all 0.15s ease',
+                                px: 1.8, py: 1.1, cursor: 'pointer',
+                                fontFamily: '"Manrope", Arial, sans-serif',
+                                fontSize: 12.5, fontWeight: isActive ? 700 : 600,
+                                color: isActive ? '#FFFFFF' : '#64748B',
+                                backgroundColor: isActive ? '#0F766E' : 'transparent',
+                                borderRadius: '9px',
+                                border: isActive ? '1px solid #0F766E' : '1px solid transparent',
+                                transition: 'all 0.2s ease',
                                 userSelect: 'none',
-                                '&:hover': { backgroundColor: isActive ? '#e88b00' : '#f7f7f7' },
+                                '&:hover': { backgroundColor: isActive ? '#0b5f59' : '#F5FAFA' },
                             }}
                         >
                             {tab.icon}
@@ -85,11 +150,13 @@ const Deal = () => {
 
             {/* Tab content */}
             <Box>
-                {activeTab === 'Deals'       && <DealsTable />}
-                {activeTab === 'Categories'  && <DealsCategoryTable />}
-                {activeTab === 'Create Deal' && (
+                {activeTab === 'Daily Discounts' && <DealsTable />}
+                {activeTab === 'Create Discount' && (
                     <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
-                        <CreateDealForm onSuccess={() => setActiveTab('Deals')} />
+                        <CreateDealForm onSuccess={() => {
+                            setActiveTab('Daily Discounts')
+                            syncDealData()
+                        }} />
                     </Box>
                 )}
             </Box>

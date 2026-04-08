@@ -21,38 +21,38 @@ import { useNavigate } from 'react-router-dom';
 import { getSellerToken } from '../../../util/authToken';
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
-const AMZ = {
-  navy:       '#131921',
+const UI = {
+  navy:       '#0F172A',
   navyLight:  '#232f3e',
-  orange:     '#ff9900',
-  orangeHover:'#e88b00',
-  blue:       '#007185',
-  blueHover:  '#005f73',
+  orange:     '#0f766e',
+  orangeHover:'#0b5f59',
+  blue:       '#0E7490',
+  blueHover:  '#155e75',
   green:      '#067d62',
   red:        '#cc0c39',
-  bg:         '#f3f3f3',
+  bg:         '#F3F7F8',
   white:      '#ffffff',
-  border:     '#dddddd',
-  borderDark: '#aaaaaa',
+  border:     '#DCE5E8',
+  borderDark: '#B7C8CE',
   text:       '#0f1111',
-  textMuted:  '#565959',
+  textMuted:  '#64748B',
   textLight:  '#8a8a8a',
   rowHover:   '#f7f8f8',
-  headerBg:   '#f0f2f2',
-  linkBlue:   '#007185',
+  headerBg:   '#F4FAFB',
+  linkBlue:   '#0E7490',
 };
 
 // ─── Styled Components ────────────────────────────────────────────────────────
 
 const PageWrap = styled('div')({
-  background: AMZ.bg,
+  background: UI.bg,
   minHeight: '100vh',
   padding: '0',
   fontFamily: "'Helvetica Neue', Arial, sans-serif",
 });
 
 const TopBar = styled('div')({
-  background: AMZ.navy,
+  background: UI.navy,
   padding: '8px 24px',
   display: 'flex',
   alignItems: 'center',
@@ -74,10 +74,10 @@ const SummaryBar = styled('div')({
 
 const SummaryCard = styled(Paper)({
   borderRadius: '4px',
-  border: `1px solid ${AMZ.border}`,
+  border: `1px solid ${UI.border}`,
   padding: '14px 18px',
   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-  background: AMZ.white,
+  background: UI.white,
   cursor: 'pointer',
   transition: 'box-shadow 0.15s',
   '&:hover': { boxShadow: '0 2px 8px rgba(0,0,0,0.12)' },
@@ -85,9 +85,9 @@ const SummaryCard = styled(Paper)({
 
 const MainCard = styled(Paper)({
   borderRadius: '4px',
-  border: `1px solid ${AMZ.border}`,
+  border: `1px solid ${UI.border}`,
   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
-  background: AMZ.white,
+  background: UI.white,
   overflow: 'hidden',
 });
 
@@ -96,26 +96,26 @@ const ToolbarRow = styled('div')({
   alignItems: 'center',
   gap: '10px',
   padding: '12px 16px',
-  borderBottom: `1px solid ${AMZ.border}`,
-  background: AMZ.headerBg,
+  borderBottom: `1px solid ${UI.border}`,
+  background: UI.headerBg,
   flexWrap: 'wrap',
 });
 
-const AmazonSearchField = styled(TextField)({
+const PremiumSearchField = styled(TextField)({
   '& .MuiOutlinedInput-root': {
     borderRadius: '4px',
     height: '34px',
     fontSize: '13px',
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
     background: '#fff',
-    '& fieldset': { borderColor: AMZ.borderDark, borderWidth: '1px' },
-    '&:hover fieldset': { borderColor: '#007185' },
-    '&.Mui-focused fieldset': { borderColor: '#007185', borderWidth: '2px' },
+    '& fieldset': { borderColor: UI.borderDark, borderWidth: '1px' },
+    '&:hover fieldset': { borderColor: '#0E7490' },
+    '&.Mui-focused fieldset': { borderColor: '#0E7490', borderWidth: '2px' },
   },
   '& .MuiInputBase-input': { padding: '6px 10px', fontSize: '13px' },
 });
 
-const AmazonButton = styled(Button)(({ variant: v }: any) => ({
+const PremiumButton = styled(Button)(({ variant: v }: any) => ({
   borderRadius: '4px',
   height: '34px',
   padding: '0 14px',
@@ -144,7 +144,7 @@ const AmazonButton = styled(Button)(({ variant: v }: any) => ({
 }));
 
 const BlueLink = styled('span')({
-  color: AMZ.linkBlue,
+  color: UI.linkBlue,
   cursor: 'pointer',
   fontSize: '13px',
   fontWeight: 400,
@@ -152,13 +152,13 @@ const BlueLink = styled('span')({
 });
 
 const HeadCell = styled(TableCell)({
-  background: AMZ.headerBg,
-  borderBottom: `1px solid ${AMZ.border}`,
-  borderRight: `1px solid ${AMZ.border}`,
+  background: UI.headerBg,
+  borderBottom: `1px solid ${UI.border}`,
+  borderRight: `1px solid ${UI.border}`,
   padding: '8px 12px',
   fontSize: '12px',
   fontWeight: 700,
-  color: AMZ.text,
+  color: UI.text,
   fontFamily: "'Helvetica Neue', Arial, sans-serif",
   whiteSpace: 'nowrap',
   userSelect: 'none',
@@ -168,16 +168,16 @@ const HeadCell = styled(TableCell)({
 const BodyCell = styled(TableCell)({
   padding: '10px 12px',
   fontSize: '13px',
-  color: AMZ.text,
-  borderBottom: `1px solid ${AMZ.border}`,
-  borderRight: `1px solid ${AMZ.border}`,
+  color: UI.text,
+  borderBottom: `1px solid ${UI.border}`,
+  borderRight: `1px solid ${UI.border}`,
   fontFamily: "'Helvetica Neue', Arial, sans-serif",
   verticalAlign: 'middle',
   '&:last-child': { borderRight: 'none' },
 });
 
 const BodyRow = styled(TableRow)({
-  '&:hover': { background: AMZ.rowHover },
+  '&:hover': { background: UI.rowHover },
   '&:last-child td': { borderBottom: 0 },
 });
 
@@ -201,14 +201,14 @@ const StatusBadge = styled('span')(({ status }: { status: string }) => ({
   }),
 }));
 
-const AmazonSelect = styled(FormControl)({
+const PremiumSelect = styled(FormControl)({
   '& .MuiOutlinedInput-root': {
     height: '34px',
     borderRadius: '4px',
     fontSize: '13px',
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
-    '& fieldset': { borderColor: AMZ.borderDark },
-    '&:hover fieldset': { borderColor: '#007185' },
+    '& fieldset': { borderColor: UI.borderDark },
+    '&:hover fieldset': { borderColor: '#0E7490' },
   },
   '& .MuiSelect-select': { padding: '6px 12px', fontSize: '13px' },
 });
@@ -252,7 +252,7 @@ export default function ProductTable() {
       {/* ── Top Nav Bar ── */}
       <TopBar>
         <Box display="flex" alignItems="center" gap={2}>
-          <Typography sx={{ color: AMZ.orange, fontWeight: 700, fontSize: '20px', letterSpacing: '-0.5px', fontFamily: "'Helvetica Neue', Arial" }}>
+          <Typography sx={{ color: UI.orange, fontWeight: 700, fontSize: '20px', letterSpacing: '-0.5px', fontFamily: "'Helvetica Neue', Arial" }}>
             seller<span style={{ color: '#fff' }}>central</span>
           </Typography>
           <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.2)', mx: 1 }} />
@@ -267,34 +267,34 @@ export default function ProductTable() {
         {/* ── Page Title ── */}
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} flexWrap="wrap" gap={1}>
           <Box>
-            <Typography sx={{ fontSize: '20px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
+            <Typography sx={{ fontSize: '20px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
               Manage Inventory
             </Typography>
-            <Typography sx={{ fontSize: '12px', color: AMZ.textMuted, mt: 0.3 }}>
+            <Typography sx={{ fontSize: '12px', color: UI.textMuted, mt: 0.3 }}>
               {products.length} total SKUs &nbsp;·&nbsp; Last refreshed just now
             </Typography>
           </Box>
           <Box display="flex" gap={1} flexWrap="wrap">
-            <AmazonButton variant="outlined" startIcon={<RefreshIcon sx={{ fontSize: 15 }} />} onClick={() => dispatch(fetchSellerProducts(getSellerToken()))}>
+            <PremiumButton variant="outlined" startIcon={<RefreshIcon sx={{ fontSize: 15 }} />} onClick={() => dispatch(fetchSellerProducts(getSellerToken()))}>
               Refresh
-            </AmazonButton>
-            <AmazonButton variant="contained" startIcon={<AddIcon sx={{ fontSize: 15 }} />} onClick={() => navigate('/seller/add-product')}>
+            </PremiumButton>
+            <PremiumButton variant="contained" startIcon={<AddIcon sx={{ fontSize: 15 }} />} onClick={() => navigate('/seller/add-product')}>
               Add a Product
-            </AmazonButton>
+            </PremiumButton>
           </Box>
         </Box>
 
         {/* ── Summary Cards ── */}
         <SummaryBar>
           {[
-            { label: 'Total Active', value: inStock, icon: <CheckCircleOutlineIcon sx={{ fontSize: 18, color: AMZ.green }} />, color: AMZ.green },
-            { label: 'Inactive / OOS', value: outStock, icon: <ErrorOutlineIcon sx={{ fontSize: 18, color: AMZ.red }} />, color: AMZ.red },
-            { label: 'Total SKUs', value: products.length, icon: <InventoryOutlinedIcon sx={{ fontSize: 18, color: AMZ.blue }} />, color: AMZ.blue },
-            { label: 'Catalog Value', value: `₹${(totalValue / 1000).toFixed(1)}k`, icon: <InventoryOutlinedIcon sx={{ fontSize: 18, color: AMZ.orange }} />, color: AMZ.orange },
+            { label: 'Total Active', value: inStock, icon: <CheckCircleOutlineIcon sx={{ fontSize: 18, color: UI.green }} />, color: UI.green },
+            { label: 'Inactive / OOS', value: outStock, icon: <ErrorOutlineIcon sx={{ fontSize: 18, color: UI.red }} />, color: UI.red },
+            { label: 'Total SKUs', value: products.length, icon: <InventoryOutlinedIcon sx={{ fontSize: 18, color: UI.blue }} />, color: UI.blue },
+            { label: 'Catalog Value', value: `₹${(totalValue / 1000).toFixed(1)}k`, icon: <InventoryOutlinedIcon sx={{ fontSize: 18, color: UI.orange }} />, color: UI.orange },
           ].map(c => (
             <SummaryCard key={c.label} elevation={0}>
               <Box display="flex" alignItems="center" gap={1} mb={0.5}>{c.icon}
-                <Typography sx={{ fontSize: '12px', color: AMZ.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>{c.label}</Typography>
+                <Typography sx={{ fontSize: '12px', color: UI.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>{c.label}</Typography>
               </Box>
               <Typography sx={{ fontSize: '22px', fontWeight: 700, color: c.color, fontFamily: "'Helvetica Neue', Arial", lineHeight: 1.2 }}>
                 {c.value}
@@ -307,21 +307,21 @@ export default function ProductTable() {
         <MainCard elevation={0}>
           {/* Toolbar */}
           <ToolbarRow>
-            <AmazonSearchField
+            <PremiumSearchField
               placeholder="Search by title, color, SKU…"
               value={search}
               onChange={e => setSearch(e.target.value)}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
-                    <SearchIcon sx={{ fontSize: 16, color: AMZ.textMuted }} />
+                    <SearchIcon sx={{ fontSize: 16, color: UI.textMuted }} />
                   </InputAdornment>
                 ),
               }}
               sx={{ minWidth: 260 }}
             />
 
-            <AmazonSelect size="small" sx={{ minWidth: 140 }}>
+            <PremiumSelect size="small" sx={{ minWidth: 140 }}>
               <Select
                 value={stockFilter}
                 onChange={e => setStockFilter(e.target.value)}
@@ -331,10 +331,10 @@ export default function ProductTable() {
                 <MenuItem value="active" sx={{ fontSize: '13px' }}>Active</MenuItem>
                 <MenuItem value="inactive" sx={{ fontSize: '13px' }}>Inactive</MenuItem>
               </Select>
-            </AmazonSelect>
+            </PremiumSelect>
 
             <Box flex={1} />
-            <Typography sx={{ fontSize: '12px', color: AMZ.textMuted }}>
+            <Typography sx={{ fontSize: '12px', color: UI.textMuted }}>
               {filtered.length} result{filtered.length !== 1 ? 's' : ''}
             </Typography>
           </ToolbarRow>
@@ -370,7 +370,7 @@ export default function ProductTable() {
                       <BodyCell colSpan={8}>
                         <Box py={5} textAlign="center">
                           <InventoryOutlinedIcon sx={{ fontSize: 40, color: '#ddd', mb: 1, display: 'block', mx: 'auto' }} />
-                          <Typography sx={{ fontSize: '14px', color: AMZ.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>
+                          <Typography sx={{ fontSize: '14px', color: UI.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>
                             No products match your search
                           </Typography>
                         </Box>
@@ -388,7 +388,7 @@ export default function ProductTable() {
                           <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
                             {item.images?.slice(0, 1).map((img, i) => (
                               <img key={i} src={img} alt=""
-                                style={{ width: 48, height: 48, objectFit: 'cover', border: `1px solid ${AMZ.border}`, borderRadius: '2px' }}
+                                style={{ width: 48, height: 48, objectFit: 'cover', border: `1px solid ${UI.border}`, borderRadius: '2px' }}
                               />
                             ))}
                           </Box>
@@ -399,21 +399,21 @@ export default function ProductTable() {
                           <BlueLink onClick={() => navigate('/seller/update-product/' + item.id)}>
                             {item.title}
                           </BlueLink>
-                          <Typography sx={{ fontSize: '11px', color: AMZ.textLight, mt: 0.3, fontFamily: "'Helvetica Neue', Arial" }}>
+                          <Typography sx={{ fontSize: '11px', color: UI.textLight, mt: 0.3, fontFamily: "'Helvetica Neue', Arial" }}>
                             ASIN: #{String(item.id).padStart(10, '0')}
                           </Typography>
                         </BodyCell>
 
                         {/* MRP */}
                         <BodyCell align="right">
-                          <Typography sx={{ fontSize: '13px', color: AMZ.textMuted, textDecoration: 'line-through', fontFamily: "'Helvetica Neue', Arial" }}>
+                          <Typography sx={{ fontSize: '13px', color: UI.textMuted, textDecoration: 'line-through', fontFamily: "'Helvetica Neue', Arial" }}>
                             ₹{item.mrpPrice?.toLocaleString('en-IN')}.00
                           </Typography>
                         </BodyCell>
 
                         {/* Selling Price */}
                         <BodyCell align="right">
-                          <Typography sx={{ fontSize: '14px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
+                          <Typography sx={{ fontSize: '14px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
                             ₹{item.sellingPrice?.toLocaleString('en-IN')}.00
                           </Typography>
                         </BodyCell>
@@ -431,7 +431,7 @@ export default function ProductTable() {
 
                         {/* Color */}
                         <BodyCell align="center">
-                          <Typography sx={{ fontSize: '13px', color: AMZ.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>
+                          <Typography sx={{ fontSize: '13px', color: UI.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>
                             {item.color}
                           </Typography>
                         </BodyCell>
@@ -453,13 +453,13 @@ export default function ProductTable() {
 
                         {/* Actions */}
                         <BodyCell align="center">
-                          <AmazonButton
+                          <PremiumButton
                             variant="outlined"
                             sx={{ height: '28px', fontSize: '12px', px: 1.5 }}
                             onClick={() => navigate('/seller/update-product/' + item.id)}
                           >
                             Edit
-                          </AmazonButton>
+                          </PremiumButton>
                         </BodyCell>
                       </BodyRow>
                     );
@@ -470,11 +470,11 @@ export default function ProductTable() {
           </TableContainer>
 
           {/* Footer */}
-          <Box sx={{ borderTop: `1px solid ${AMZ.border}`, px: 2, py: 1.2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: AMZ.headerBg }}>
-            <Typography sx={{ fontSize: '12px', color: AMZ.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>
+          <Box sx={{ borderTop: `1px solid ${UI.border}`, px: 2, py: 1.2, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: UI.headerBg }}>
+            <Typography sx={{ fontSize: '12px', color: UI.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>
               Showing <b>{filtered.length}</b> of <b>{products.length}</b> products
             </Typography>
-            <Typography sx={{ fontSize: '12px', color: AMZ.linkBlue, cursor: 'pointer', fontFamily: "'Helvetica Neue', Arial", '&:hover': { textDecoration: 'underline' } }}>
+            <Typography sx={{ fontSize: '12px', color: UI.linkBlue, cursor: 'pointer', fontFamily: "'Helvetica Neue', Arial", '&:hover': { textDecoration: 'underline' } }}>
               Download Report
             </Typography>
           </Box>

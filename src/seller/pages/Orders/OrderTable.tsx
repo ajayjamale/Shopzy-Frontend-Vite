@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { fetchSellerOrders, updateOrderStatus } from "../../../Redux Toolkit/Seller/sellerOrderSlice";
 import { Order, OrderItem, OrderStatus } from "../../../types/orderTypes";
@@ -6,22 +7,22 @@ import { getSellerToken } from "../../../util/authToken";
 
 /* ── palette ─────────────────────────────────────────── */
 const C = {
-  navy:    "#232F3E",
-  orange:  "#FF9900",
+  navy:    "#1E293B",
+  orange:  "#0F766E",
   white:   "#FFFFFF",
   bg:      "#F3F3F3",
-  border:  "#D5D9D9",
+  border:  "#DCE5E8",
   soft:    "#EAEDEE",
-  text:    "#0F1111",
-  mid:     "#565959",
+  text:    "#0F172A",
+  mid:     "#64748B",
   dim:     "#8D9095",
-  link:    "#007185",
+  link:    "#0E7490",
 };
 
 /* ── status config ───────────────────────────────────── */
 const STATUS: Record<string, { color: string; bg: string }> = {
   PENDING:   { color: "#E07B00", bg: "#FFF3CD" },
-  PLACED:    { color: "#007185", bg: "#E6F4F6" },
+  PLACED:    { color: "#0E7490", bg: "#E6F4F6" },
   CONFIRMED: { color: "#5A4FCF", bg: "#EDECFB" },
   SHIPPED:   { color: "#1E6EC8", bg: "#E8F1FB" },
   DELIVERED: { color: "#067D62", bg: "#E6F4F1" },
@@ -72,31 +73,76 @@ const StatusDropdown = ({
   onUpdate: (orderId: number, status: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [hover, setHover] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [menuStyle, setMenuStyle] = useState({
+    top: 0,
+    left: 0,
+    width: 170,
+    maxHeight: 280,
+  });
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+  const updateMenuPosition = useCallback(() => {
+    if (!buttonRef.current) return;
+    const rect = buttonRef.current.getBoundingClientRect();
+    const width = Math.max(rect.width, 170);
+    const estimatedHeight = Math.min(STATUS_LIST.length * 37 + 10, 280);
+    const spaceBelow = window.innerHeight - rect.bottom - 8;
+    const spaceAbove = rect.top - 8;
+    const placeAbove = spaceBelow < estimatedHeight && spaceAbove > spaceBelow;
+    const availableSpace = placeAbove ? spaceAbove : spaceBelow;
+    const maxHeight = Math.max(120, Math.min(280, availableSpace - 6));
+    const top = placeAbove
+      ? Math.max(8, rect.top - Math.min(estimatedHeight, maxHeight) - 6)
+      : rect.bottom + 6;
+    const left = Math.min(
+      Math.max(8, rect.right - width),
+      window.innerWidth - width - 8,
+    );
+
+    setMenuStyle({ top, left, width, maxHeight });
   }, []);
 
-  const [hover, setHover] = useState(false);
+  useEffect(() => {
+    if (!open) return;
+    updateMenuPosition();
+
+    const handleOutsideClick = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (wrapperRef.current?.contains(target)) return;
+      if (menuRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    window.addEventListener("resize", updateMenuPosition);
+    window.addEventListener("scroll", updateMenuPosition, true);
+
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+      window.removeEventListener("resize", updateMenuPosition);
+      window.removeEventListener("scroll", updateMenuPosition, true);
+    };
+  }, [open, updateMenuPosition]);
 
   return (
-    <div ref={ref} style={{ position: "relative", display: "inline-block" }}>
+    <div ref={wrapperRef} style={{ position: "relative", display: "inline-block" }}>
       <button
+        ref={buttonRef}
         onClick={() => setOpen((v) => !v)}
         onMouseEnter={() => setHover(true)}
         onMouseLeave={() => setHover(false)}
+        aria-haspopup="menu"
+        aria-expanded={open}
         style={{
           display: "flex", alignItems: "center", gap: 5,
           padding: "5px 10px", borderRadius: 3,
           border: "1px solid #C45500",
           background: hover
-            ? "linear-gradient(to bottom,#f0a030,#df7921)"
-            : "linear-gradient(to bottom,#FFB84D,#FF9900)",
+            ? "linear-gradient(135deg,#0B5F59,#0F766E)"
+            : "linear-gradient(to bottom,#FFB84D,#0F766E)",
           color: "#111", fontSize: 12, fontWeight: 700,
           cursor: "pointer", fontFamily: "inherit",
           boxShadow: "0 1px 0 rgba(255,255,255,.3) inset",
@@ -106,45 +152,59 @@ const StatusDropdown = ({
         Update <ChevronDown />
       </button>
 
-      {open && (
-        <div style={{
-          position: "absolute", right: 0, top: "calc(100% + 4px)",
-          background: C.white,
-          border: `1px solid ${C.border}`,
-          borderRadius: 4,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.14)",
-          zIndex: 100, minWidth: 130,
-          overflow: "hidden",
-        }}>
-          {STATUS_LIST.map((s) => {
-            const cfg = getStatus(s);
-            return (
-              <button
-                key={s}
-                onClick={() => { onUpdate(orderId, s); setOpen(false); }}
-                style={{
-                  display: "flex", alignItems: "center", gap: 8,
-                  width: "100%", padding: "8px 12px",
-                  background: s === current ? C.bg : C.white,
-                  border: "none", borderBottom: `1px solid ${C.soft}`,
-                  cursor: "pointer", fontFamily: "inherit",
-                  fontSize: 12.5, fontWeight: s === current ? 700 : 400,
-                  color: C.text, textAlign: "left" as const,
-                  transition: "background .1s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = C.bg)}
-                onMouseLeave={(e) => (e.currentTarget.style.background = s === current ? C.bg : C.white)}
-              >
-                <span style={{
-                  width: 8, height: 8, borderRadius: "50%",
-                  background: cfg.color, flexShrink: 0,
-                }} />
-                {s}
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {open &&
+        createPortal(
+          <div
+            ref={menuRef}
+            style={{
+              position: "fixed",
+              top: menuStyle.top,
+              left: menuStyle.left,
+              width: menuStyle.width,
+              maxHeight: menuStyle.maxHeight,
+              background: C.white,
+              border: `1px solid ${C.border}`,
+              borderRadius: 6,
+              boxShadow: "0 12px 28px rgba(15, 23, 42, 0.22)",
+              zIndex: 4000,
+              overflowY: "auto",
+              overflowX: "hidden",
+            }}
+          >
+            {STATUS_LIST.map((s, index) => {
+              const cfg = getStatus(s);
+              return (
+                <button
+                  key={s}
+                  onClick={() => {
+                    onUpdate(orderId, s);
+                    setOpen(false);
+                  }}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 8,
+                    width: "100%", padding: "8px 12px",
+                    background: s === current ? C.bg : C.white,
+                    border: "none",
+                    borderBottom: index < STATUS_LIST.length - 1 ? `1px solid ${C.soft}` : "none",
+                    cursor: "pointer", fontFamily: "inherit",
+                    fontSize: 12.5, fontWeight: s === current ? 700 : 400,
+                    color: C.text, textAlign: "left" as const,
+                    transition: "background .1s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = C.bg)}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = s === current ? C.bg : C.white)}
+                >
+                  <span style={{
+                    width: 8, height: 8, borderRadius: "50%",
+                    background: cfg.color, flexShrink: 0,
+                  }} />
+                  {s}
+                </button>
+              );
+            })}
+          </div>,
+          document.body,
+        )}
     </div>
   );
 };

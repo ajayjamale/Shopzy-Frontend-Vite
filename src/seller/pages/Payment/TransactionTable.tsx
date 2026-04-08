@@ -6,15 +6,15 @@ import { redableDateTime } from "../../../util/redableDateTime";
 import { getSellerToken } from "../../../util/authToken";
 
 const C = {
-  navy:   "#232F3E",
+  navy:   "#1E293B",
   white:  "#FFFFFF",
   bg:     "#F3F3F3",
-  border: "#D5D9D9",
+  border: "#DCE5E8",
   soft:   "#EAEDEE",
-  text:   "#0F1111",
-  mid:    "#565959",
+  text:   "#0F172A",
+  mid:    "#64748B",
   dim:    "#8D9095",
-  link:   "#007185",
+  link:   "#0E7490",
   green:  "#067D62",
 };
 

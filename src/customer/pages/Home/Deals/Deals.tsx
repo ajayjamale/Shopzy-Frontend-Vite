@@ -1,22 +1,42 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../Redux Toolkit/Store";
 
-const fallbackDeals = [
-  { category:{ categoryId:"women_indian_and_fusion_wear", image:"https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/22866694/2023/4/24/98951db4-e0a5-47f8-a1be-353863d24dc01682349679664KaliniOrangeSilkBlendEthnicWovenDesignFestiveSareewithMatchi2.jpg" }, discount:40 },
-  { category:{ categoryId:"men_topwear",                  image:"https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/23029834/2023/9/18/96c015ae-1090-4036-954b-d9c80085b1d71695022844653-HRX-by-Hrithik-Roshan-Men-Jackets-6981695022843934-1.jpg" }, discount:35 },
-  { category:{ categoryId:"women_footwear",               image:"https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28024048/2024/3/5/fca98389-f9d6-4f19-b82a-53c7ee0518ec1709633175836CORSICABlockSandalswithBows1.jpg" }, discount:50 },
-  { category:{ categoryId:"home_decor",                   image:"https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28460938/2024/3/22/7fb09e9c-86e0-4602-b54e-fa5c0171b50b1711104156746IrregularMirrorHomeDecor1.jpg" }, discount:30 },
-  { category:{ categoryId:"headphones_headsets",          image:"https://rukminim2.flixcart.com/image/612/612/kz4gh3k0/headphone/c/v/r/-original-imagb7bmhdgghzxq.jpeg?q=70" }, discount:45 },
-  { category:{ categoryId:"men_bottomwear",               image:"https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/20122324/2022/9/22/91c61c45-fe17-4d1d-8e20-0aaaf90186b61663827920015RaymondSlimFitBlueJeansForMen1.jpg" }, discount:25 },
-  { category:{ categoryId:"women_western_wear",           image:"https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/22391504/2023/3/17/3259c109-060a-4c39-aba2-e9d32e2068e41679049035856StyleQuotientPeach-ColouredTie-UpNeckPuffSleeveCottonTop1.jpg" }, discount:55 },
-  { category:{ categoryId:"bed_linen_furnishing",         image:"https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/19284508/2022/7/28/92df52de-27dc-4d72-8ab4-fee2c82c85081659003977664DreamscapeUnisexPinkBedsheets1.jpg" }, discount:38 },
+interface DealsProps {
+  title?: string;
+}
+
+type DealView = {
+  id?: number;
+  title?: string;
+  subtitle?: string;
+  discount?: number | string;
+  discountLabel?: string;
+  image?: string;
+  imageUrl?: string;
+  redirectLink?: string;
+  category?: { categoryId?: string; image?: string };
+  active?: boolean;
+};
+
+const fallbackDeals: DealView[] = [
+  { category: { categoryId: "women_indian_and_fusion_wear", image: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/22866694/2023/4/24/98951db4-e0a5-47f8-a1be-353863d24dc01682349679664KaliniOrangeSilkBlendEthnicWovenDesignFestiveSareewithMatchi2.jpg" }, discount: 40 },
+  { category: { categoryId: "men_topwear", image: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/23029834/2023/9/18/96c015ae-1090-4036-954b-d9c80085b1d71695022844653-HRX-by-Hrithik-Roshan-Men-Jackets-6981695022843934-1.jpg" }, discount: 35 },
+  { category: { categoryId: "women_footwear", image: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28024048/2024/3/5/fca98389-f9d6-4f19-b82a-53c7ee0518ec1709633175836CORSICABlockSandalswithBows1.jpg" }, discount: 50 },
+  { category: { categoryId: "home_decor", image: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28460938/2024/3/22/7fb09e9c-86e0-4602-b54e-fa5c0171b50b1711104156746IrregularMirrorHomeDecor1.jpg" }, discount: 30 },
+  { category: { categoryId: "headphones_headsets", image: "https://rukminim2.flixcart.com/image/612/612/kz4gh3k0/headphone/c/v/r/-original-imagb7bmhdgghzxq.jpeg?q=70" }, discount: 45 },
+  { category: { categoryId: "men_bottomwear", image: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/20122324/2022/9/22/91c61c45-fe17-4d1d-8e20-0aaaf90186b61663827920015RaymondSlimFitBlueJeansForMen1.jpg" }, discount: 25 },
 ];
 
-const DealCardLight: React.FC<{ deal: any }> = ({ deal }) => {
+const DealCard: React.FC<{ deal: any }> = ({ deal }) => {
   const navigate = useNavigate();
   const target = deal.redirectLink || deal.category?.categoryId || "";
-  const label = (deal.title || target).split("_").join(" ");
+  const label = (deal.title || target || "deal").split("_").join(" ");
+  const image = deal.image || deal.imageUrl || deal.category?.image;
+  const discount = deal.discountLabel || deal.discount || "Hot";
+
+  if (!image) return null;
+
   return (
     <div
       onClick={() => target && navigate(target.startsWith("/") ? target : `/products/${target}`)}
@@ -24,7 +44,7 @@ const DealCardLight: React.FC<{ deal: any }> = ({ deal }) => {
         borderRadius: 14,
         overflow: "hidden",
         cursor: "pointer",
-        border: "1px solid #f1f5f9",
+        border: "1px solid #E4EDF0",
         background: "#fff",
         transition: "all 0.25s ease",
       }}
@@ -32,18 +52,18 @@ const DealCardLight: React.FC<{ deal: any }> = ({ deal }) => {
         const el = e.currentTarget as HTMLDivElement;
         el.style.transform = "translateY(-5px)";
         el.style.boxShadow = "0 14px 32px rgba(0,0,0,0.08)";
-        el.style.borderColor = "#C9A84C";
+        el.style.borderColor = "#6FB7B0";
       }}
       onMouseLeave={(e) => {
         const el = e.currentTarget as HTMLDivElement;
         el.style.transform = "none";
         el.style.boxShadow = "none";
-        el.style.borderColor = "#f1f5f9";
+        el.style.borderColor = "#E4EDF0";
       }}
     >
       <div style={{ position: "relative", overflow: "hidden" }}>
         <img
-          src={deal.image || deal.category?.image}
+          src={image}
           alt={label}
           style={{
             width: "100%",
@@ -52,41 +72,35 @@ const DealCardLight: React.FC<{ deal: any }> = ({ deal }) => {
             objectPosition: "top",
             transition: "transform 0.5s ease",
           }}
-          onMouseEnter={(e) =>
-            ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.07)")
-          }
-          onMouseLeave={(e) =>
-            ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")
-          }
+          onMouseEnter={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1.07)")}
+          onMouseLeave={(e) => ((e.currentTarget as HTMLImageElement).style.transform = "scale(1)")}
         />
         <div
           style={{
             position: "absolute",
             top: 10,
             right: 10,
-            background: "#C9A84C",
-            color: "#1e293b",
+            background: "#0F766E",
+            color: "#fff",
             borderRadius: 6,
-            padding: "4px 10px",
-            fontFamily: "'Syne', sans-serif",
+            padding: "5px 10px",
             fontWeight: 800,
-            fontSize: 13,
+            fontSize: 12,
             textAlign: "center",
+            lineHeight: 1.1,
           }}
         >
-          {(deal.discountLabel || deal.discount || "")}<br />
-          <span style={{ fontSize: 8, letterSpacing: "0.06em" }}>OFF</span>
+          {discount}
         </div>
       </div>
       <div style={{ padding: "12px 14px" }}>
         <p
           style={{
             fontSize: 12,
-            fontWeight: 600,
-            color: "#1e293b",
+            fontWeight: 700,
+            color: "#0F172A",
             textTransform: "capitalize",
             margin: "0 0 6px",
-            fontFamily: "'Syne', sans-serif",
             letterSpacing: "0.01em",
           }}
         >
@@ -96,51 +110,68 @@ const DealCardLight: React.FC<{ deal: any }> = ({ deal }) => {
           style={{
             fontSize: 10,
             fontWeight: 700,
-            color: "#C9A84C",
+            color: "#0F766E",
             letterSpacing: "0.1em",
             textTransform: "uppercase",
           }}
         >
-          Shop Now →
+          Shop now -&gt;
         </span>
       </div>
     </div>
   );
 };
 
-const Deals: React.FC = () => {
+const Deals: React.FC<DealsProps> = ({ title = "Daily Deals" }) => {
+  const navigate = useNavigate();
   const { homePage } = useAppSelector((s) => s);
-  const deals = homePage.homePageData?.deals || fallbackDeals;
-  const [t, setT] = useState({ h: 8, m: 24, s: 17 });
+  const [clock, setClock] = useState({ h: 8, m: 24, s: 17 });
+
+  const deals = useMemo<DealView[]>(() => {
+    const liveDeals = ((homePage.homePageData?.deals || []) as DealView[]).filter((item) => item?.active !== false);
+    return liveDeals.length ? liveDeals : fallbackDeals;
+  }, [homePage.homePageData?.deals]);
+  const featuredDeal = useMemo<DealView | null>(() => {
+    if (!deals.length) return null;
+    return [...deals].sort((a, b) => (Number(b?.discount) || 0) - (Number(a?.discount) || 0))[0];
+  }, [deals]);
 
   useEffect(() => {
-    const iv = setInterval(
-      () =>
-        setT((tl) => {
-          let { h, m, s } = tl;
-          s--;
-          if (s < 0) {
-            s = 59;
-            m--;
-          }
-          if (m < 0) {
-            m = 59;
-            h--;
-          }
-          if (h < 0) h = 23;
-          return { h, m, s };
-        }),
-      1000
-    );
-    return () => clearInterval(iv);
+    const timer = setInterval(() => {
+      setClock((prev) => {
+        let { h, m, s } = prev;
+        s -= 1;
+        if (s < 0) {
+          s = 59;
+          m -= 1;
+        }
+        if (m < 0) {
+          m = 59;
+          h -= 1;
+        }
+        if (h < 0) h = 23;
+        return { h, m, s };
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
-  const pad = (n: number) => String(n).padStart(2, "0");
+  if (!deals.length) return null;
+
+  const pad = (num: number) => String(num).padStart(2, "0");
 
   return (
     <section style={{ padding: "clamp(40px,5.5vw,72px) 0" }}>
+      <style>
+        {`
+          @keyframes adminDealBlink {
+            0%,100% { opacity: 1; box-shadow: 0 0 0 rgba(239, 68, 68, .1); }
+            50% { opacity: .7; box-shadow: 0 0 24px rgba(239, 68, 68, .35); }
+          }
+        `}
+      </style>
       <div style={{ padding: "0 clamp(16px,5.5vw,80px)" }}>
-        {/* Header */}
         <div
           style={{
             display: "flex",
@@ -154,80 +185,68 @@ const Deals: React.FC = () => {
           <div>
             <span
               style={{
-                fontFamily: "'Syne', sans-serif",
                 fontSize: 10,
                 fontWeight: 700,
                 letterSpacing: ".22em",
                 textTransform: "uppercase",
-                color: "#777",
+                color: "#64748B",
                 display: "flex",
                 alignItems: "center",
                 gap: 12,
-                marginBottom: 12,
+                marginBottom: 10,
               }}
             >
-              <span
-                style={{
-                  width: 24,
-                  height: 1.5,
-                  background: "#C9A84C",
-                  display: "inline-block",
-                }}
-              />
-              Limited Time Only
+              <span style={{ width: 24, height: 1.5, background: "#0F766E", display: "inline-block" }} />
+              Updated from Admin
             </span>
             <h2
               style={{
                 fontFamily: "'Playfair Display', Georgia, serif",
                 fontSize: "clamp(26px,3.8vw,52px)",
                 fontWeight: 600,
-                color: "#1a1612",
+                color: "#0F172A",
                 letterSpacing: "-.02em",
                 lineHeight: 1.15,
                 margin: 0,
               }}
             >
-              Today's Deals
+              {title}
             </h2>
           </div>
-          {/* Countdown */}
+
           <div
             style={{
               display: "flex",
               alignItems: "center",
               gap: 8,
-              background: "#f8fafc",
-              border: "1px solid #e2e8f0",
+              background: "#F4FAFB",
+              border: "1px solid #DCE8EC",
               borderRadius: 12,
               padding: "12px 20px",
             }}
           >
             {[
-              ["Hrs", t.h],
-              ["Min", t.m],
-              ["Sec", t.s],
-            ].map(([label, val], i) => (
-              <div
-                key={label as string}
-                style={{ display: "flex", alignItems: "center", gap: 8 }}
-              >
+              ["Hrs", clock.h],
+              ["Min", clock.m],
+              ["Sec", clock.s],
+            ].map(([label, value], index) => (
+              <div key={label as string} style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <div style={{ textAlign: "center" }}>
                   <div
                     style={{
                       fontFamily: "'Playfair Display', serif",
                       fontSize: "clamp(20px,2.8vw,32px)",
                       fontWeight: 700,
-                      color: "#C9A84C",
+                      color: "#0F766E",
                       lineHeight: 1,
                     }}
                   >
-                    {pad(val as number)}
+                    {pad(value as number)}
                   </div>
                   <div
                     style={{
                       fontSize: 9,
-                      color: "#64748b",
-                      fontFamily: "'Syne', sans-serif",
+                      color: "#64748B",
                       letterSpacing: ".12em",
                       textTransform: "uppercase",
                       marginTop: 2,
@@ -236,15 +255,8 @@ const Deals: React.FC = () => {
                     {label as string}
                   </div>
                 </div>
-                {i < 2 && (
-                  <span
-                    style={{
-                      fontSize: 22,
-                      color: "#C9A84C",
-                      opacity: 0.5,
-                      marginBottom: 10,
-                    }}
-                  >
+                {index < 2 && (
+                  <span style={{ fontSize: 22, color: "#0F766E", opacity: 0.45, marginBottom: 10 }}>
                     :
                   </span>
                 )}
@@ -253,7 +265,79 @@ const Deals: React.FC = () => {
           </div>
         </div>
 
-        {/* Grid */}
+        {featuredDeal && (
+          <div
+            onClick={() => {
+              const target = featuredDeal.redirectLink || featuredDeal.category?.categoryId;
+              if (!target) return;
+              navigate(target.startsWith("/") ? target : `/products/${target}`);
+            }}
+            style={{
+              position: "relative",
+              overflow: "hidden",
+              borderRadius: 16,
+              border: "1px solid #D8E8EB",
+              background: "linear-gradient(124deg, #0F172A 0%, #0B5F59 54%, #14B8A6 100%)",
+              padding: "clamp(18px,2.2vw,28px)",
+              marginBottom: "clamp(16px,2vw,24px)",
+              cursor: "pointer",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))",
+              gap: 14,
+              alignItems: "center",
+            }}
+          >
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <span
+                style={{
+                  display: "inline-flex",
+                  borderRadius: 999,
+                  background: "#BE123C",
+                  color: "#fff",
+                  padding: "6px 12px",
+                  fontSize: 11,
+                  fontWeight: 800,
+                  letterSpacing: ".12em",
+                  animation: "adminDealBlink 1s ease-in-out infinite",
+                }}
+              >
+                TODAY'S DEAL
+              </span>
+              <h3
+                style={{
+                  margin: "14px 0 6px",
+                  fontSize: "clamp(1.15rem,2.1vw,1.6rem)",
+                  color: "#fff",
+                  textTransform: "capitalize",
+                }}
+              >
+                {(featuredDeal.discountLabel || `${featuredDeal.discount}% OFF`)} on{" "}
+                {(featuredDeal.title || featuredDeal.category?.categoryId || "selected picks").split("_").join(" ")}
+              </h3>
+              <p style={{ margin: 0, color: "#C8F0EB", fontSize: 13 }}>
+                Admin-updated limited-time offer. Tap to shop now.
+              </p>
+            </div>
+
+            <div
+              style={{
+                width: "100%",
+                height: "clamp(120px,16vw,170px)",
+                borderRadius: 12,
+                overflow: "hidden",
+                border: "1px solid rgba(255,255,255,0.22)",
+                background: "rgba(255,255,255,0.08)",
+              }}
+            >
+              <img
+                src={featuredDeal.image || featuredDeal.imageUrl || featuredDeal.category?.image}
+                alt={featuredDeal.title || featuredDeal.category?.categoryId || "Featured deal"}
+                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </div>
+          </div>
+        )}
+
         <div
           style={{
             display: "grid",
@@ -261,30 +345,23 @@ const Deals: React.FC = () => {
             gap: "clamp(12px,1.8vw,20px)",
           }}
         >
-          {deals.map((deal: any, i: number) => (
-            <DealCardLight key={i} deal={deal} />
+          {deals.map((deal: any, index: number) => (
+            <DealCard key={deal.id || `${deal.category?.categoryId || "deal"}-${index}`} deal={deal} />
           ))}
         </div>
 
-        {/* View All button */}
-        <div
-          style={{
-            textAlign: "center",
-            marginTop: "clamp(28px,3.5vw,44px)",
-          }}
-        >
+        <div style={{ textAlign: "center", marginTop: "clamp(28px,3.5vw,44px)" }}>
           <button
-            onClick={() => {}}
+            onClick={() => navigate("/products")}
             style={{
               display: "inline-flex",
               alignItems: "center",
               gap: 8,
               padding: "13px 28px",
-              borderRadius: 4,
-              background: "#C9A84C",
-              border: "1.5px solid #C9A84C",
-              color: "#0D0D0D",
-              fontFamily: "'Syne', sans-serif",
+              borderRadius: 999,
+              background: "linear-gradient(135deg,#0F766E,#14B8A6)",
+              border: "1.5px solid #0F766E",
+              color: "#fff",
               fontSize: 12,
               fontWeight: 700,
               letterSpacing: ".1em",
@@ -293,17 +370,17 @@ const Deals: React.FC = () => {
               transition: "all .22s ease",
             }}
             onMouseEnter={(e) => {
-              const b = e.currentTarget as HTMLButtonElement;
-              b.style.background = "transparent";
-              b.style.color = "#C9A84C";
+              const button = e.currentTarget as HTMLButtonElement;
+              button.style.transform = "translateY(-1px)";
+              button.style.boxShadow = "0 14px 26px rgba(15,118,110,0.28)";
             }}
             onMouseLeave={(e) => {
-              const b = e.currentTarget as HTMLButtonElement;
-              b.style.background = "#C9A84C";
-              b.style.color = "#0D0D0D";
+              const button = e.currentTarget as HTMLButtonElement;
+              button.style.transform = "none";
+              button.style.boxShadow = "none";
             }}
           >
-            View All Deals →
+            View all deals -&gt;
           </button>
         </div>
       </div>

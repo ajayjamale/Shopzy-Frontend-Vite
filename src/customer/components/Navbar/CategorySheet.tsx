@@ -31,7 +31,7 @@ const CategorySheet = ({ selectedCategory, toggleDrawer, setShowSheet }: any) =>
   const navigate = useNavigate();
   const [expandedSections, setExpandedSections] = React.useState<{ [key: string]: boolean }>({});
 
-  const accent = accentColors[selectedCategory] ?? "#131921";
+  const accent = accentColors[selectedCategory] ?? "#0F172A";
 
   const childCategory = (category: any[], parentCategoryId: string) =>
     category?.filter((child: any) => child.parentCategoryId === parentCategoryId);
@@ -68,7 +68,7 @@ const CategorySheet = ({ selectedCategory, toggleDrawer, setShowSheet }: any) =>
         </div>
         {setShowSheet && (
           <IconButton onClick={() => setShowSheet(false)}
-            sx={{ background: "#f1f5f9", borderRadius: "8px", width: 32, height: 32, "&:hover": { background: "#131921", color: "#fff" } }}>
+            sx={{ background: "#f1f5f9", borderRadius: "8px", width: 32, height: 32, "&:hover": { background: "#0F172A", color: "#fff" } }}>
             <ExpandLessIcon sx={{ fontSize: 18 }} />
           </IconButton>
         )}

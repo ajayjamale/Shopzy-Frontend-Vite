@@ -10,13 +10,13 @@ import type { SettlementStatus } from "../../../types/settlementTypes";
 import { getAdminToken } from "../../../util/authToken";
 
 const C = {
-  text: "#0F1111",
+  text: "#0F172A",
   mid: "#4B5563",
   dim: "#6B7280",
   border: "#E5E7EB",
   card: "#FFFFFF",
   bg: "#F5F6F8",
-  accent: "#FF9900",
+  accent: "#0F766E",
 };
 
 const statusOptions: (SettlementStatus | "ALL")[] = [
@@ -190,7 +190,7 @@ const AdminSettlementList: React.FC = () => {
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 960 }}>
             <thead>
-              <tr style={{ background: "#232F3E", color: "#fff" }}>
+              <tr style={{ background: "#1E293B", color: "#fff" }}>
                 {["ID", "Seller", "Order", "Net Amount", "Status", "Date", "Action"].map((h, i) => (
                   <th
                     key={h}

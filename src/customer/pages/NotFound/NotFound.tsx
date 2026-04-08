@@ -12,8 +12,6 @@ const NotFound = () => {
   return (
     <>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Amazon+Ember&display=swap');
-
         .nf-page {
           min-height: 100vh;
           background: #fff;
@@ -22,10 +20,10 @@ const NotFound = () => {
           flex-direction: column;
         }
 
-        /* ── Top orange bar (Amazon style) ── */
+        /* ── Top accent bar ── */
         .nf-topbar {
           height: 4px;
-          background: linear-gradient(to right, #FF9900, #FF6600);
+          background: linear-gradient(to right, #0F766E, #14B8A6);
           width: 0;
           transition: width 0.8s ease;
         }
@@ -33,7 +31,7 @@ const NotFound = () => {
 
         /* ── Header ── */
         .nf-header {
-          background: #131921;
+          background: #0F172A;
           padding: 12px 24px;
           display: flex;
           align-items: center;
@@ -43,9 +41,9 @@ const NotFound = () => {
           font-size: 22px;
           font-weight: 900;
           letter-spacing: -1px;
-          color: #FF9900;
+          color: #0F766E;
         }
-        .nf-logo-dot { color: #FF9900; }
+        .nf-logo-dot { color: #0F766E; }
 
         /* ── Main ── */
         .nf-main {
@@ -111,7 +109,7 @@ const NotFound = () => {
         .nf-heading {
           font-size: clamp(22px, 4vw, 30px);
           font-weight: 700;
-          color: #0F1111;
+          color: #0F172A;
           margin: 0 0 12px;
           text-align: center;
         }
@@ -119,14 +117,14 @@ const NotFound = () => {
         /* ── Description ── */
         .nf-desc {
           font-size: 14px;
-          color: #565959;
+          color: #64748B;
           text-align: center;
           max-width: 480px;
           line-height: 1.6;
           margin: 0 0 28px;
         }
         .nf-desc a {
-          color: #007185;
+          color: #0E7490;
           text-decoration: none;
         }
         .nf-desc a:hover { text-decoration: underline; color: #C7511F; }
@@ -153,21 +151,21 @@ const NotFound = () => {
           border: none;
           outline: none;
           font-size: 14px;
-          color: #0F1111;
+          color: #0F172A;
           background: #fff;
         }
         .nf-search-btn {
           padding: 0 16px;
-          background: linear-gradient(to bottom, #FFD814, #F8B200);
+          background: linear-gradient(135deg, #0F766E, #14B8A6);
           border: none;
-          border-left: 1px solid #C7980A;
+          border-left: 1px solid #0B5F59;
           cursor: pointer;
           display: flex;
           align-items: center;
           transition: background 0.15s;
         }
         .nf-search-btn:hover {
-          background: linear-gradient(to bottom, #f7ca00, #e5a800);
+          background: linear-gradient(135deg, #0B5F59, #0F766E);
         }
 
         /* ── Buttons ── */
@@ -180,17 +178,17 @@ const NotFound = () => {
         }
         .nf-btn-home {
           padding: 8px 20px;
-          background: linear-gradient(to bottom, #FFD814, #F8B200);
-          border: 1px solid #C7980A;
+          background: linear-gradient(135deg, #0F766E, #14B8A6);
+          border: 1px solid #0B5F59;
           border-radius: 4px;
           font-size: 13px;
           font-weight: 600;
-          color: #111;
+          color: #ffffff;
           cursor: pointer;
           transition: background 0.15s, box-shadow 0.15s;
         }
         .nf-btn-home:hover {
-          background: linear-gradient(to bottom, #f7ca00, #e5a800);
+          background: linear-gradient(135deg, #0B5F59, #0F766E);
           box-shadow: 0 2px 5px rgba(0,0,0,0.15);
         }
         .nf-btn-back {
@@ -200,7 +198,7 @@ const NotFound = () => {
           border-radius: 4px;
           font-size: 13px;
           font-weight: 600;
-          color: #0F1111;
+          color: #0F172A;
           cursor: pointer;
           transition: background 0.15s;
         }
@@ -219,7 +217,7 @@ const NotFound = () => {
         .nf-links-title {
           font-size: 14px;
           font-weight: 700;
-          color: #0F1111;
+          color: #0F172A;
           margin-bottom: 14px;
           text-align: center;
         }
@@ -235,7 +233,7 @@ const NotFound = () => {
           border-radius: 20px;
           font-size: 12px;
           font-weight: 600;
-          color: #007185;
+          color: #0E7490;
           background: #fff;
           cursor: pointer;
           transition: background 0.12s, border-color 0.12s, color 0.12s;
@@ -243,20 +241,20 @@ const NotFound = () => {
         }
         .nf-link-pill:hover {
           background: #f0fafa;
-          border-color: #007185;
+          border-color: #0E7490;
           color: #005f6b;
         }
 
         /* ── Footer ── */
         .nf-footer {
-          background: #232F3E;
+          background: #1E293B;
           padding: 20px 24px;
           text-align: center;
         }
         .nf-footer-logo {
           font-size: 18px;
           font-weight: 900;
-          color: #FF9900;
+          color: #0F766E;
           letter-spacing: -0.5px;
           margin-bottom: 6px;
         }

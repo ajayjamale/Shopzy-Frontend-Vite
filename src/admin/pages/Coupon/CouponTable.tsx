@@ -18,21 +18,21 @@ import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 const StyledTableCell = styled(TableCell)(() => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#232F3E',
+        backgroundColor: '#1E293B',
         color: '#ffffff',
-        fontFamily: '"Amazon Ember", "Arial", sans-serif',
+        fontFamily: '"Manrope", "Arial", sans-serif',
         fontWeight: 700,
         fontSize: 12,
         letterSpacing: '0.6px',
         textTransform: 'uppercase',
-        borderBottom: '3px solid #FF9900',
+        borderBottom: '3px solid #0F766E',
         padding: '14px 18px',
         whiteSpace: 'nowrap',
     },
     [`&.${tableCellClasses.body}`]: {
         fontSize: 13,
-        fontFamily: '"Amazon Ember", "Arial", sans-serif',
-        color: '#0F1111',
+        fontFamily: '"Manrope", "Arial", sans-serif',
+        color: '#0F172A',
         padding: '12px 18px',
         borderBottom: '1px solid #f0f0f0',
     },
@@ -97,7 +97,7 @@ export default function CouponTable() {
             {/* Stat Cards */}
             <Box sx={{ display: 'flex', gap: 2, mb: 2.5, flexWrap: 'wrap' }}>
                 {[
-                    { label: 'Total Coupons', value: allCoupons.length, color: '#131921', bg: '#fff' },
+                    { label: 'Total Coupons', value: allCoupons.length, color: '#0F172A', bg: '#fff' },
                     { label: 'Active', value: activeCoupons, color: '#067D62', bg: '#f0faf7' },
                     { label: 'Inactive', value: allCoupons.length - activeCoupons, color: '#CC0C39', bg: '#fff5f7' },
                 ].map(stat => (
@@ -112,11 +112,11 @@ export default function CouponTable() {
                     }}>
                         {adminCoupon?.loading
                             ? <Skeleton width={40} height={32} />
-                            : <Typography sx={{ fontSize: 24, fontWeight: 800, color: stat.color, lineHeight: 1.1, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                            : <Typography sx={{ fontSize: 24, fontWeight: 800, color: stat.color, lineHeight: 1.1, fontFamily: '"Manrope", Arial, sans-serif' }}>
                                 {stat.value}
                             </Typography>
                         }
-                        <Typography sx={{ fontSize: 11, color: '#565959', fontFamily: '"Amazon Ember", Arial, sans-serif', mt: 0.3 }}>
+                        <Typography sx={{ fontSize: 11, color: '#64748B', fontFamily: '"Manrope", Arial, sans-serif', mt: 0.3 }}>
                             {stat.label}
                         </Typography>
                     </Box>
@@ -131,8 +131,8 @@ export default function CouponTable() {
                 border: '1px solid #ddd',
                 borderRadius: '4px',
             }}>
-                <FilterListIcon sx={{ color: '#565959', fontSize: 17 }} />
-                <Typography sx={{ fontSize: 13, fontWeight: 600, color: '#0F1111', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                <FilterListIcon sx={{ color: '#64748B', fontSize: 17 }} />
+                <Typography sx={{ fontSize: 13, fontWeight: 600, color: '#0F172A', fontFamily: '"Manrope", Arial, sans-serif' }}>
                     Filter:
                 </Typography>
                 <Select
@@ -141,19 +141,19 @@ export default function CouponTable() {
                     size="small"
                     sx={{
                         fontSize: 13, minWidth: 160,
-                        fontFamily: '"Amazon Ember", Arial, sans-serif',
+                        fontFamily: '"Manrope", Arial, sans-serif',
                         '& .MuiOutlinedInput-notchedOutline': { borderColor: '#c4c4c4' },
-                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#FF9900' },
-                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#FF9900', borderWidth: 2 },
+                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#0F766E' },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#0F766E', borderWidth: 2 },
                     }}
                 >
                     {filterOptions.map(o => (
-                        <MenuItem key={o.value} value={o.value} sx={{ fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                        <MenuItem key={o.value} value={o.value} sx={{ fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' }}>
                             {o.label}
                         </MenuItem>
                     ))}
                 </Select>
-                <Typography sx={{ ml: 'auto', fontSize: 12, color: '#565959', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                <Typography sx={{ ml: 'auto', fontSize: 12, color: '#64748B', fontFamily: '"Manrope", Arial, sans-serif' }}>
                     Showing {filteredCoupons.length} of {allCoupons.length} coupons
                 </Typography>
             </Box>
@@ -198,7 +198,7 @@ export default function CouponTable() {
                                             <StyledTableCell>
                                                 <Box sx={{
                                                     display: 'inline-flex', alignItems: 'center', gap: 0.8,
-                                                    backgroundColor: '#232F3E', color: '#FF9900',
+                                                    backgroundColor: '#1E293B', color: '#0F766E',
                                                     fontFamily: '"Courier New", monospace',
                                                     fontWeight: 800, fontSize: 13,
                                                     px: 1.5, py: 0.5, borderRadius: '3px',
@@ -213,7 +213,7 @@ export default function CouponTable() {
                                             </StyledTableCell>
                                             <StyledTableCell>
                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                                    <Typography sx={{ fontSize: 12, color: expired ? '#CC0C39' : '#555', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                                                    <Typography sx={{ fontSize: 12, color: expired ? '#CC0C39' : '#555', fontFamily: '"Manrope", Arial, sans-serif' }}>
                                                         {formatDate(c.validityEndDate)}
                                                     </Typography>
                                                     {expired && (
@@ -224,18 +224,18 @@ export default function CouponTable() {
                                                 </Box>
                                             </StyledTableCell>
                                             <StyledTableCell>
-                                                <Typography sx={{ fontWeight: 700, fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                                                <Typography sx={{ fontWeight: 700, fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' }}>
                                                     ${Number(c.minimumOrderValue).toFixed(2)}
                                                 </Typography>
                                             </StyledTableCell>
                                             <StyledTableCell>
                                                 <Box sx={{
                                                     display: 'inline-block',
-                                                    background: 'linear-gradient(135deg, #FF9900, #e88b00)',
+                                                    background: 'linear-gradient(135deg, #0F766E, #0b5f59)',
                                                     color: '#fff',
                                                     fontWeight: 800, fontSize: 13,
                                                     px: 1.2, py: 0.4, borderRadius: '3px',
-                                                    fontFamily: '"Amazon Ember", Arial, sans-serif',
+                                                    fontFamily: '"Manrope", Arial, sans-serif',
                                                     boxShadow: '0 1px 3px rgba(255,153,0,0.4)',
                                                 }}>
                                                     {c.discountPercentage}% OFF
@@ -250,7 +250,7 @@ export default function CouponTable() {
                                                     size="small"
                                                     sx={{
                                                         fontWeight: 700, fontSize: 11,
-                                                        fontFamily: '"Amazon Ember", Arial, sans-serif',
+                                                        fontFamily: '"Manrope", Arial, sans-serif',
                                                         backgroundColor: expired ? '#FFF3CD' : c.active ? '#D4EDDA' : '#F8D7DA',
                                                         color: expired ? '#856404' : c.active ? '#155724' : '#721C24',
                                                         border: `1px solid ${expired ? '#FFEAA7' : c.active ? '#C3E6CB' : '#F5C6CB'}`,
@@ -290,12 +290,12 @@ export default function CouponTable() {
                 </Table>
 
                 {!adminCoupon?.loading && filteredCoupons.length === 0 && (
-                    <Box sx={{ textAlign: 'center', py: 7, color: '#565959' }}>
+                    <Box sx={{ textAlign: 'center', py: 7, color: '#64748B' }}>
                         <LocalOfferIcon sx={{ fontSize: 44, color: '#ddd', mb: 1.5 }} />
-                        <Typography sx={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 14, fontWeight: 600 }}>
+                        <Typography sx={{ fontFamily: '"Manrope", Arial, sans-serif', fontSize: 14, fontWeight: 600 }}>
                             No coupons found
                         </Typography>
-                        <Typography sx={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 12, color: '#999', mt: 0.5 }}>
+                        <Typography sx={{ fontFamily: '"Manrope", Arial, sans-serif', fontSize: 12, color: '#999', mt: 0.5 }}>
                             {filter !== 'ALL' ? 'Try changing the filter.' : 'Create your first coupon to get started.'}
                         </Typography>
                     </Box>
@@ -309,21 +309,21 @@ export default function CouponTable() {
                 PaperProps={{ sx: { borderRadius: '6px', border: '1px solid #ddd', maxWidth: 400 } }}
             >
                 <DialogTitle sx={{
-                    fontFamily: '"Amazon Ember", Arial, sans-serif',
+                    fontFamily: '"Manrope", Arial, sans-serif',
                     fontWeight: 700, fontSize: 16,
-                    backgroundColor: '#232F3E', color: '#fff',
-                    borderBottom: '3px solid #FF9900',
+                    backgroundColor: '#1E293B', color: '#fff',
+                    borderBottom: '3px solid #0F766E',
                     display: 'flex', alignItems: 'center', gap: 1,
                 }}>
-                    <WarningAmberIcon sx={{ color: '#FF9900', fontSize: 20 }} />
+                    <WarningAmberIcon sx={{ color: '#0F766E', fontSize: 20 }} />
                     Confirm Delete
                 </DialogTitle>
                 <DialogContent sx={{ pt: 2.5 }}>
-                    <DialogContentText sx={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13, color: '#0F1111' }}>
+                    <DialogContentText sx={{ fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13, color: '#0F172A' }}>
                         Are you sure you want to delete coupon{' '}
                         <Box component="span" sx={{
                             fontFamily: '"Courier New", monospace', fontWeight: 800,
-                            backgroundColor: '#232F3E', color: '#FF9900',
+                            backgroundColor: '#1E293B', color: '#0F766E',
                             px: 0.8, py: 0.2, borderRadius: '3px', fontSize: 13,
                         }}>
                             {deleteTarget?.code}
@@ -335,9 +335,9 @@ export default function CouponTable() {
                     <Button
                         onClick={() => setDeleteTarget(null)}
                         sx={{
-                            fontFamily: '"Amazon Ember", Arial, sans-serif',
+                            fontFamily: '"Manrope", Arial, sans-serif',
                             fontSize: 13, textTransform: 'none',
-                            color: '#0F1111', border: '1px solid #ccc',
+                            color: '#0F172A', border: '1px solid #ccc',
                             borderRadius: '20px', px: 2.5,
                             '&:hover': { backgroundColor: '#f5f5f5' },
                         }}
@@ -348,7 +348,7 @@ export default function CouponTable() {
                         onClick={handleDeleteConfirm}
                         variant="contained"
                         sx={{
-                            fontFamily: '"Amazon Ember", Arial, sans-serif',
+                            fontFamily: '"Manrope", Arial, sans-serif',
                             fontSize: 13, textTransform: 'none', fontWeight: 700,
                             backgroundColor: '#CC0C39', borderRadius: '20px', px: 2.5,
                             '&:hover': { backgroundColor: '#a30a2e' },

@@ -1,121 +1,86 @@
-import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useEffect } from "react";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import RateReviewRoundedIcon from "@mui/icons-material/RateReviewRounded";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { fetchProductById } from "../../../Redux Toolkit/Customer/ProductSlice";
 import { fetchReviewsByProductId } from "../../../Redux Toolkit/Customer/ReviewSlice";
 import RatingCard from "./RatingCard";
 import ProductReviewCard from "./ProductReviewCard";
-import RateReviewIcon from "@mui/icons-material/RateReview";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import "./Reviews.css";
 
 const Reviews = () => {
-  const dispatch  = useAppDispatch();
-  const navigate  = useNavigate();
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { productId } = useParams();
 
-  // ✅ Granular selectors
-  const product  = useAppSelector((s) => s.products.product);
-  const reviews  = useAppSelector((s) => s.review.reviews);
-  const loading  = useAppSelector((s) => s.review.loading);
+  const product = useAppSelector((s) => s.products.product);
+  const reviews = useAppSelector((s) => s.review.reviews);
+  const loading = useAppSelector((s) => s.review.loading);
 
   useEffect(() => {
-    if (productId) {
-      dispatch(fetchProductById(Number(productId)));
-      dispatch(fetchReviewsByProductId({ productId: Number(productId) }));
-    }
-  }, [productId]);
+    if (!productId) return;
+
+    dispatch(fetchProductById(Number(productId)));
+    dispatch(fetchReviewsByProductId({ productId: Number(productId) }));
+  }, [productId, dispatch]);
 
   return (
     <div className="amz-reviews-page">
       <div className="amz-reviews-wrapper">
-
-        {/* Breadcrumb */}
         <div className="amz-rv-breadcrumb">
-          <a href="/">Shopzy</a>
-          <span>›</span>
-          <a href={`/product-details/${product?.category?.categoryId}/${product?.title}/${productId}`}>{product?.title || "Product"}</a>
-          <span>›</span>
-          <span>Customer Reviews</span>
+          <a href="/">Shopzy</a> / <a href={`/product-details/${product?.category?.categoryId}/${product?.title}/${productId}`}>{product?.title || "Product"}</a> / <span>Reviews</span>
         </div>
 
         <div className="amz-rv-layout">
-
-          {/* ── Product sidebar ── */}
           <aside>
             <div className="amz-rv-product-sidebar">
-              <img
-                className="amz-rv-product-img"
-                src={product?.images?.[0]}
-                alt={product?.title}
-              />
-              <div className="amz-rv-product-info">
-                <div className="amz-rv-product-seller">
-                  {product?.seller?.businessDetails?.businessName}
-                </div>
-                <div className="amz-rv-product-title">{product?.title}</div>
-                <div className="amz-rv-product-price">
-                  <span className="amz-rv-price-sell">₹{product?.sellingPrice?.toLocaleString("en-IN")}</span>
-                  <span className="amz-rv-price-mrp">₹{product?.mrpPrice?.toLocaleString("en-IN")}</span>
-                  {product?.discountPercent > 0 && (
-                    <span className="amz-rv-price-off">{product.discountPercent}% off</span>
-                  )}
-                </div>
+              <img className="amz-rv-product-img" src={product?.images?.[0]} alt={product?.title} />
+              <p className="amz-rv-product-seller">{product?.seller?.businessDetails?.businessName}</p>
+              <p className="amz-rv-product-title">{product?.title}</p>
+              <div className="amz-rv-product-price">
+                <span className="amz-rv-price-sell">Rs. {product?.sellingPrice?.toLocaleString("en-IN")}</span>
+                <span className="amz-rv-price-mrp">Rs. {product?.mrpPrice?.toLocaleString("en-IN")}</span>
+                {product?.discountPercent > 0 && <span className="amz-rv-price-off">{product.discountPercent}% off</span>}
               </div>
             </div>
 
-            {/* Write review CTA */}
-            <div style={{ marginTop: 12 }}>
-              <button
-                className="amz-rv-btn-primary"
-                style={{ width: "100%", justifyContent: "center", padding: "10px" }}
-                onClick={() => navigate(`/reviews/${productId}/create`)}
-              >
-                <RateReviewIcon style={{ fontSize: "1rem" }} />
-                Write a customer review
-              </button>
-            </div>
+            <button className="amz-rv-btn-primary" style={{ marginTop: 10 }} onClick={() => navigate(`/reviews/${productId}/create`)}>
+              <RateReviewRoundedIcon sx={{ fontSize: 16 }} />
+              Write a review
+            </button>
+
+            <button className="amz-btn-secondary mt-2" style={{ width: "100%" }} onClick={() => navigate(-1)}>
+              <ArrowBackRoundedIcon sx={{ fontSize: 16 }} />
+              Back
+            </button>
           </aside>
 
-          {/* ── Main content ── */}
-          <main>
-
-            {/* Rating summary */}
+          <main className="grid gap-4">
             <RatingCard reviews={reviews} />
 
-            {/* Review list */}
             <div className="amz-rv-card">
               <div className="amz-rv-card-header">
-                <span>Top Reviews</span>
-                <span style={{ fontSize: "0.8125rem", fontWeight: "normal", color: "#565959" }}>
-                  {reviews.length} review{reviews.length !== 1 ? "s" : ""}
-                </span>
+                <span>All reviews</span>
+                <span className="text-xs text-slate-500">{reviews.length} review{reviews.length > 1 ? "s" : ""}</span>
               </div>
+
               <div className="amz-rv-card-body">
                 {loading ? (
-                  [1, 2, 3].map((i) => (
-                    <div key={i} style={{ height: 90, background: "#f0f2f2", borderRadius: 3, marginBottom: 14, animation: "pulse 1.5s ease-in-out infinite" }} />
-                  ))
-                ) : reviews.length === 0 ? (
+                  <p className="text-sm text-slate-500">Loading reviews...</p>
+                ) : reviews.length ? (
+                  reviews.map((item) => <ProductReviewCard key={item.id} item={item} />)
+                ) : (
                   <div className="amz-rv-empty">
-                    <div className="amz-rv-empty-title">No reviews yet</div>
-                    <div className="amz-rv-empty-desc">Be the first to review this product.</div>
-                    <button
-                      className="amz-rv-btn-primary"
-                      style={{ marginTop: 12 }}
-                      onClick={() => navigate(`/reviews/${productId}/create`)}
-                    >
+                    <p className="amz-rv-empty-title">No reviews yet</p>
+                    <p className="amz-rv-empty-desc">Be the first to share your experience.</p>
+                    <button className="amz-rv-btn-primary" style={{ marginTop: 12 }} onClick={() => navigate(`/reviews/${productId}/create`)}>
                       Write a review
                     </button>
                   </div>
-                ) : (
-                  reviews.map((item) => (
-                    <ProductReviewCard key={item.id} item={item} />
-                  ))
                 )}
               </div>
             </div>
-
           </main>
         </div>
       </div>

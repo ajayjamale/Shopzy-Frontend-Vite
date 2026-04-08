@@ -1,122 +1,90 @@
-import React, { useCallback, useEffect, useMemo } from "react";
-import SellingChart from "./SellingChart";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FormControl, MenuItem, Select, type SelectChangeEvent } from "@mui/material";
+import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
+import ShoppingBagRoundedIcon from "@mui/icons-material/ShoppingBagRounded";
+import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
+import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { fetchSellerReport } from "../../../Redux Toolkit/Seller/sellerSlice";
-import ReportCard from "./Report/ReportCard";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
-import {
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  type SelectChangeEvent,
-} from "@mui/material";
 import { getSellerToken } from "../../../util/authToken";
+import SellingChart from "./SellingChart";
 
-const Chart = [
+const chartTypes = [
   { name: "Today", value: "today" },
   { name: "Last 7 days", value: "daily" },
-  { name: "Last 12 Month", value: "monthly" },
+  { name: "Last 12 months", value: "monthly" },
+];
+
+const metricCards = [
+  { key: "totalEarnings", label: "Revenue", icon: <TrendingUpRoundedIcon sx={{ color: "#0F766E" }} /> },
+  { key: "totalSales", label: "Sales", icon: <ShoppingBagRoundedIcon sx={{ color: "#0F766E" }} /> },
+  { key: "totalRefunds", label: "Refunds", icon: <ReplayRoundedIcon sx={{ color: "#0F766E" }} /> },
+  { key: "canceledOrders", label: "Cancelled", icon: <CancelRoundedIcon sx={{ color: "#0F766E" }} /> },
 ];
 
 const HomePage = () => {
-  const { sellers } = useAppSelector((store) => store);
   const dispatch = useAppDispatch();
-  const [chartType, setChartType] = React.useState(Chart[0].value);
+  const { sellers } = useAppSelector((store) => store);
   const jwt = useMemo(() => getSellerToken(), []);
+  const [chartType, setChartType] = useState(chartTypes[0].value);
 
   const refreshReport = useCallback(() => {
     if (!jwt) return;
     dispatch(fetchSellerReport(jwt));
-  }, [dispatch, jwt]);
+  }, [jwt, dispatch]);
 
   useEffect(() => {
     if (!jwt) return;
+
     refreshReport();
     const onFocus = () => refreshReport();
-    window.addEventListener("focus", onFocus);
     const intervalId = window.setInterval(refreshReport, 30000);
+    window.addEventListener("focus", onFocus);
+
     return () => {
       window.clearInterval(intervalId);
       window.removeEventListener("focus", onFocus);
     };
   }, [jwt, refreshReport]);
 
-  const handleChange = (event: SelectChangeEvent) => {
-    setChartType(event.target.value as string);
-  };
   return (
-    <div className="space-y-5">
-      <section className="grid grid-cols-4 gap-5">
-        <div className="col-span-4 md:col-span-2 lg:col-span-1">
-          <ReportCard
-            icon={<AccountBalanceIcon />}
-            value={"$" + "" + sellers.report?.totalEarnings}
-            title={"Total Earnings"}
-          />
-        </div>
-        <div className="col-span-4 md:col-span-2 lg:col-span-1">
-          <ReportCard
-            icon={<AccountBalanceIcon />}
-            value={sellers.report?.totalSales}
-            title={"Total Sales"}
-          />
-        </div>
-        <div className="col-span-4 md:col-span-2 lg:col-span-1">
-          <ReportCard
-            icon={<AccountBalanceIcon />}
-            value={sellers.report?.totalRefunds}
-            title={"Total Refund"}
-          />
-        </div>
+    <div className="grid gap-4">
+      <div className="grid sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {metricCards.map((card) => (
+          <article key={card.key} className="surface p-4" style={{ borderRadius: 16 }}>
+            <div className="flex items-center justify-between">
+              <p className="text-xs uppercase tracking-[0.12em] text-slate-500 font-bold">{card.label}</p>
+              {card.icon}
+            </div>
+            <p className="text-2xl font-bold text-slate-900 mt-3">
+              {card.key === "totalEarnings"
+                ? `Rs. ${Number((sellers.report as any)?.[card.key] || 0).toLocaleString("en-IN")}`
+                : Number((sellers.report as any)?.[card.key] || 0).toLocaleString("en-IN")}
+            </p>
+          </article>
+        ))}
+      </div>
 
-        <div className="col-span-4 md:col-span-2 lg:col-span-1">
-          <ReportCard
-            icon={<AccountBalanceIcon />}
-            value={sellers.report?.canceledOrders}
-            title={"Cancel Orders"}
-          />
-        </div>
-      </section>
+      <section className="surface p-5" style={{ borderRadius: 16 }}>
+        <div className="flex items-center justify-between gap-3 mb-4 flex-wrap">
+          <div>
+            <p className="section-kicker mb-1">Performance</p>
+            <h2 style={{ fontSize: "1.3rem" }}>Sales analytics</h2>
+          </div>
 
-      <div className="h-[500px] space-y-10 p-5 lg:p-10 bg-slate-800 rounded-md">
-        {/* <h1 className="text-lg font-bold text-white ">Total Revanue</h1> */}
-        <div className="w-40" >
-          <FormControl sx={{color:'white'}} fullWidth>
-            <InputLabel sx={{color:'white'}} id="demo-simple-select-label">Chart Type</InputLabel>
-            <Select
-            sx={{
-                color: 'white', 
-                '.MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'white',
-                },
-                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'white',
-                },
-                '&:hover .MuiOutlinedInput-notchedOutline': {
-                  borderColor: 'white',
-                },
-                '.MuiSvgIcon-root': {
-                  color: 'white',
-                },
-              }}
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={chartType}
-              label="Chart Type"
-              onChange={handleChange}
-            >
-              {Chart.map((item) => (
+          <FormControl size="small" sx={{ minWidth: 180 }}>
+            <Select value={chartType} onChange={(event: SelectChangeEvent) => setChartType(event.target.value)}>
+              {chartTypes.map((item) => (
                 <MenuItem key={item.value} value={item.value}>{item.name}</MenuItem>
               ))}
             </Select>
           </FormControl>
         </div>
 
-        <div className="h-[350px]">
+        <div style={{ height: 360 }}>
           <SellingChart chartType={chartType} />
         </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -20,18 +20,18 @@ import InventoryIcon from '@mui/icons-material/Inventory';
 // ── Styled table ────────────────────────────────────────────────────────────
 const StyledTableCell = styled(TableCell)(() => ({
     [`&.${tableCellClasses.head}`]: {
-        backgroundColor: '#232F3E',
+        backgroundColor: '#1E293B',
         color: '#fff',
-        fontFamily: '"Amazon Ember", Arial, sans-serif',
+        fontFamily: '"Manrope", Arial, sans-serif',
         fontWeight: 700, fontSize: 12,
         letterSpacing: '0.6px', textTransform: 'uppercase',
-        borderBottom: '3px solid #FF9900',
+        borderBottom: '3px solid #0F766E',
         padding: '12px 16px',
     },
     [`&.${tableCellClasses.body}`]: {
         fontSize: 13,
-        fontFamily: '"Amazon Ember", Arial, sans-serif',
-        color: '#0F1111', padding: '10px 16px',
+        fontFamily: '"Manrope", Arial, sans-serif',
+        color: '#0F172A', padding: '10px 16px',
         borderBottom: '1px solid #f0f0f0',
     },
 }));
@@ -70,7 +70,7 @@ const recentOrders = [
 
 const orderStatusData = [
     { name: 'Delivered',  value: 58, color: '#067D62' },
-    { name: 'Shipped',    value: 22, color: '#FF9900' },
+    { name: 'Shipped',    value: 22, color: '#0F766E' },
     { name: 'Processing', value: 12, color: '#0066c0' },
     { name: 'Cancelled',  value: 8,  color: '#CC0C39' },
 ];
@@ -86,7 +86,7 @@ const statusChip = (status: string) => {
     return (
         <Chip label={status} size="small" sx={{
             fontWeight: 700, fontSize: 10,
-            fontFamily: '"Amazon Ember", Arial, sans-serif',
+            fontFamily: '"Manrope", Arial, sans-serif',
             backgroundColor: s.bg, color: s.color,
             border: `1px solid ${s.border}`,
         }} />
@@ -114,14 +114,14 @@ const StatCard = ({ label, value, icon, color, sub }: {
             <Box sx={{ color, '& svg': { fontSize: 22 } }}>{icon}</Box>
         </Box>
         <Box>
-            <Typography sx={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1.1, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+            <Typography sx={{ fontSize: 22, fontWeight: 800, color, lineHeight: 1.1, fontFamily: '"Manrope", Arial, sans-serif' }}>
                 {value}
             </Typography>
-            <Typography sx={{ fontSize: 12, color: '#0F1111', fontWeight: 600, fontFamily: '"Amazon Ember", Arial, sans-serif', mt: 0.3 }}>
+            <Typography sx={{ fontSize: 12, color: '#0F172A', fontWeight: 600, fontFamily: '"Manrope", Arial, sans-serif', mt: 0.3 }}>
                 {label}
             </Typography>
             {sub && (
-                <Typography sx={{ fontSize: 11, color: '#565959', fontFamily: '"Amazon Ember", Arial, sans-serif', mt: 0.2 }}>
+                <Typography sx={{ fontSize: 11, color: '#64748B', fontFamily: '"Manrope", Arial, sans-serif', mt: 0.2 }}>
                     {sub}
                 </Typography>
             )}
@@ -132,10 +132,10 @@ const StatCard = ({ label, value, icon, color, sub }: {
 // ── Section heading ──────────────────────────────────────────────────────────
 const SectionHeading = ({ title, sub }: { title: string; sub?: string }) => (
     <Box sx={{ mb: 2 }}>
-        <Typography sx={{ fontSize: 15, fontWeight: 700, color: '#131921', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+        <Typography sx={{ fontSize: 15, fontWeight: 700, color: '#0F172A', fontFamily: '"Manrope", Arial, sans-serif' }}>
             {title}
         </Typography>
-        {sub && <Typography sx={{ fontSize: 12, color: '#565959', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>{sub}</Typography>}
+        {sub && <Typography sx={{ fontSize: 12, color: '#64748B', fontFamily: '"Manrope", Arial, sans-serif' }}>{sub}</Typography>}
     </Box>
 );
 
@@ -153,22 +153,22 @@ const AdminAnalyticsDashboard = () => {
     const activeCoupons  = adminCoupon?.coupons?.filter((c: any) => c.active).length ?? 0;
 
     return (
-        <Box sx={{ backgroundColor: '#f3f3f3', minHeight: '100vh', p: 3 }}>
+        <Box sx={{ backgroundColor: '#F3F7F8', minHeight: '100vh', p: 3 }}>
             {/* Page header */}
             <Box sx={{
                 display: 'flex', alignItems: 'center', gap: 1.5,
-                mb: 3, pb: 2, borderBottom: '2px solid #FF9900',
+                mb: 3, pb: 2, borderBottom: '2px solid #0F766E',
             }}>
-                <DashboardIcon sx={{ color: '#FF9900', fontSize: 28 }} />
+                <DashboardIcon sx={{ color: '#0F766E', fontSize: 28 }} />
                 <Box>
-                    <Typography variant="h5" sx={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontWeight: 700, color: '#131921', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
+                    <Typography variant="h5" sx={{ fontFamily: '"Manrope", Arial, sans-serif', fontWeight: 700, color: '#0F172A', letterSpacing: '-0.3px', lineHeight: 1.2 }}>
                         Admin Analytics
                     </Typography>
-                    <Typography sx={{ fontSize: 11, color: '#565959', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                    <Typography sx={{ fontSize: 11, color: '#64748B', fontFamily: '"Manrope", Arial, sans-serif' }}>
                         Overview of your marketplace performance
                     </Typography>
                 </Box>
-                <Typography variant="body2" sx={{ color: '#565959', ml: 'auto', fontSize: 12, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                <Typography variant="body2" sx={{ color: '#64748B', ml: 'auto', fontSize: 12, fontFamily: '"Manrope", Arial, sans-serif' }}>
                     Seller Central › Admin › Dashboard
                 </Typography>
             </Box>
@@ -177,8 +177,8 @@ const AdminAnalyticsDashboard = () => {
             <Grid container spacing={2} sx={{ mb: 3 }}>
                 {[
                     { label: 'Total Revenue',    value: '₹8,42,000', icon: <TrendingUpIcon />,  color: '#067D62', sub: '+14% vs last month' },
-                    { label: 'Total Orders',     value: '6,120',     icon: <InventoryIcon />,   color: '#FF9900', sub: '740 this month'     },
-                    { label: 'Active Sellers',   value: activeSellers, icon: <StorefrontIcon />, color: '#131921', sub: 'Currently active'   },
+                    { label: 'Total Orders',     value: '6,120',     icon: <InventoryIcon />,   color: '#0F766E', sub: '740 this month'     },
+                    { label: 'Active Sellers',   value: activeSellers, icon: <StorefrontIcon />, color: '#0F172A', sub: 'Currently active'   },
                     { label: 'Total Customers',  value: '18,450',    icon: <PeopleIcon />,      color: '#0066c0', sub: '+320 this month'    },
                     { label: 'Active Coupons',   value: activeCoupons, icon: <LocalOfferIcon />, color: '#CC0C39', sub: `${totalCoupons} total` },
                 ].map(card => (
@@ -198,27 +198,27 @@ const AdminAnalyticsDashboard = () => {
                             <AreaChart data={revenueData} margin={{ top: 5, right: 20, left: 0, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="revenue" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%"  stopColor="#FF9900" stopOpacity={0.3} />
-                                        <stop offset="95%" stopColor="#FF9900" stopOpacity={0} />
+                                        <stop offset="5%"  stopColor="#0F766E" stopOpacity={0.3} />
+                                        <stop offset="95%" stopColor="#0F766E" stopOpacity={0} />
                                     </linearGradient>
                                     <linearGradient id="orders" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%"  stopColor="#131921" stopOpacity={0.2} />
-                                        <stop offset="95%" stopColor="#131921" stopOpacity={0} />
+                                        <stop offset="5%"  stopColor="#0F172A" stopOpacity={0.2} />
+                                        <stop offset="95%" stopColor="#0F172A" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                                <XAxis dataKey="month" tick={{ fontSize: 11, fontFamily: '"Amazon Ember", Arial, sans-serif', fill: '#565959' }} />
-                                <YAxis yAxisId="left" tick={{ fontSize: 11, fontFamily: '"Amazon Ember", Arial, sans-serif', fill: '#565959' }} />
-                                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fontFamily: '"Amazon Ember", Arial, sans-serif', fill: '#565959' }} />
+                                <XAxis dataKey="month" tick={{ fontSize: 11, fontFamily: '"Manrope", Arial, sans-serif', fill: '#64748B' }} />
+                                <YAxis yAxisId="left" tick={{ fontSize: 11, fontFamily: '"Manrope", Arial, sans-serif', fill: '#64748B' }} />
+                                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11, fontFamily: '"Manrope", Arial, sans-serif', fill: '#64748B' }} />
                                 <Tooltip
-                                    contentStyle={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 12, border: '1px solid #ddd', borderRadius: '4px' }}
+                                    contentStyle={{ fontFamily: '"Manrope", Arial, sans-serif', fontSize: 12, border: '1px solid #ddd', borderRadius: '4px' }}
                                     formatter={(value: any, name: string) => [
                                         name === 'revenue' ? `₹${value.toLocaleString()}` : value,
                                         name === 'revenue' ? 'Revenue' : 'Orders'
                                     ]}
                                 />
-                                <Area yAxisId="left"  type="monotone" dataKey="revenue" stroke="#FF9900" strokeWidth={2} fill="url(#revenue)" />
-                                <Area yAxisId="right" type="monotone" dataKey="orders"  stroke="#131921" strokeWidth={2} fill="url(#orders)"  />
+                                <Area yAxisId="left"  type="monotone" dataKey="revenue" stroke="#0F766E" strokeWidth={2} fill="url(#revenue)" />
+                                <Area yAxisId="right" type="monotone" dataKey="orders"  stroke="#0F172A" strokeWidth={2} fill="url(#orders)"  />
                             </AreaChart>
                         </ResponsiveContainer>
                     </Paper>
@@ -242,12 +242,12 @@ const AdminAnalyticsDashboard = () => {
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 12, border: '1px solid #ddd', borderRadius: '4px' }}
+                                    contentStyle={{ fontFamily: '"Manrope", Arial, sans-serif', fontSize: 12, border: '1px solid #ddd', borderRadius: '4px' }}
                                     formatter={(value: any) => [`${value}%`]}
                                 />
                                 <Legend
                                     iconType="circle" iconSize={8}
-                                    wrapperStyle={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 12 }}
+                                    wrapperStyle={{ fontFamily: '"Manrope", Arial, sans-serif', fontSize: 12 }}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
@@ -266,14 +266,14 @@ const AdminAnalyticsDashboard = () => {
                             { label: 'Pending Verification', value: 23,  color: '#856404', bg: '#FFF3CD' },
                             { label: 'Suspended',            value: 11,  color: '#721C24', bg: '#F8D7DA' },
                             { label: 'Banned',               value: 4,   color: '#fff',    bg: '#CC0C39' },
-                            { label: 'Deactivated',          value: 7,   color: '#565959', bg: '#e9ecef' },
+                            { label: 'Deactivated',          value: 7,   color: '#64748B', bg: '#e9ecef' },
                         ].map(row => (
                             <Box key={row.label} sx={{ mb: 1.5 }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                    <Typography sx={{ fontSize: 12, fontFamily: '"Amazon Ember", Arial, sans-serif', color: '#0F1111' }}>
+                                    <Typography sx={{ fontSize: 12, fontFamily: '"Manrope", Arial, sans-serif', color: '#0F172A' }}>
                                         {row.label}
                                     </Typography>
-                                    <Typography sx={{ fontSize: 12, fontWeight: 700, fontFamily: '"Amazon Ember", Arial, sans-serif', color: row.color === '#fff' ? '#CC0C39' : row.color }}>
+                                    <Typography sx={{ fontSize: 12, fontWeight: 700, fontFamily: '"Manrope", Arial, sans-serif', color: row.color === '#fff' ? '#CC0C39' : row.color }}>
                                         {row.value}
                                     </Typography>
                                 </Box>
@@ -290,8 +290,8 @@ const AdminAnalyticsDashboard = () => {
                         ))}
                         <Divider sx={{ my: 1.5, borderColor: '#f0f0f0' }} />
                         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                            <Typography sx={{ fontSize: 12, fontFamily: '"Amazon Ember", Arial, sans-serif', color: '#565959' }}>Total Sellers</Typography>
-                            <Typography sx={{ fontSize: 12, fontWeight: 800, fontFamily: '"Amazon Ember", Arial, sans-serif', color: '#131921' }}>129</Typography>
+                            <Typography sx={{ fontSize: 12, fontFamily: '"Manrope", Arial, sans-serif', color: '#64748B' }}>Total Sellers</Typography>
+                            <Typography sx={{ fontSize: 12, fontWeight: 800, fontFamily: '"Manrope", Arial, sans-serif', color: '#0F172A' }}>129</Typography>
                         </Box>
                     </Paper>
                 </Grid>
@@ -321,12 +321,12 @@ const AdminAnalyticsDashboard = () => {
                                             </StyledTableCell>
                                             <StyledTableCell>{order.customer}</StyledTableCell>
                                             <StyledTableCell sx={{ maxWidth: 160 }}>
-                                                <Typography sx={{ fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                                <Typography sx={{ fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                                     {order.product}
                                                 </Typography>
                                             </StyledTableCell>
                                             <StyledTableCell>
-                                                <Typography sx={{ fontWeight: 700, fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                                                <Typography sx={{ fontWeight: 700, fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' }}>
                                                     ₹{order.amount.toLocaleString()}
                                                 </Typography>
                                             </StyledTableCell>

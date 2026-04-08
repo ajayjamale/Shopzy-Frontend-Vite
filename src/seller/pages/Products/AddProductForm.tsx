@@ -1,460 +1,491 @@
-import React, { useEffect, useState } from "react";
+import React, { useMemo, useState } from "react";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  FormControl,
+  FormHelperText,
+  InputLabel,
+  MenuItem,
+  Paper,
+  Select,
+  Snackbar,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import Inventory2RoundedIcon from "@mui/icons-material/Inventory2Rounded";
+import SellRoundedIcon from "@mui/icons-material/SellRounded";
+import CategoryRoundedIcon from "@mui/icons-material/CategoryRounded";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import {
-  TextField, Button, MenuItem, Select, InputLabel,
-  FormControl, FormHelperText, Grid, CircularProgress,
-  IconButton, Snackbar, Alert, Typography, Box, Paper, Divider,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
-import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
-import CloseIcon from "@mui/icons-material/Close";
-import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
-import { mainCategory } from "../../../data/category/mainCategory";
-import { menLevelTwo } from "../../../data/category/level two/menLevelTwo";
-import { womenLevelTwo } from "../../../data/category/level two/womenLevelTwo";
-import { menLevelThree } from "../../../data/category/level three/menLevelThree";
-import { womenLevelThree } from "../../../data/category/level three/womenLevelThree";
-import { colors } from "../../../data/Filter/color";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { createProduct } from "../../../Redux Toolkit/Seller/sellerProductSlice";
 import { uploadToCloudinary } from "../../../util/uploadToCloudnary";
 import { getSellerToken } from "../../../util/authToken";
-import { electronicsLevelThree } from "../../../data/category/level three/electronicsLevelThree";
-import { electronicsLevelTwo } from "../../../data/category/level two/electronicsLavelTwo";
+import { mainCategory } from "../../../data/category/mainCategory";
+import { menLevelTwo } from "../../../data/category/level two/menLevelTwo";
+import { womenLevelTwo } from "../../../data/category/level two/womenLevelTwo";
 import { furnitureLevelTwo } from "../../../data/category/level two/furnitureLevleTwo";
+import { electronicsLevelTwo } from "../../../data/category/level two/electronicsLavelTwo";
+import { menLevelThree } from "../../../data/category/level three/menLevelThree";
+import { womenLevelThree } from "../../../data/category/level three/womenLevelThree";
 import { furnitureLevelThree } from "../../../data/category/level three/furnitureLevelThree";
+import { electronicsLevelThree } from "../../../data/category/level three/electronicsLevelThree";
+import { colors } from "../../../data/Filter/color";
 
-// ─── Design Tokens ────────────────────────────────────────────────────────────
-const AMZ = {
-  navy: '#131921', navyLight: '#232f3e', orange: '#ff9900',
-  blue: '#007185', green: '#067d62', red: '#cc0c39',
-  bg: '#f3f3f3', white: '#ffffff', border: '#dddddd',
-  borderDark: '#aaaaaa', text: '#0f1111', textMuted: '#565959',
-  headerBg: '#f0f2f2', linkBlue: '#007185',
+const categoryLevelTwo: { [key: string]: any[] } = {
+  men: menLevelTwo,
+  women: womenLevelTwo,
+  home_furniture: furnitureLevelTwo,
+  electronics: electronicsLevelTwo,
+  beauty: [],
+  kids: [],
 };
 
-// ─── Category Maps ────────────────────────────────────────────────────────────
-const categoryTwo: { [key: string]: any[] } = {
-  men: menLevelTwo, women: womenLevelTwo, kids: [],
-  home_furniture: furnitureLevelTwo, beauty: [], electronics: electronicsLevelTwo,
-};
-const categoryThree: { [key: string]: any[] } = {
-  men: menLevelThree, women: womenLevelThree, kids: [],
-  home_furniture: furnitureLevelThree, beauty: [], electronics: electronicsLevelThree,
+const categoryLevelThree: { [key: string]: any[] } = {
+  men: menLevelThree,
+  women: womenLevelThree,
+  home_furniture: furnitureLevelThree,
+  electronics: electronicsLevelThree,
+  beauty: [],
+  kids: [],
 };
 
-const validationSchema = Yup.object({
-  title: Yup.string().min(5, "Title should be at least 5 characters long").required("Title is required"),
-  description: Yup.string().min(10, "Description should be at least 10 characters long").required("Description is required"),
-  price: Yup.number().positive("Price should be greater than zero").required("Price is required"),
-  discountedPrice: Yup.number().positive("Discounted Price should be greater than zero").required("Discounted Price is required"),
-  discountPercent: Yup.number().positive("Discount Percent should be greater than zero").required("Discount Percent is required"),
-  quantity: Yup.number().positive("Quantity should be greater than zero").required("Quantity is required"),
+const schema = Yup.object({
+  title: Yup.string().min(5, "Title should have at least 5 characters").required("Title is required"),
+  description: Yup.string().min(10, "Description should have at least 10 characters").required("Description is required"),
+  mrpPrice: Yup.number().typeError("MRP is required").positive("MRP must be positive").required("MRP is required"),
+  sellingPrice: Yup.number()
+    .typeError("Selling price is required")
+    .positive("Selling price must be positive")
+    .required("Selling price is required"),
+  quantity: Yup.number().typeError("Quantity is required").integer("Quantity must be a whole number").min(1, "Quantity must be at least 1").required("Quantity is required"),
   color: Yup.string().required("Color is required"),
-  category: Yup.string().required("Category is required"),
-  sizes: Yup.string().required("Sizes are required"),
+  sizes: Yup.string().required("Size is required"),
+  category: Yup.string().required("Main category is required"),
 });
-
-// ─── Styled Components ────────────────────────────────────────────────────────
-
-const PageWrap = styled('div')({
-  background: AMZ.bg, minHeight: '100vh',
-  fontFamily: "'Helvetica Neue', Arial, sans-serif",
-});
-
-const TopBar = styled('div')({
-  background: AMZ.navy, padding: '8px 24px',
-  display: 'flex', alignItems: 'center', gap: 16,
-});
-
-const ContentWrap = styled('div')({
-  maxWidth: '1100px', margin: '0 auto', padding: '20px 24px',
-});
-
-const SectionCard = styled(Paper)({
-  borderRadius: '4px', border: `1px solid ${AMZ.border}`,
-  boxShadow: '0 1px 2px rgba(0,0,0,0.05)', background: AMZ.white,
-  marginBottom: '16px', overflow: 'hidden',
-});
-
-const SectionHeader = styled('div')({
-  background: AMZ.headerBg, padding: '10px 18px',
-  borderBottom: `1px solid ${AMZ.border}`,
-  display: 'flex', alignItems: 'center', gap: 8,
-});
-
-const SectionBody = styled('div')({ padding: '20px 18px' });
-
-const FieldLabel = styled(Typography)({
-  fontSize: '13px', fontWeight: 700, color: AMZ.text,
-  fontFamily: "'Helvetica Neue', Arial, sans-serif",
-  marginBottom: '4px',
-  display: 'flex', alignItems: 'center', gap: 4,
-});
-
-const RequiredStar = styled('span')({ color: AMZ.red, fontWeight: 700 });
-
-const AmazonField = styled(TextField)({
-  '& .MuiOutlinedInput-root': {
-    borderRadius: '3px', fontSize: '13px',
-    fontFamily: "'Helvetica Neue', Arial, sans-serif",
-    background: '#fff',
-    '& fieldset': { borderColor: AMZ.borderDark },
-    '&:hover fieldset': { borderColor: '#007185' },
-    '&.Mui-focused fieldset': { borderColor: '#e77600', borderWidth: '2px', boxShadow: '0 0 0 3px rgba(228,121,17,0.15)' },
-  },
-  '& .MuiInputBase-input': { padding: '8px 10px', fontSize: '13px' },
-  '& .MuiInputLabel-root': { display: 'none' },
-  '& .MuiFormHelperText-root': { fontSize: '12px', color: AMZ.red, margin: '4px 0 0 0' },
-});
-
-const AmazonSelect = styled(FormControl)({
-  '& .MuiOutlinedInput-root': {
-    borderRadius: '3px', fontSize: '13px',
-    fontFamily: "'Helvetica Neue', Arial, sans-serif",
-    background: '#fff',
-    '& fieldset': { borderColor: AMZ.borderDark },
-    '&:hover fieldset': { borderColor: '#007185' },
-    '&.Mui-focused fieldset': { borderColor: '#e77600', borderWidth: '2px', boxShadow: '0 0 0 3px rgba(228,121,17,0.15)' },
-  },
-  '& .MuiSelect-select': { padding: '8px 10px', fontSize: '13px' },
-  '& .MuiInputLabel-root': { display: 'none' },
-  '& .MuiFormHelperText-root': { fontSize: '12px', color: AMZ.red, margin: '4px 0 0 0' },
-});
-
-const UploadBox = styled('label')({
-  width: 96, height: 96, borderRadius: '3px',
-  border: `2px dashed ${AMZ.borderDark}`, background: AMZ.headerBg,
-  display: 'flex', flexDirection: 'column', alignItems: 'center',
-  justifyContent: 'center', cursor: 'pointer', transition: 'all 0.15s',
-  color: AMZ.textMuted, flexShrink: 0, gap: 4,
-  '&:hover': { borderColor: '#e77600', background: '#fffbf2', color: '#e77600' },
-});
-
-const ThumbWrap = styled('div')({
-  position: 'relative', width: 96, height: 96, borderRadius: '3px',
-  border: `1px solid ${AMZ.border}`, overflow: 'hidden',
-  '& img': { width: '100%', height: '100%', objectFit: 'cover' },
-  '& .rmv': {
-    position: 'absolute', top: 2, right: 2, opacity: 0, transition: 'opacity 0.15s',
-    background: 'rgba(0,0,0,0.65)', borderRadius: '50%',
-  },
-  '&:hover .rmv': { opacity: 1 },
-});
-
-const SubmitBtn = styled(Button)({
-  borderRadius: '3px', padding: '9px 20px',
-  fontFamily: "'Helvetica Neue', Arial, sans-serif",
-  fontWeight: 400, fontSize: '14px', textTransform: 'none',
-  background: 'linear-gradient(to bottom, #f7dfa5, #f0c14b)',
-  color: '#111', border: '1px solid #a88734', boxShadow: 'none',
-  '&:hover': {
-    background: 'linear-gradient(to bottom, #f5d78e, #eeb933)',
-    boxShadow: '0 1px 2px rgba(0,0,0,0.15)',
-  },
-  '&:disabled': { background: '#e9ecef', color: '#888', border: '1px solid #ccc' },
-});
-
-const FieldRow = ({ label, required, children, hint }: any) => (
-  <Box mb={2.5}>
-    <FieldLabel>
-      {label} {required && <RequiredStar>*</RequiredStar>}
-      {hint && <Tooltip title={hint}><InfoOutlinedIcon sx={{ fontSize: 14, color: AMZ.textMuted, cursor: 'help' }} /></Tooltip>}
-    </FieldLabel>
-    {children}
-  </Box>
-);
-
-// Quick tooltip placeholder since we're not importing Tooltip above
-const Tooltip = ({ title, children }: any) => children;
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 const ProductForm = () => {
-  const [uploadImage, setUploadingImage] = useState(false);
   const dispatch = useAppDispatch();
-  const { sellerProduct } = useAppSelector(store => store);
-  const [snackbarOpen, setOpenSnackbar] = useState(false);
+  const { sellerProduct } = useAppSelector((store) => store);
+  const [uploading, setUploading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const formik = useFormik({
     initialValues: {
-      title: "", description: "", mrpPrice: "", sellingPrice: "",
-      quantity: "", color: "", images: [], category: "",
-      category2: "", category3: "", sizes: "",
+      title: "",
+      description: "",
+      mrpPrice: "",
+      sellingPrice: "",
+      quantity: "",
+      color: "",
+      sizes: "",
+      images: [] as string[],
+      category: "",
+      category2: "",
+      category3: "",
     },
-    // validationSchema,
-    onSubmit: (values) => {
-      dispatch(createProduct({ request: values, jwt: getSellerToken() }));
-      console.log(values);
+    validationSchema: schema,
+    onSubmit: async (values, helpers) => {
+      const mrp = Number(values.mrpPrice);
+      const selling = Number(values.sellingPrice);
+      const discountPercent = mrp > 0 && mrp > selling ? Math.round(((mrp - selling) / mrp) * 100) : 0;
+
+      const payload = {
+        ...values,
+        mrpPrice: mrp,
+        sellingPrice: selling,
+        quantity: Number(values.quantity),
+        discountPercent,
+      };
+
+      const result = await dispatch(
+        createProduct({
+          request: payload,
+          jwt: getSellerToken(),
+        })
+      );
+
+      setSnackbarOpen(true);
+      if (createProduct.fulfilled.match(result)) {
+        helpers.resetForm();
+      }
     },
   });
 
-  const handleImageChange = async (event: any) => {
-    const file = event.target.files[0];
-    setUploadingImage(true);
-    const image = await uploadToCloudinary(file);
-    formik.setFieldValue("images", [...formik.values.images, image]);
-    setUploadingImage(false);
+  const secondLevelOptions = useMemo(
+    () => (formik.values.category ? categoryLevelTwo[formik.values.category] || [] : []),
+    [formik.values.category]
+  );
+
+  const thirdLevelOptions = useMemo(() => {
+    if (!formik.values.category || !formik.values.category2) return [];
+    return (categoryLevelThree[formik.values.category] || []).filter(
+      (item: any) => item.parentCategoryId == formik.values.category2
+    );
+  }, [formik.values.category, formik.values.category2]);
+
+  const discountPreview = useMemo(() => {
+    const mrp = Number(formik.values.mrpPrice);
+    const selling = Number(formik.values.sellingPrice);
+    if (!(mrp > 0) || !(selling >= 0) || mrp <= selling) return 0;
+    return Math.round(((mrp - selling) / mrp) * 100);
+  }, [formik.values.mrpPrice, formik.values.sellingPrice]);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const imageUrl = await uploadToCloudinary(file);
+      formik.setFieldValue("images", [...formik.values.images, imageUrl]);
+    } finally {
+      setUploading(false);
+      event.target.value = "";
+    }
   };
 
-  const handleRemoveImage = (index: number) => {
-    const updated = [...formik.values.images];
-    updated.splice(index, 1);
-    formik.setFieldValue("images", updated);
+  const removeImage = (index: number) => {
+    const next = [...formik.values.images];
+    next.splice(index, 1);
+    formik.setFieldValue("images", next);
   };
-
-  const childCategory = (category: any, parentCategoryId: any) =>
-    category.filter((c: any) => c.parentCategoryId == parentCategoryId);
-
-  useEffect(() => {
-    if (sellerProduct.productCreated || sellerProduct.error) setOpenSnackbar(true);
-  }, [sellerProduct.productCreated, sellerProduct.error]);
 
   return (
-    <PageWrap>
-      {/* Top Bar */}
-      <TopBar>
-        <Typography sx={{ color: AMZ.orange, fontWeight: 700, fontSize: '20px', fontFamily: "'Helvetica Neue', Arial" }}>
-          seller<span style={{ color: '#fff' }}>central</span>
-        </Typography>
-        <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.2)' }} />
-        <Typography sx={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>Add a Product</Typography>
-      </TopBar>
-
-      <ContentWrap>
-        {/* Breadcrumb */}
-        <Box mb={2} mt={0.5}>
-          <Typography sx={{ fontSize: '12px', color: AMZ.linkBlue, fontFamily: "'Helvetica Neue', Arial" }}>
-            Inventory &rsaquo; <span style={{ color: AMZ.text }}>Add a Product</span>
+    <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1300, mx: "auto" }}>
+      <Stack direction={{ xs: "column", md: "row" }} alignItems={{ xs: "flex-start", md: "center" }} justifyContent="space-between" spacing={1} mb={2.5}>
+        <Box>
+          <Typography variant="h4" sx={{ fontSize: { xs: "1.4rem", md: "1.8rem" } }}>
+            Add Product
+          </Typography>
+          <Typography sx={{ color: "text.secondary", mt: 0.6 }}>
+            Publish a new catalog listing with pricing, inventory, media, and category mapping.
           </Typography>
         </Box>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Inventory2RoundedIcon sx={{ color: "primary.main" }} />
+          <Typography sx={{ fontWeight: 700, color: "text.secondary", fontSize: ".85rem" }}>
+            Seller Catalog
+          </Typography>
+        </Stack>
+      </Stack>
 
-        <Typography sx={{ fontSize: '20px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial", mb: 2 }}>
-          Add a Product
-        </Typography>
+      <Box
+        component="form"
+        onSubmit={formik.handleSubmit}
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: { xs: "1fr", lg: "1.5fr 1fr" },
+          alignItems: "start",
+        }}
+      >
+        <Stack spacing={2}>
+          <Paper sx={{ p: 2.2 }}>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
+              <SellRoundedIcon sx={{ color: "primary.main", fontSize: 20 }} />
+              <Typography sx={{ fontWeight: 800 }}>Basic Details</Typography>
+            </Stack>
+            <Stack spacing={1.5}>
+              <TextField
+                label="Product title"
+                name="title"
+                value={formik.values.title}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.title && formik.errors.title)}
+                helperText={formik.touched.title && formik.errors.title}
+                fullWidth
+              />
+              <TextField
+                label="Product description"
+                name="description"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.description && formik.errors.description)}
+                helperText={formik.touched.description && formik.errors.description}
+                multiline
+                minRows={4}
+                fullWidth
+              />
+            </Stack>
+          </Paper>
 
-        <form onSubmit={formik.handleSubmit}>
+          <Paper sx={{ p: 2.2 }}>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
+              <Inventory2RoundedIcon sx={{ color: "primary.main", fontSize: 20 }} />
+              <Typography sx={{ fontWeight: 800 }}>Pricing & Inventory</Typography>
+            </Stack>
+            <Box sx={{ display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" } }}>
+              <TextField
+                label="MRP price"
+                name="mrpPrice"
+                type="number"
+                value={formik.values.mrpPrice}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.mrpPrice && formik.errors.mrpPrice)}
+                helperText={formik.touched.mrpPrice && formik.errors.mrpPrice}
+                fullWidth
+              />
+              <TextField
+                label="Selling price"
+                name="sellingPrice"
+                type="number"
+                value={formik.values.sellingPrice}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.sellingPrice && formik.errors.sellingPrice)}
+                helperText={formik.touched.sellingPrice && formik.errors.sellingPrice}
+                fullWidth
+              />
+              <TextField
+                label="Quantity"
+                name="quantity"
+                type="number"
+                value={formik.values.quantity}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.quantity && formik.errors.quantity)}
+                helperText={formik.touched.quantity && formik.errors.quantity}
+                fullWidth
+              />
+              <Paper
+                variant="outlined"
+                sx={{
+                  px: 1.5,
+                  py: 1.2,
+                  borderRadius: 2,
+                  borderColor: discountPreview > 0 ? "success.main" : "divider",
+                  bgcolor: discountPreview > 0 ? "rgba(21,128,61,0.08)" : "rgba(15,118,110,0.04)",
+                }}
+              >
+                <Typography sx={{ fontSize: ".74rem", fontWeight: 700, color: "text.secondary", textTransform: "uppercase", letterSpacing: ".07em" }}>
+                  Live Discount
+                </Typography>
+                <Typography sx={{ fontWeight: 800, fontSize: "1.2rem", color: discountPreview > 0 ? "success.main" : "text.primary" }}>
+                  {discountPreview > 0 ? `-${discountPreview}%` : "0%"}
+                </Typography>
+                <Typography sx={{ fontSize: ".75rem", color: "text.secondary" }}>
+                  Auto-calculated at submit
+                </Typography>
+              </Paper>
+            </Box>
+          </Paper>
 
-          {/* ── Images ── */}
-          <SectionCard elevation={0}>
-            <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
-                Product Images
-              </Typography>
-            </SectionHeader>
-            <SectionBody>
-              <Typography sx={{ fontSize: '12px', color: AMZ.textMuted, mb: 2, fontFamily: "'Helvetica Neue', Arial" }}>
-                Upload up to 9 images. First image will be the main image. Images must be at least 500px on the longest side.
-              </Typography>
-              <Box display="flex" flexWrap="wrap" gap={1.5}>
-                <input type="file" accept="image/*" id="fileInput" style={{ display: 'none' }} onChange={handleImageChange} />
-                <UploadBox htmlFor="fileInput">
-                  {uploadImage
-                    ? <CircularProgress size={20} sx={{ color: '#e77600' }} />
-                    : <>
-                        <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 24 }} />
-                        <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.3px', fontFamily: "'Helvetica Neue', Arial" }}>ADD IMAGE</Typography>
-                      </>}
-                </UploadBox>
-                {formik.values.images.map((image, index) => (
-                  <ThumbWrap key={index}>
-                    <img src={image} alt={`img-${index}`} />
-                    <IconButton className="rmv" size="small" onClick={() => handleRemoveImage(index)}
-                      sx={{ color: '#fff', width: 22, height: 22, padding: 0 }}>
-                      <CloseIcon sx={{ fontSize: 13 }} />
-                    </IconButton>
-                  </ThumbWrap>
-                ))}
-              </Box>
-            </SectionBody>
-          </SectionCard>
+          <Paper sx={{ p: 2.2 }}>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
+              <CategoryRoundedIcon sx={{ color: "primary.main", fontSize: 20 }} />
+              <Typography sx={{ fontWeight: 800 }}>Attributes & Categories</Typography>
+            </Stack>
+            <Box sx={{ display: "grid", gap: 1.5, gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" } }}>
+              <FormControl error={Boolean(formik.touched.color && formik.errors.color)}>
+                <InputLabel id="color-label">Color</InputLabel>
+                <Select
+                  labelId="color-label"
+                  label="Color"
+                  name="color"
+                  value={formik.values.color}
+                  onChange={formik.handleChange}
+                >
+                  {colors.map((color) => (
+                    <MenuItem key={color.name} value={color.name}>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <Box sx={{ width: 14, height: 14, borderRadius: "50%", bgcolor: color.hex, border: "1px solid #d1d5db" }} />
+                        <span>{color.name}</span>
+                      </Stack>
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>{formik.touched.color && formik.errors.color}</FormHelperText>
+              </FormControl>
 
-          {/* ── Vital Info ── */}
-          <SectionCard elevation={0}>
-            <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
-                Vital Info
-              </Typography>
-            </SectionHeader>
-            <SectionBody>
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12 }}>
-                  <FieldRow label="Product name" required>
-                    <AmazonField
-                      fullWidth id="title" name="title"
-                      placeholder="Enter product name"
-                      value={formik.values.title}
-                      onChange={formik.handleChange}
-                      error={formik.touched.title && Boolean(formik.errors.title)}
-                      helperText={formik.touched.title && formik.errors.title}
-                    />
-                  </FieldRow>
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <FieldRow label="Product description" required>
-                    <AmazonField
-                      fullWidth multiline rows={5}
-                      id="description" name="description"
-                      placeholder="Describe your product in detail. Good descriptions improve search results."
-                      value={formik.values.description}
-                      onChange={formik.handleChange}
-                      error={formik.touched.description && Boolean(formik.errors.description)}
-                      helperText={formik.touched.description && formik.errors.description}
-                    />
-                  </FieldRow>
-                </Grid>
-              </Grid>
-            </SectionBody>
-          </SectionCard>
+              <FormControl error={Boolean(formik.touched.sizes && formik.errors.sizes)}>
+                <InputLabel id="size-label">Size</InputLabel>
+                <Select
+                  labelId="size-label"
+                  label="Size"
+                  name="sizes"
+                  value={formik.values.sizes}
+                  onChange={formik.handleChange}
+                >
+                  {["FREE", "S", "M", "L", "XL"].map((size) => (
+                    <MenuItem key={size} value={size}>
+                      {size}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>{formik.touched.sizes && formik.errors.sizes}</FormHelperText>
+              </FormControl>
 
-          {/* ── Pricing & Details ── */}
-          <SectionCard elevation={0}>
-            <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
-                Offer & Pricing
-              </Typography>
-            </SectionHeader>
-            <SectionBody>
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <FieldRow label="MRP (₹)" required>
-                    <AmazonField
-                      fullWidth id="mrp_price" name="mrpPrice" type="number"
-                      placeholder="0.00"
-                      value={formik.values.mrpPrice}
-                      onChange={formik.handleChange}
-                      error={formik.touched.mrpPrice && Boolean(formik.errors.mrpPrice)}
-                      helperText={formik.touched.mrpPrice && formik.errors.mrpPrice}
-                    />
-                  </FieldRow>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <FieldRow label="Your selling price (₹)" required>
-                    <AmazonField
-                      fullWidth id="sellingPrice" name="sellingPrice" type="number"
-                      placeholder="0.00"
-                      value={formik.values.sellingPrice}
-                      onChange={formik.handleChange}
-                      error={formik.touched.sellingPrice && Boolean(formik.errors.sellingPrice)}
-                      helperText={formik.touched.sellingPrice && formik.errors.sellingPrice}
-                    />
-                  </FieldRow>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <FieldRow label="Color" required>
-                    <AmazonSelect fullWidth error={formik.touched.color && Boolean(formik.errors.color)}>
-                      <Select name="color" value={formik.values.color} onChange={formik.handleChange} displayEmpty>
-                        <MenuItem value=""><em style={{ color: '#999', fontStyle: 'normal' }}>Select color</em></MenuItem>
-                        {colors.map(c => (
-                          <MenuItem key={c.name} value={c.name}>
-                            <Box display="flex" alignItems="center" gap={1.5}>
-                              <span style={{ width: 14, height: 14, borderRadius: '50%', background: c.hex, border: c.name === 'White' ? '1px solid #ccc' : 'none', display: 'inline-block', flexShrink: 0 }} />
-                              <span style={{ fontSize: '13px', fontFamily: "'Helvetica Neue', Arial" }}>{c.name}</span>
-                            </Box>
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {formik.touched.color && formik.errors.color && <FormHelperText>{formik.errors.color}</FormHelperText>}
-                    </AmazonSelect>
-                  </FieldRow>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <FieldRow label="Size" required>
-                    <AmazonSelect fullWidth error={formik.touched.sizes && Boolean(formik.errors.sizes)}>
-                      <Select name="sizes" value={formik.values.sizes} onChange={formik.handleChange} displayEmpty>
-                        <MenuItem value=""><em style={{ color: '#999', fontStyle: 'normal' }}>Select size</em></MenuItem>
-                        {['FREE', 'S', 'M', 'L', 'XL'].map(s => (
-                          <MenuItem key={s} value={s} sx={{ fontSize: '13px', fontFamily: "'Helvetica Neue', Arial" }}>{s}</MenuItem>
-                        ))}
-                      </Select>
-                      {formik.touched.sizes && formik.errors.sizes && <FormHelperText>{formik.errors.sizes}</FormHelperText>}
-                    </AmazonSelect>
-                  </FieldRow>
-                </Grid>
-              </Grid>
-            </SectionBody>
-          </SectionCard>
+              <FormControl error={Boolean(formik.touched.category && formik.errors.category)}>
+                <InputLabel id="cat1-label">Main category</InputLabel>
+                <Select
+                  labelId="cat1-label"
+                  label="Main category"
+                  name="category"
+                  value={formik.values.category}
+                  onChange={(event) => {
+                    formik.setFieldValue("category", event.target.value);
+                    formik.setFieldValue("category2", "");
+                    formik.setFieldValue("category3", "");
+                  }}
+                >
+                  {mainCategory.map((item) => (
+                    <MenuItem key={item.categoryId} value={item.categoryId}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <FormHelperText>{formik.touched.category && formik.errors.category}</FormHelperText>
+              </FormControl>
 
-          {/* ── Categories ── */}
-          <SectionCard elevation={0}>
-            <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial" }}>
-                Category
-              </Typography>
-            </SectionHeader>
-            <SectionBody>
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                  <FieldRow label="Main category" required>
-                    <AmazonSelect fullWidth error={formik.touched.category && Boolean(formik.errors.category)}>
-                      <Select name="category" value={formik.values.category} onChange={formik.handleChange} displayEmpty>
-                        <MenuItem value=""><em style={{ color: '#999', fontStyle: 'normal' }}>Select category</em></MenuItem>
-                        {mainCategory.map(item => (
-                          <MenuItem key={item.categoryId} value={item.categoryId} sx={{ fontSize: '13px', fontFamily: "'Helvetica Neue', Arial" }}>
-                            {item.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {formik.touched.category && formik.errors.category && <FormHelperText>{formik.errors.category}</FormHelperText>}
-                    </AmazonSelect>
-                  </FieldRow>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                  <FieldRow label="Sub category">
-                    <AmazonSelect fullWidth>
-                      <Select name="category2" value={formik.values.category2} onChange={formik.handleChange} displayEmpty disabled={!formik.values.category}>
-                        <MenuItem value=""><em style={{ color: '#999', fontStyle: 'normal' }}>Select sub-category</em></MenuItem>
-                        {formik.values.category && categoryTwo[formik.values.category]?.map(item => (
-                          <MenuItem key={item.categoryId} value={item.categoryId} sx={{ fontSize: '13px', fontFamily: "'Helvetica Neue', Arial" }}>
-                            {item.name}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </AmazonSelect>
-                  </FieldRow>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
-                  <FieldRow label="Third category">
-                    <AmazonSelect fullWidth>
-                      <Select name="category3" value={formik.values.category3} onChange={formik.handleChange} displayEmpty disabled={!formik.values.category2}>
-                        <MenuItem value=""><em style={{ color: '#999', fontStyle: 'normal' }}>Select third category</em></MenuItem>
-                        {formik.values.category2 &&
-                          childCategory(categoryThree[formik.values.category], formik.values.category2)?.map((item: any) => (
-                            <MenuItem key={item.categoryId} value={item.categoryId} sx={{ fontSize: '13px', fontFamily: "'Helvetica Neue', Arial" }}>
-                              {item.name}
-                            </MenuItem>
-                          ))}
-                      </Select>
-                    </AmazonSelect>
-                  </FieldRow>
-                </Grid>
-              </Grid>
-            </SectionBody>
-          </SectionCard>
+              <FormControl>
+                <InputLabel id="cat2-label">Second category</InputLabel>
+                <Select
+                  labelId="cat2-label"
+                  label="Second category"
+                  name="category2"
+                  value={formik.values.category2}
+                  onChange={(event) => {
+                    formik.setFieldValue("category2", event.target.value);
+                    formik.setFieldValue("category3", "");
+                  }}
+                  disabled={!formik.values.category}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {secondLevelOptions.map((item: any) => (
+                    <MenuItem key={item.categoryId} value={item.categoryId}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-          {/* ── Actions ── */}
-          <Box display="flex" gap={1.5} justifyContent="flex-end" mb={4}>
-            <Button variant="outlined" sx={{ borderRadius: '3px', borderColor: AMZ.borderDark, color: AMZ.text, fontFamily: "'Helvetica Neue', Arial", fontSize: '13px', textTransform: 'none', height: '36px', px: 2.5, background: 'linear-gradient(to bottom, #f7f8fa, #e7e9ec)', '&:hover': { background: 'linear-gradient(to bottom, #e7eaf0, #d9dce3)', borderColor: '#888', boxShadow: 'none' } }}>
-              Cancel
+              <FormControl sx={{ gridColumn: { xs: "1 / -1", sm: "1 / -1" } }}>
+                <InputLabel id="cat3-label">Third category</InputLabel>
+                <Select
+                  labelId="cat3-label"
+                  label="Third category"
+                  name="category3"
+                  value={formik.values.category3}
+                  onChange={formik.handleChange}
+                  disabled={!formik.values.category2}
+                >
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  {thirdLevelOptions.map((item: any) => (
+                    <MenuItem key={item.categoryId} value={item.categoryId}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </Paper>
+        </Stack>
+
+        <Stack spacing={2} sx={{ position: { lg: "sticky" }, top: { lg: 90 } }}>
+          <Paper sx={{ p: 2.2 }}>
+            <Typography sx={{ fontWeight: 800, mb: 1.5 }}>Media Uploads</Typography>
+            <Button
+              component="label"
+              variant="outlined"
+              fullWidth
+              startIcon={uploading ? <CircularProgress size={14} /> : <AddPhotoAlternateOutlinedIcon />}
+              disabled={uploading}
+              sx={{ borderStyle: "dashed", py: 1.1 }}
+            >
+              {uploading ? "Uploading..." : "Add product image"}
+              <input hidden type="file" accept="image/*" onChange={handleImageUpload} />
             </Button>
-            <SubmitBtn type="submit" disabled={sellerProduct.loading} sx={{ minWidth: 140 }}>
-              {sellerProduct.loading
-                ? <CircularProgress size={18} sx={{ color: '#333' }} />
-                : 'Save and finish'}
-            </SubmitBtn>
-          </Box>
-        </form>
-      </ContentWrap>
 
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={snackbarOpen} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
-        <Alert onClose={() => setOpenSnackbar(false)} severity={sellerProduct.error ? 'error' : 'success'} variant="filled"
-          sx={{ width: '100%', fontFamily: "'Helvetica Neue', Arial", borderRadius: '3px' }}>
-          {sellerProduct.error ? sellerProduct.error : 'Product created successfully'}
+            <Box sx={{ mt: 1.5, display: "grid", gap: 1, gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+              {formik.values.images.map((image, index) => (
+                <Box key={`${image}-${index}`} sx={{ position: "relative", borderRadius: 1.5, overflow: "hidden", border: "1px solid #dbe7ea", aspectRatio: "1 / 1" }}>
+                  <img src={image} alt={`product-${index}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => removeImage(index)}
+                    sx={{
+                      minWidth: 0,
+                      width: 24,
+                      height: 24,
+                      p: 0,
+                      borderRadius: "50%",
+                      position: "absolute",
+                      top: 4,
+                      right: 4,
+                      bgcolor: "rgba(255,255,255,0.9)",
+                    }}
+                  >
+                    <DeleteOutlineRoundedIcon sx={{ fontSize: 14 }} />
+                  </Button>
+                </Box>
+              ))}
+              {!formik.values.images.length && (
+                <Box sx={{ gridColumn: "1 / -1", p: 1.2, borderRadius: 1.5, border: "1px dashed #cadce0", bgcolor: "rgba(15,118,110,0.03)" }}>
+                  <Typography sx={{ fontSize: ".78rem", color: "text.secondary" }}>
+                    Upload at least one clear image for better conversion.
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Paper>
+
+          <Paper sx={{ p: 2.2 }}>
+            <Typography sx={{ fontWeight: 800, mb: 1.5 }}>Listing Summary</Typography>
+            <Stack spacing={1}>
+              <Row label="Title" value={formik.values.title || "-"} />
+              <Row label="Price" value={formik.values.sellingPrice ? `Rs. ${formik.values.sellingPrice}` : "-"} />
+              <Row label="MRP" value={formik.values.mrpPrice ? `Rs. ${formik.values.mrpPrice}` : "-"} />
+              <Row label="Discount" value={discountPreview > 0 ? `${discountPreview}%` : "0%"} />
+              <Row label="Inventory" value={formik.values.quantity || "0"} />
+              <Row label="Images" value={String(formik.values.images.length)} />
+            </Stack>
+            <Button
+              type="submit"
+              variant="contained"
+              fullWidth
+              disabled={sellerProduct.loading || uploading}
+              sx={{ mt: 2, py: 1.1 }}
+            >
+              {sellerProduct.loading ? <CircularProgress size={18} sx={{ color: "#fff" }} /> : "Create Product"}
+            </Button>
+          </Paper>
+        </Stack>
+      </Box>
+
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={snackbarOpen}
+        autoHideDuration={4000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={sellerProduct.error ? "error" : "success"} variant="filled">
+          {sellerProduct.error || "Product created successfully"}
         </Alert>
       </Snackbar>
-    </PageWrap>
+    </Box>
   );
 };
 
+const Row = ({ label, value }: { label: string; value: string }) => (
+  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ py: 0.7, borderBottom: "1px solid #edf3f5" }}>
+    <Typography sx={{ color: "text.secondary", fontSize: ".82rem" }}>{label}</Typography>
+    <Typography sx={{ fontWeight: 700, fontSize: ".86rem", color: "text.primary" }}>{value}</Typography>
+  </Stack>
+);
+
 export default ProductForm;
+

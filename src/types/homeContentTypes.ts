@@ -1,6 +1,12 @@
 import type { HomeCategory } from './homeDataTypes';
 
-export type HomeSectionKey = 'HERO' | 'ELECTRONICS' | 'TOP_BRAND' | 'SHOP_BY_CATEGORY';
+export type HomeSectionKey =
+  | 'HERO'
+  | 'ELECTRONICS'
+  | 'TOP_BRAND'
+  | 'SHOP_BY_CATEGORY'
+  | 'DEALS'
+  | 'DAILY_DEALS';
 
 export interface HomeContentItem {
   id: number;
@@ -39,6 +45,22 @@ export interface DealItem {
   displayOrder?: number;
 }
 
+export interface DailyDiscountItem {
+  id?: number;
+  title?: string;
+  subtitle?: string;
+  description?: string;
+  imageUrl?: string;
+  redirectLink?: string;
+  discountLabel?: string;
+  discountPercent?: number;
+  active?: boolean;
+  highlighted?: boolean;
+  displayOrder?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
 export interface HomePageContent {
   heroSlides: HomeContentItem[];
   electronics: HomeContentItem[];
@@ -46,5 +68,6 @@ export interface HomePageContent {
   shopByCategories: HomeCategory[];
   dealCategories: HomeCategory[];
   deals: DealItem[];
+  dailyDiscounts: DailyDiscountItem[];
   sections: HomeSectionConfig[];
 }

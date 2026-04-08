@@ -88,7 +88,7 @@ const AdminLoginForm = () => {
           transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
         }
         .alf-input-wrap:focus-within {
-          border-color: #131921;
+          border-color: #0F172A;
           background: #fff;
           box-shadow: 0 0 0 3px rgba(19,25,33,0.08);
         }
@@ -99,7 +99,7 @@ const AdminLoginForm = () => {
           border: none;
           background: transparent;
           font-size: 14px;
-          color: #0F1111;
+          color: #0F172A;
           outline: none;
           border-radius: 8px;
           box-sizing: border-box;
@@ -130,7 +130,7 @@ const AdminLoginForm = () => {
           margin: 0 0 12px;
           line-height: 1.5;
         }
-        .alf-otp-hint strong { color: #0F1111; }
+        .alf-otp-hint strong { color: #0F172A; }
         .alf-resend-row {
           display: flex;
           align-items: center;
@@ -142,7 +142,7 @@ const AdminLoginForm = () => {
         .alf-resend-btn {
           background: none;
           border: none;
-          color: #007185;
+          color: #0E7490;
           font-size: 12px;
           font-weight: 600;
           cursor: pointer;
@@ -150,7 +150,7 @@ const AdminLoginForm = () => {
           text-decoration: underline;
         }
         .alf-resend-btn:hover { color: #005f6b; }
-        .alf-timer { color: #007185; font-weight: 600; }
+        .alf-timer { color: #0E7490; font-weight: 600; }
 
         .alf-btn {
           width: 100%;
@@ -170,9 +170,9 @@ const AdminLoginForm = () => {
         .alf-btn:hover:not(:disabled) { transform: translateY(-1px); }
 
         .alf-btn-primary {
-          background: #131921;
-          border: 1px solid #131921;
-          color: #FF9900;
+          background: #0F172A;
+          border: 1px solid #0F172A;
+          color: #0F766E;
         }
         .alf-btn-primary:hover:not(:disabled) { background: #1f2937; }
 
@@ -187,7 +187,7 @@ const AdminLoginForm = () => {
           width: 18px;
           height: 18px;
           border: 2px solid rgba(255,255,255,0.3);
-          border-top-color: #FF9900;
+          border-top-color: #0F766E;
           border-radius: 50%;
           animation: alf-spin 0.7s linear infinite;
         }
@@ -206,10 +206,10 @@ const AdminLoginForm = () => {
           padding: 8px 12px;
           margin-bottom: 12px;
         }
-        .alf-edit-email { font-size: 13px; font-weight: 600; color: #0F1111; }
+        .alf-edit-email { font-size: 13px; font-weight: 600; color: #0F172A; }
         .alf-edit-btn {
           font-size: 12px;
-          color: #007185;
+          color: #0E7490;
           background: none;
           border: none;
           cursor: pointer;

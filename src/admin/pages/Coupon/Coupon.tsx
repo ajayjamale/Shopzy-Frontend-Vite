@@ -1,49 +1,30 @@
-import React, { useEffect } from 'react'
-import CouponTable from './CouponTable'
-import { useAppDispatch } from '../../../Redux Toolkit/Store'
-import { fetchAllCoupons } from '../../../Redux Toolkit/Admin/AdminCouponSlice'
-import { Box, Typography } from '@mui/material'
-import LocalOfferIcon from '@mui/icons-material/LocalOffer'
+import { useEffect } from "react";
+import { Box, Typography } from "@mui/material";
+import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
+import CouponTable from "./CouponTable";
+import { useAppDispatch } from "../../../Redux Toolkit/Store";
+import { fetchAllCoupons } from "../../../Redux Toolkit/Admin/AdminCouponSlice";
 
 const Coupon = () => {
-    const dispatch = useAppDispatch()
+  const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        dispatch(fetchAllCoupons(localStorage.getItem("jwt") || ""))
-    }, [])
+  useEffect(() => {
+    dispatch(fetchAllCoupons(localStorage.getItem("jwt") || ""));
+  }, [dispatch]);
 
-    return (
-        <Box sx={{ backgroundColor: '#f3f3f3', minHeight: '100vh', p: 3 }}>
-            <Box sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1.5,
-                mb: 3,
-                pb: 2,
-                borderBottom: '2px solid #FF9900',
-            }}>
-                <LocalOfferIcon sx={{ color: '#FF9900', fontSize: 28 }} />
-                <Typography variant="h5" sx={{
-                    fontFamily: '"Amazon Ember", "Arial", sans-serif',
-                    fontWeight: 700,
-                    color: '#131921',
-                    letterSpacing: '-0.3px',
-                }}>
-                    Coupon Management
-                </Typography>
-                <Typography variant="body2" sx={{
-                    color: '#565959',
-                    fontFamily: '"Amazon Ember", "Arial", sans-serif',
-                    ml: 'auto',
-                    fontSize: '12px',
-                }}>
-                    Amazon Seller Central › Promotions › Coupons
-                </Typography>
-            </Box>
-
-            <CouponTable />
+  return (
+    <Box className="grid gap-4">
+      <Box className="surface p-5" sx={{ borderRadius: 4 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1.2 }}>
+          <LocalOfferRoundedIcon sx={{ color: "#0F766E" }} />
+          <Typography variant="h6" fontWeight={700}>
+            Coupon Management
+          </Typography>
         </Box>
-    )
-}
+      </Box>
+      <CouponTable />
+    </Box>
+  );
+};
 
-export default Coupon
+export default Coupon;

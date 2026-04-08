@@ -15,16 +15,16 @@ import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import PercentIcon from "@mui/icons-material/Percent";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 
-const amazonTextField = {
-  "& label.Mui-focused": { color: "#232F3E" },
+const modernTextField = {
+  "& label.Mui-focused": { color: "#1E293B" },
   "& .MuiOutlinedInput-root": {
-    fontFamily: '"Amazon Ember", Arial, sans-serif',
+    fontFamily: '"Manrope", Arial, sans-serif',
     fontSize: 13,
-    "&:hover fieldset": { borderColor: "#FF9900" },
-    "&.Mui-focused fieldset": { borderColor: "#FF9900", borderWidth: 2 },
+    "&:hover fieldset": { borderColor: "#0F766E" },
+    "&.Mui-focused fieldset": { borderColor: "#0F766E", borderWidth: 2 },
   },
-  "& label": { fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13 },
-  "& .MuiFormHelperText-root": { fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 11 },
+  "& label": { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13 },
+  "& .MuiFormHelperText-root": { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 11 },
 };
 
 interface CouponFormValues {
@@ -116,15 +116,15 @@ const CreateCouponForm: React.FC = () => {
     }}>
       {/* Header */}
       <Box sx={{
-        backgroundColor: "#232F3E",
+        backgroundColor: "#1E293B",
         px: 3, py: 2,
         display: "flex", alignItems: "center", gap: 1.5,
-        borderBottom: "3px solid #FF9900",
+        borderBottom: "3px solid #0F766E",
       }}>
-        <LocalOfferIcon sx={{ color: "#FF9900", fontSize: 20 }} />
+        <LocalOfferIcon sx={{ color: "#0F766E", fontSize: 20 }} />
         <Typography sx={{
           color: "#fff",
-          fontFamily: '"Amazon Ember", Arial, sans-serif',
+          fontFamily: '"Manrope", Arial, sans-serif',
           fontWeight: 700, fontSize: 15,
         }}>
           Create New Coupon
@@ -153,12 +153,12 @@ const CreateCouponForm: React.FC = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LocalOfferIcon sx={{ fontSize: 16, color: "#565959" }} />
+                        <LocalOfferIcon sx={{ fontSize: 16, color: "#64748B" }} />
                       </InputAdornment>
                     ),
                     sx: { fontFamily: '"Courier New", monospace', fontWeight: 700, letterSpacing: "1px" },
                   }}
-                  sx={amazonTextField}
+                  sx={modernTextField}
                 />
               </Grid>
 
@@ -178,12 +178,12 @@ const CreateCouponForm: React.FC = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PercentIcon sx={{ fontSize: 16, color: "#565959" }} />
+                        <PercentIcon sx={{ fontSize: 16, color: "#64748B" }} />
                       </InputAdornment>
                     ),
                     inputProps: { min: 1, max: 100 },
                   }}
-                  sx={amazonTextField}
+                  sx={modernTextField}
                 />
               </Grid>
 
@@ -199,7 +199,7 @@ const CreateCouponForm: React.FC = () => {
                       onBlur: () => formik.setFieldTouched("validityStartDate", true),
                       error: formik.touched.validityStartDate && Boolean(formik.errors.validityStartDate),
                       helperText: formik.touched.validityStartDate && (formik.errors.validityStartDate as string),
-                      sx: { ...amazonTextField, "& .MuiInputBase-root": { fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' } },
+                      sx: { ...modernTextField, "& .MuiInputBase-root": { fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' } },
                     },
                   }}
                 />
@@ -217,7 +217,7 @@ const CreateCouponForm: React.FC = () => {
                       onBlur: () => formik.setFieldTouched("validityEndDate", true),
                       error: formik.touched.validityEndDate && Boolean(formik.errors.validityEndDate),
                       helperText: formik.touched.validityEndDate && (formik.errors.validityEndDate as string),
-                      sx: { ...amazonTextField, "& .MuiInputBase-root": { fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' } },
+                      sx: { ...modernTextField, "& .MuiInputBase-root": { fontSize: 13, fontFamily: '"Manrope", Arial, sans-serif' } },
                     },
                   }}
                 />
@@ -239,12 +239,12 @@ const CreateCouponForm: React.FC = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <AttachMoneyIcon sx={{ fontSize: 16, color: "#565959" }} />
+                        <AttachMoneyIcon sx={{ fontSize: 16, color: "#64748B" }} />
                       </InputAdornment>
                     ),
                     inputProps: { min: 1 },
                   }}
-                  sx={amazonTextField}
+                  sx={modernTextField}
                 />
               </Grid>
 
@@ -256,7 +256,7 @@ const CreateCouponForm: React.FC = () => {
                   borderRadius: "3px",
                   px: 2, py: 1,
                 }}>
-                  <Typography sx={{ fontSize: 12, color: "#856404", fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
+                  <Typography sx={{ fontSize: 12, color: "#856404", fontFamily: '"Manrope", Arial, sans-serif' }}>
                     <strong>Note:</strong> Coupons will be available to all eligible customers once activated. Ensure the validity period and discount are correct before submitting.
                   </Typography>
                 </Box>
@@ -270,21 +270,21 @@ const CreateCouponForm: React.FC = () => {
                   fullWidth
                   disabled={adminCoupon.loading}
                   sx={{
-                    backgroundColor: "#FF9900",
-                    color: "#0F1111",
-                    fontFamily: '"Amazon Ember", Arial, sans-serif',
+                    backgroundColor: "#0F766E",
+                    color: "#0F172A",
+                    fontFamily: '"Manrope", Arial, sans-serif',
                     fontWeight: 700, fontSize: 14,
                     textTransform: "none",
                     borderRadius: "20px", py: 1.2,
-                    border: "1px solid #e88b00",
+                    border: "1px solid #0b5f59",
                     boxShadow: "0 1px 0 rgba(255,255,255,.4) inset, 0 -1px 0 rgba(0,0,0,.15) inset",
-                    "&:hover": { backgroundColor: "#e88b00", boxShadow: "none" },
-                    "&:active": { backgroundColor: "#d47f00" },
+                    "&:hover": { backgroundColor: "#0b5f59", boxShadow: "none" },
+                    "&:active": { backgroundColor: "#115e59" },
                     "&.Mui-disabled": { backgroundColor: "#f7ca7d", color: "#9d9d9d" },
                   }}
                 >
                   {adminCoupon.loading
-                    ? <CircularProgress size={22} sx={{ color: "#0F1111" }} />
+                    ? <CircularProgress size={22} sx={{ color: "#0F172A" }} />
                     : "Create Coupon"
                   }
                 </Button>
@@ -306,7 +306,7 @@ const CreateCouponForm: React.FC = () => {
           variant="filled"
           sx={{
             width: "100%",
-            fontFamily: '"Amazon Ember", Arial, sans-serif',
+            fontFamily: '"Manrope", Arial, sans-serif',
             backgroundColor: adminCoupon.error ? "#CC0C39" : "#067D62",
           }}
         >

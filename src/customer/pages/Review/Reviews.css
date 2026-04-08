@@ -1,292 +1,297 @@
-/* ============================================================
-   Reviews.css — Amazon design system
-   ============================================================ */
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 .amz-reviews-page {
-  font-family: "Amazon Ember", "Helvetica Neue", Arial, sans-serif;
-  color: #0f1111;
-  background: #f0f2f2;
-  min-height: 100vh;
+  padding: 26px 0 34px;
 }
 
-/* ── Wrapper ─────────────────────────────────────────────── */
 .amz-reviews-wrapper {
-  max-width: 1100px;
+  width: min(1180px, 94vw);
   margin: 0 auto;
-  padding: 24px 16px 48px;
 }
 
-/* ── Breadcrumb ──────────────────────────────────────────── */
 .amz-rv-breadcrumb {
-  font-size: 0.8125rem;
-  color: #565959;
-  margin-bottom: 16px;
+  font-size: 0.8rem;
+  color: #64748b;
+  margin-bottom: 12px;
 }
-.amz-rv-breadcrumb a { color: #0066c0; text-decoration: none; }
-.amz-rv-breadcrumb a:hover { color: #c45500; text-decoration: underline; }
-.amz-rv-breadcrumb span { margin: 0 4px; }
 
-/* ── Two-col layout ──────────────────────────────────────── */
+.amz-rv-breadcrumb a {
+  color: #0f766e;
+}
+
 .amz-rv-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
-  gap: 20px;
+  grid-template-columns: 320px 1fr;
+  gap: 16px;
   align-items: start;
 }
-@media (max-width: 768px) {
-  .amz-rv-layout { grid-template-columns: 1fr; }
-}
 
-/* ── Product sidebar ─────────────────────────────────────── */
 .amz-rv-product-sidebar {
   background: #fff;
-  border: 1px solid #d5d9d9;
-  border-radius: 4px;
-  overflow: hidden;
-  position: sticky;
-  top: 20px;
+  border: 1px solid #dce8ec;
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
 }
+
 .amz-rv-product-img {
   width: 100%;
-  aspect-ratio: 1;
-  object-fit: contain;
-  background: #fff;
-  border-bottom: 1px solid #f0f2f2;
-  padding: 16px;
+  aspect-ratio: 4/4;
+  object-fit: cover;
+  border-radius: 14px;
+  border: 1px solid #dce8ec;
 }
-.amz-rv-product-info { padding: 14px 16px; }
-.amz-rv-product-seller { font-size: 0.8125rem; color: #565959; margin-bottom: 4px; }
-.amz-rv-product-title  { font-size: 0.9375rem; font-weight: 700; color: #0f1111; margin-bottom: 10px; line-height: 1.4; }
-.amz-rv-product-price  { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; font-size: 0.875rem; }
-.amz-rv-price-sell     { font-weight: 700; font-size: 1rem; color: #0f1111; }
-.amz-rv-price-mrp      { color: #888c8c; text-decoration: line-through; }
-.amz-rv-price-off      { color: #c45500; font-weight: 700; }
 
-/* ── Card ────────────────────────────────────────────────── */
+.amz-rv-product-seller {
+  margin-top: 10px;
+  font-size: 0.76rem;
+  color: #64748b;
+}
+
+.amz-rv-product-title {
+  margin-top: 4px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.5;
+}
+
+.amz-rv-product-price {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  margin-top: 8px;
+}
+
+.amz-rv-price-sell {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.amz-rv-price-mrp {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  text-decoration: line-through;
+}
+
+.amz-rv-price-off {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: #be123c;
+}
+
+.amz-rv-btn-primary {
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: linear-gradient(130deg, #0f766e, #14b8a6);
+  color: #fff;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  padding: 9px 14px;
+}
+
 .amz-rv-card {
   background: #fff;
-  border: 1px solid #d5d9d9;
-  border-radius: 4px;
+  border: 1px solid #dce8ec;
+  border-radius: 18px;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.06);
   overflow: hidden;
-  margin-bottom: 16px;
 }
+
 .amz-rv-card-header {
-  background: #f0f2f2;
-  border-bottom: 1px solid #d5d9d9;
-  padding: 11px 18px;
-  font-size: 0.9375rem;
+  border-bottom: 1px solid #e8eff2;
+  background: #f8fbfc;
+  padding: 13px 16px;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #0f1111;
+  color: #0f172a;
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
 }
-.amz-rv-card-body { padding: 18px; }
 
-/* ── Overall rating summary ──────────────────────────────── */
+.amz-rv-card-body {
+  padding: 16px;
+}
+
 .amz-rv-summary {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-bottom: 20px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #e7e7e7;
-  flex-wrap: wrap;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 220px 1fr;
 }
-.amz-rv-big-score {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 80px;
-}
-.amz-rv-score-num {
-  font-size: 3rem;
-  font-weight: 900;
-  color: #0f1111;
-  line-height: 1;
-}
-.amz-rv-score-label { font-size: 0.75rem; color: #565959; margin-top: 4px; }
 
-/* ── Rating bars ─────────────────────────────────────────── */
-.amz-rv-bars { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 6px; }
-.amz-rv-bar-row { display: flex; align-items: center; gap: 8px; font-size: 0.8125rem; }
-.amz-rv-bar-label { width: 72px; flex-shrink: 0; color: #0066c0; cursor: pointer; text-align: right; }
-.amz-rv-bar-label:hover { color: #c45500; text-decoration: underline; }
+.amz-rv-score-num {
+  font-size: 2rem;
+  font-family: var(--font-display);
+}
+
+.amz-rv-score-label {
+  font-size: 0.84rem;
+  color: #64748b;
+}
+
+.amz-rv-stars {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.amz-rv-star {
+  color: #d97706;
+  display: inline-flex;
+}
+
+.amz-rv-star.empty {
+  color: #d2dde2;
+}
+
+.amz-rv-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.amz-rv-bar-row {
+  display: grid;
+  grid-template-columns: 90px 1fr 24px;
+  align-items: center;
+  gap: 8px;
+}
+
+.amz-rv-bar-label {
+  font-size: 0.76rem;
+  color: #64748b;
+}
+
 .amz-rv-bar-track {
-  flex: 1;
-  height: 12px;
-  background: #e7e7e7;
-  border-radius: 2px;
+  height: 8px;
+  border-radius: 99px;
+  background: #edf2f5;
   overflow: hidden;
 }
+
 .amz-rv-bar-fill {
   height: 100%;
-  background: #f0c14b;
-  border-radius: 2px;
-  transition: width 0.4s ease;
+  background: linear-gradient(130deg, #14b8a6, #0f766e);
 }
-.amz-rv-bar-fill.low { background: #e87722; }
-.amz-rv-bar-fill.vlow { background: #c40000; }
-.amz-rv-bar-count { width: 36px; flex-shrink: 0; color: #565959; }
 
-/* ── Individual review card ──────────────────────────────── */
+.amz-rv-bar-fill.low,
+.amz-rv-bar-fill.vlow {
+  background: #f97316;
+}
+
+.amz-rv-bar-count {
+  font-size: 0.76rem;
+  color: #64748b;
+}
+
 .amz-rv-review-item {
-  padding: 16px 0;
-  border-bottom: 1px solid #f0f2f2;
+  padding: 14px 0;
+  border-bottom: 1px solid #e8eff2;
 }
-.amz-rv-review-item:last-child { border-bottom: none; padding-bottom: 0; }
-.amz-rv-review-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
-.amz-rv-reviewer { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+
+.amz-rv-review-item:last-child {
+  border-bottom: 0;
+}
+
+.amz-rv-reviewer {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
 .amz-rv-avatar {
-  width: 36px; height: 36px;
-  background: #232f3e; color: #ff9900;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.875rem; font-weight: 700; flex-shrink: 0;
-}
-.amz-rv-reviewer-name { font-size: 0.875rem; font-weight: 700; color: #0f1111; }
-.amz-rv-reviewer-date { font-size: 0.75rem; color: #565959; }
-.amz-rv-stars { display: flex; align-items: center; gap: 4px; margin-bottom: 6px; }
-.amz-rv-star { color: #f0c14b; font-size: 1rem; }
-.amz-rv-star.empty { color: #d5d9d9; }
-.amz-rv-headline {
-  font-size: 0.9375rem; font-weight: 700; color: #0f1111; margin-bottom: 6px;
-}
-.amz-rv-body { font-size: 0.875rem; color: #333; line-height: 1.7; margin-bottom: 10px; }
-.amz-rv-images { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-.amz-rv-img {
-  width: 72px; height: 72px; object-fit: cover;
-  border: 1px solid #d5d9d9; border-radius: 3px;
-  cursor: pointer; transition: opacity 0.15s ease;
-}
-.amz-rv-img:hover { opacity: 0.85; }
-.amz-rv-delete-btn {
-  background: none; border: none; cursor: pointer;
-  color: #888c8c; padding: 4px; border-radius: 3px;
-  flex-shrink: 0; line-height: 1;
-  transition: color 0.15s ease, background 0.15s ease;
-}
-.amz-rv-delete-btn:hover { color: #c40000; background: #fff5f5; }
-
-/* ── Empty state ─────────────────────────────────────────── */
-.amz-rv-empty {
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  padding: 40px 24px; text-align: center; gap: 10px;
-}
-.amz-rv-empty-title { font-size: 1rem; font-weight: 700; color: #0f1111; }
-.amz-rv-empty-desc  { font-size: 0.875rem; color: #565959; }
-
-/* ── Write-review form ───────────────────────────────────── */
-.amz-wr-form { display: flex; flex-direction: column; gap: 18px; }
-.amz-wr-label {
-  display: block; font-size: 0.8125rem; font-weight: 700;
-  color: #0f1111; margin-bottom: 6px;
-}
-.amz-wr-required { color: #c40000; margin-left: 2px; }
-.amz-wr-input, .amz-wr-textarea {
-  width: 100%; padding: 8px 12px;
-  border: 1px solid #888c8c; border-radius: 3px;
-  font-size: 0.9375rem; color: #0f1111; outline: none;
-  font-family: inherit;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.amz-wr-input:focus, .amz-wr-textarea:focus {
-  border-color: #e77600;
-  box-shadow: 0 0 0 3px rgba(228,121,17,0.5);
-}
-.amz-wr-input.err, .amz-wr-textarea.err {
-  border-color: #c40000;
-  box-shadow: 0 0 0 3px rgba(196,0,0,0.2);
-}
-.amz-wr-textarea { resize: vertical; line-height: 1.6; }
-.amz-wr-char-row { display: flex; justify-content: space-between; margin-top: 4px; }
-.amz-wr-char-count { font-size: 0.75rem; color: #888c8c; }
-.amz-wr-err-msg {
-  color: #c40000; font-size: 0.8125rem; margin-top: 4px;
-  display: flex; align-items: center; gap: 4px;
-}
-.amz-wr-err-dot {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 14px; height: 14px; background: #c40000; color: #fff;
-  border-radius: 50%; font-size: 10px; font-weight: bold; flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(130deg, #14b8a6, #0f766e);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
-/* ── Stars (write form) ──────────────────────────────────── */
-.amz-wr-stars { display: flex; align-items: center; gap: 2px; }
-.amz-wr-star-btn {
-  background: none; border: none; cursor: pointer;
-  padding: 2px; line-height: 1;
-  transition: transform 0.1s ease;
-}
-.amz-wr-star-btn:hover { transform: scale(1.2); }
-.amz-wr-star-label { font-size: 0.875rem; color: #565959; margin-left: 8px; }
-
-/* ── Image upload ────────────────────────────────────────── */
-.amz-wr-upload-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
-.amz-wr-upload-btn {
-  width: 80px; height: 80px;
-  border: 1px dashed #adb1b8; border-radius: 3px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  cursor: pointer; background: #fafafa; gap: 4px;
-  transition: border-color 0.15s ease, background 0.15s ease;
-  font-size: 0.6875rem; color: #565959;
-}
-.amz-wr-upload-btn:hover { border-color: #e77600; background: #fef9f0; color: #c45500; }
-.amz-wr-upload-btn svg { font-size: 1.5rem; }
-.amz-wr-img-thumb {
-  position: relative; width: 80px; height: 80px;
-}
-.amz-wr-img-thumb img {
-  width: 80px; height: 80px; object-fit: cover;
-  border: 1px solid #d5d9d9; border-radius: 3px;
-}
-.amz-wr-img-remove {
-  position: absolute; top: -6px; right: -6px;
-  width: 18px; height: 18px;
-  background: #c40000; color: #fff; border: none;
-  border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 0.625rem; font-weight: bold; line-height: 1;
+.amz-rv-reviewer-name {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #0f172a;
 }
 
-/* ── Buttons ─────────────────────────────────────────────── */
-.amz-rv-btn-primary {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 8px 20px;
-  background: linear-gradient(to bottom, #f7dfa5, #f0c14b);
-  color: #111; border: 1px solid #a88734; border-radius: 3px;
-  font-size: 0.9375rem; cursor: pointer;
-  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
-  transition: background 0.15s ease; font-family: inherit;
-}
-.amz-rv-btn-primary:hover { background: linear-gradient(to bottom, #f5d78e, #eeb933); }
-.amz-rv-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.amz-rv-btn-secondary {
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-  padding: 8px 20px;
-  background: linear-gradient(to bottom, #f7f8f8, #e7e9ec);
-  color: #0f1111; border: 1px solid #adb1b8; border-radius: 3px;
-  font-size: 0.9375rem; cursor: pointer;
-  transition: background 0.15s ease; font-family: inherit; text-decoration: none;
-}
-.amz-rv-btn-secondary:hover { background: linear-gradient(to bottom, #e7e9ec, #d9dce1); }
-
-/* ── Spin ────────────────────────────────────────────────── */
-@keyframes rv-spin { to { transform: rotate(360deg); } }
-.amz-rv-spinner {
-  width: 15px; height: 15px;
-  border: 2px solid rgba(0,0,0,0.15);
-  border-top-color: #111;
-  border-radius: 50%;
-  animation: rv-spin 0.7s linear infinite;
-  display: inline-block;
+.amz-rv-reviewer-date {
+  font-size: 0.74rem;
+  color: #64748b;
 }
 
-/* ── Verified badge ──────────────────────────────────────── */
 .amz-rv-verified {
-  font-size: 0.75rem; color: #c45500; font-weight: 700;
-  display: flex; align-items: center; gap: 3px;
+  font-size: 0.72rem;
+  color: #15803d;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.amz-rv-body {
+  margin-top: 6px;
+  font-size: 0.85rem;
+  color: #334155;
+  line-height: 1.7;
+}
+
+.amz-rv-images {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.amz-rv-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  border: 1px solid #dce8ec;
+  object-fit: cover;
+}
+
+.amz-rv-delete-btn {
+  border: 1px solid #f1d3da;
+  background: #fff5f7;
+  color: #be123c;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.amz-rv-empty {
+  text-align: center;
+  padding: 24px;
+}
+
+.amz-rv-empty-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.amz-rv-empty-desc {
+  margin-top: 6px;
+  color: #64748b;
+  font-size: 0.86rem;
+}
+
+@media (max-width: 980px) {
+  .amz-rv-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .amz-rv-summary {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,177 +1,284 @@
-import React from 'react'
+import React from "react";
 import {
-    Box, Button, CircularProgress, FormControl, FormHelperText,
-    InputAdornment, InputLabel, MenuItem, Select, TextField, Typography,
-} from '@mui/material'
-import { useFormik } from 'formik'
-import * as Yup from 'yup'
-import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store'
-import { createDeal } from '../../../Redux Toolkit/Admin/DealSlice'
-import LocalOfferIcon from '@mui/icons-material/LocalOffer'
-import PercentIcon from '@mui/icons-material/Percent'
-import CategoryIcon from '@mui/icons-material/Category'
+  Box,
+  Button,
+  CircularProgress,
+  FormControlLabel,
+  Switch,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
+import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { createDailyDiscount, getAllDailyDiscounts } from "../../../Redux Toolkit/Admin/DealSlice";
+import { fetchHomePageData } from "../../../Redux Toolkit/Customer/Customer/AsyncThunk";
 
-const amazonTextField = {
-    '& label.Mui-focused': { color: '#232F3E' },
-    '& .MuiOutlinedInput-root': {
-        fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13,
-        '&:hover fieldset': { borderColor: '#FF9900' },
-        '&.Mui-focused fieldset': { borderColor: '#FF9900', borderWidth: 2 },
-    },
-    '& label': { fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13 },
-    '& .MuiFormHelperText-root': { fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 11 },
-}
+const modernTextField = {
+  "& label.Mui-focused": { color: "#1E293B" },
+  "& .MuiOutlinedInput-root": {
+    fontFamily: '"Manrope", Arial, sans-serif',
+    fontSize: 13,
+    "&:hover fieldset": { borderColor: "#0F766E" },
+    "&.Mui-focused fieldset": { borderColor: "#0F766E", borderWidth: 2 },
+  },
+  "& label": { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13 },
+  "& .MuiFormHelperText-root": { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 11 },
+};
 
 interface Props {
-    onSuccess?: () => void
+  onSuccess?: () => void;
 }
 
 const CreateDealForm = ({ onSuccess }: Props) => {
-    const { homePage, deal } = useAppSelector(store => store)
-    const dispatch = useAppDispatch()
+  const { deal } = useAppSelector((store) => store);
+  const dispatch = useAppDispatch();
 
-    const formik = useFormik({
-        initialValues: { discount: '' as unknown as number, category: '' },
-        validationSchema: Yup.object({
-            discount: Yup.number()
-                .typeError('Enter a valid number')
-                .required('Discount is required')
-                .min(1, 'Discount must be at least 1%')
-                .max(100, 'Discount cannot exceed 100%'),
-            category: Yup.string().required('Please select a category'),
-        }),
-        onSubmit: async (values, { resetForm }) => {
-            const result = await dispatch(createDeal({
-                discount: values.discount,
-                category: { id: values.category },
-            }))
-            if (createDeal.fulfilled.match(result)) {
-                resetForm()
-                onSuccess?.()
-            }
-        },
-    })
+  const formik = useFormik({
+    initialValues: {
+      title: "",
+      subtitle: "",
+      imageUrl: "",
+      redirectLink: "/products",
+      discountPercent: 20,
+      discountLabel: "",
+      startDate: "",
+      endDate: "",
+      displayOrder: 0,
+      highlighted: true,
+      active: true,
+    },
+    validationSchema: Yup.object({
+      title: Yup.string().trim().required("Title is required"),
+      imageUrl: Yup.string().trim().url("Enter a valid image URL").required("Image URL is required"),
+      redirectLink: Yup.string().trim().required("Redirect link is required"),
+      discountPercent: Yup.number()
+        .typeError("Enter a valid number")
+        .required("Discount is required")
+        .min(1, "Discount must be at least 1%")
+        .max(95, "Discount cannot exceed 95%"),
+      startDate: Yup.string().required("Start date is required"),
+      endDate: Yup.string().required("End date is required"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      const payload = {
+        ...values,
+        title: values.title.trim(),
+        subtitle: values.subtitle.trim() || undefined,
+        imageUrl: values.imageUrl.trim(),
+        redirectLink: values.redirectLink.trim(),
+        discountLabel: values.discountLabel.trim() || `${values.discountPercent}% OFF`,
+      };
 
-    return (
-        <Box sx={{
-            width: 500,
-            backgroundColor: '#fff',
-            border: '1px solid #ddd',
-            borderRadius: '4px',
-            overflow: 'hidden',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-        }}>
-            {/* Header */}
-            <Box sx={{
-                backgroundColor: '#232F3E', px: 3, py: 2,
-                display: 'flex', alignItems: 'center', gap: 1.5,
-                borderBottom: '3px solid #FF9900',
-            }}>
-                <LocalOfferIcon sx={{ color: '#FF9900', fontSize: 20 }} />
-                <Typography sx={{ color: '#fff', fontFamily: '"Amazon Ember", Arial, sans-serif', fontWeight: 700, fontSize: 15 }}>
-                    Create New Deal
-                </Typography>
-            </Box>
+      const result = await dispatch(createDailyDiscount(payload));
+      if (createDailyDiscount.fulfilled.match(result)) {
+        dispatch(getAllDailyDiscounts());
+        dispatch(fetchHomePageData());
+        resetForm();
+        onSuccess?.();
+      }
+    },
+  });
 
-            <Box component="form" onSubmit={formik.handleSubmit} sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                {/* Discount */}
-                <TextField
-                    fullWidth
-                    id="discount"
-                    name="discount"
-                    label="Discount Percentage"
-                    type="number"
-                    value={formik.values.discount}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    error={formik.touched.discount && Boolean(formik.errors.discount)}
-                    helperText={formik.touched.discount && formik.errors.discount}
-                    InputProps={{
-                        startAdornment: (
-                            <InputAdornment position="start">
-                                <PercentIcon sx={{ fontSize: 16, color: '#565959' }} />
-                            </InputAdornment>
-                        ),
-                        inputProps: { min: 1, max: 100 },
-                    }}
-                    sx={amazonTextField}
-                />
+  return (
+    <Box
+      sx={{
+        width: 560,
+        maxWidth: "94vw",
+        backgroundColor: "#fff",
+        border: "1px solid #ddd",
+        borderRadius: "6px",
+        overflow: "hidden",
+        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      }}
+    >
+      <Box
+        sx={{
+          backgroundColor: "#1E293B",
+          px: 3,
+          py: 2,
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          borderBottom: "3px solid #0F766E",
+        }}
+      >
+        <LocalOfferIcon sx={{ color: "#0F766E", fontSize: 20 }} />
+        <Typography
+          sx={{ color: "#fff", fontFamily: '"Manrope", Arial, sans-serif', fontWeight: 700, fontSize: 15 }}
+        >
+          Create Daily Discount
+        </Typography>
+      </Box>
 
-                {/* Category */}
-                <FormControl
-                    fullWidth
-                    error={formik.touched.category && Boolean(formik.errors.category)}
-                    sx={{
-                        '& label.Mui-focused': { color: '#232F3E' },
-                        '& .MuiOutlinedInput-root': {
-                            fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13,
-                            '&:hover fieldset': { borderColor: '#FF9900' },
-                            '&.Mui-focused fieldset': { borderColor: '#FF9900', borderWidth: 2 },
-                        },
-                        '& label': { fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 13 },
-                    }}
-                >
-                    <InputLabel id="category-label">Category</InputLabel>
-                    <Select
-                        labelId="category-label"
-                        id="category"
-                        name="category"
-                        value={formik.values.category}
-                        onChange={formik.handleChange}
-                        onBlur={formik.handleBlur}
-                        label="Category"
-                        startAdornment={
-                            <InputAdornment position="start">
-                                <CategoryIcon sx={{ fontSize: 16, color: '#565959' }} />
-                            </InputAdornment>
-                        }
-                    >
-                        {homePage.homePageData?.dealCategories.map((item) => (
-                            <MenuItem key={item.id} value={item.id} sx={{ fontSize: 13, fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
-                                {item.categoryId}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                    {formik.touched.category && formik.errors.category && (
-                        <FormHelperText sx={{ fontFamily: '"Amazon Ember", Arial, sans-serif', fontSize: 11 }}>
-                            {formik.errors.category}
-                        </FormHelperText>
-                    )}
-                </FormControl>
+      <Box component="form" onSubmit={formik.handleSubmit} sx={{ p: 3, display: "grid", gap: 2 }}>
+        <TextField
+          fullWidth
+          id="title"
+          name="title"
+          label="Title"
+          value={formik.values.title}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.title && Boolean(formik.errors.title)}
+          helperText={formik.touched.title && formik.errors.title}
+          sx={modernTextField}
+        />
 
-                {/* Note */}
-                <Box sx={{ backgroundColor: '#FFF3CD', border: '1px solid #FFEAA7', borderRadius: '3px', px: 2, py: 1 }}>
-                    <Typography sx={{ fontSize: 12, color: '#856404', fontFamily: '"Amazon Ember", Arial, sans-serif' }}>
-                        <strong>Note:</strong> The deal will appear on the homepage for the selected category. After creating, you'll be redirected to the Deals list.
-                    </Typography>
-                </Box>
+        <TextField
+          fullWidth
+          id="subtitle"
+          name="subtitle"
+          label="Subtitle"
+          value={formik.values.subtitle}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          sx={modernTextField}
+        />
 
-                {/* Submit */}
-                <Button
-                    variant="contained"
-                    type="submit"
-                    fullWidth
-                    disabled={deal?.loading}
-                    sx={{
-                        backgroundColor: '#FF9900', color: '#0F1111',
-                        fontFamily: '"Amazon Ember", Arial, sans-serif',
-                        fontWeight: 700, fontSize: 14, textTransform: 'none',
-                        borderRadius: '20px', py: 1.2,
-                        border: '1px solid #e88b00',
-                        boxShadow: '0 1px 0 rgba(255,255,255,.4) inset, 0 -1px 0 rgba(0,0,0,.15) inset',
-                        '&:hover': { backgroundColor: '#e88b00', boxShadow: 'none' },
-                        '&:active': { backgroundColor: '#d47f00' },
-                        '&.Mui-disabled': { backgroundColor: '#f7ca7d', color: '#9d9d9d' },
-                    }}
-                >
-                    {deal?.loading
-                        ? <CircularProgress size={22} sx={{ color: '#0F1111' }} />
-                        : 'Create Deal'
-                    }
-                </Button>
-            </Box>
+        <TextField
+          fullWidth
+          id="imageUrl"
+          name="imageUrl"
+          label="Image URL"
+          value={formik.values.imageUrl}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.imageUrl && Boolean(formik.errors.imageUrl)}
+          helperText={formik.touched.imageUrl && formik.errors.imageUrl}
+          sx={modernTextField}
+        />
+
+        <TextField
+          fullWidth
+          id="redirectLink"
+          name="redirectLink"
+          label="Redirect Link"
+          value={formik.values.redirectLink}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.redirectLink && Boolean(formik.errors.redirectLink)}
+          helperText={formik.touched.redirectLink && formik.errors.redirectLink}
+          sx={modernTextField}
+        />
+
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 1.5 }}>
+          <TextField
+            fullWidth
+            id="discountPercent"
+            name="discountPercent"
+            label="Discount %"
+            type="number"
+            value={formik.values.discountPercent}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.discountPercent && Boolean(formik.errors.discountPercent)}
+            helperText={formik.touched.discountPercent && formik.errors.discountPercent}
+            inputProps={{ min: 1, max: 95 }}
+            sx={modernTextField}
+          />
+          <TextField
+            fullWidth
+            id="discountLabel"
+            name="discountLabel"
+            label="Discount Label (optional)"
+            value={formik.values.discountLabel}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            placeholder="e.g. 30% OFF"
+            sx={modernTextField}
+          />
         </Box>
-    )
-}
 
-export default CreateDealForm
+        <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr 1fr" }, gap: 1.5 }}>
+          <TextField
+            fullWidth
+            id="startDate"
+            name="startDate"
+            label="Start Date"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={formik.values.startDate}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+            helperText={formik.touched.startDate && formik.errors.startDate}
+            sx={modernTextField}
+          />
+          <TextField
+            fullWidth
+            id="endDate"
+            name="endDate"
+            label="End Date"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={formik.values.endDate}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+            helperText={formik.touched.endDate && formik.errors.endDate}
+            sx={modernTextField}
+          />
+          <TextField
+            fullWidth
+            id="displayOrder"
+            name="displayOrder"
+            label="Display Order"
+            type="number"
+            value={formik.values.displayOrder}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            inputProps={{ min: 0 }}
+            sx={modernTextField}
+          />
+        </Box>
+
+        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={formik.values.highlighted}
+                onChange={(e) => formik.setFieldValue("highlighted", e.target.checked)}
+              />
+            }
+            label="Highlighted"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={formik.values.active}
+                onChange={(e) => formik.setFieldValue("active", e.target.checked)}
+              />
+            }
+            label="Active"
+          />
+        </Box>
+
+        <Button
+          variant="contained"
+          type="submit"
+          fullWidth
+          disabled={deal.loading}
+          sx={{
+            backgroundColor: "#0F766E",
+            color: "#0F172A",
+            fontFamily: '"Manrope", Arial, sans-serif',
+            fontWeight: 700,
+            fontSize: 14,
+            textTransform: "none",
+            borderRadius: "20px",
+            py: 1.2,
+            border: "1px solid #0b5f59",
+            "&:hover": { backgroundColor: "#0b5f59" },
+            "&.Mui-disabled": { backgroundColor: "#d1e4e2", color: "#64748B" },
+          }}
+        >
+          {deal.loading ? <CircularProgress size={22} sx={{ color: "#0F172A" }} /> : "Create Daily Discount"}
+        </Button>
+      </Box>
+    </Box>
+  );
+};
+
+export default CreateDealForm;

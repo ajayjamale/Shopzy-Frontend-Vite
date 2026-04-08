@@ -1,422 +1,285 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useMemo, useState } from "react";
+import { Button } from "@mui/material";
+import ArrowOutwardRoundedIcon from "@mui/icons-material/ArrowOutwardRounded";
+import NavigateBeforeRoundedIcon from "@mui/icons-material/NavigateBeforeRounded";
+import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../Redux Toolkit/Store";
 
-const DELAY = 5500;
+const fallbackSlides = [
+  {
+    title: "Luxury Looks. Smart Prices.",
+    subtitle: "Spring collection now live",
+    description: "Explore standout drops from premium labels with fast delivery and easy returns.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80&fit=crop",
+    buttonText: "Shop collection",
+    categoryId: "women",
+  },
+  {
+    title: "Modern Tech For Everyday",
+    subtitle: "Best-in-class electronics",
+    description: "Curated headphones, laptops, and smart devices selected for quality and value.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1600&q=80&fit=crop",
+    buttonText: "Browse electronics",
+    categoryId: "electronics",
+  },
+  {
+    title: "Designed Homes Start Here",
+    subtitle: "Furniture and decor edit",
+    description: "Create warm, minimal living spaces with beautiful and functional pieces.",
+    imageUrl:
+      "https://images.unsplash.com/photo-1493666438817-866a91353ca9?w=1600&q=80&fit=crop",
+    buttonText: "Refresh your home",
+    categoryId: "home_furniture",
+  },
+];
 
-const MainCarousel: React.FC = () => {
-  const { homePage } = useAppSelector((s) => s);
+const MainCarousel = () => {
   const navigate = useNavigate();
+  const { homePage } = useAppSelector((store) => store);
 
   const slides = useMemo(() => {
     if (homePage.homePageData?.heroSlides?.length) {
-      return homePage.homePageData.heroSlides.map((item, idx) => ({
-        id: item.id || idx,
-        badge: item.badgeText || "Featured",
-        title: item.title || "Shop the best picks",
-        subtitle: item.subtitle || "",
-        desc: item.description || "",
-        cta: item.buttonText || "Shop Now",
-        ctaSecondary: "Learn more",
-        tag: item.categoryId || item.redirectLink || "",
-        img: item.imageUrl,
-        bg: "#f5f6f8",
-        accent: "#FF9900",
-        accentDark: "#c96b00",
-        textDark: "#0F1111",
-        pill: item.badgeText || "FEATURED",
-        link: item.buttonLink || item.redirectLink || "#",
+      return homePage.homePageData.heroSlides.map((slide) => ({
+        title: slide.title || "Curated Collections",
+        subtitle: slide.subtitle || slide.badgeText || "Fresh picks",
+        description:
+          slide.description ||
+          "Shop thoughtfully selected products across fashion, electronics, and home.",
+        imageUrl: slide.imageUrl || fallbackSlides[0].imageUrl,
+        buttonText: slide.buttonText || "Explore now",
+        link: slide.buttonLink || slide.redirectLink || slide.categoryId || "/",
       }));
     }
-    return [
-      {
-        id: 1,
-        badge: "Limited Time Deal",
-        title: "Up to 60% off",
-        subtitle: "Summer Fashion",
-        desc: "Top brands. Fresh styles. Free delivery on orders over ₹499.",
-        cta: "Shop Now",
-        ctaSecondary: "See all deals",
-        tag: "Ends in 12 hrs",
-        img: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1400&q=90&fit=crop",
-        bg: "#FEF9EC",
-        accent: "#FF9900",
-        accentDark: "#E47911",
-        textDark: "#0F1111",
-        pill: "DEAL OF THE DAY",
-        link: "#",
-      },
-      {
-        id: 2,
-        badge: "New Arrival",
-        title: "Smart Home Devices",
-        subtitle: "Echo & Fire TV",
-        desc: "Control your home with your voice. Starting at just ₹2,999.",
-        cta: "Explore Devices",
-        ctaSecondary: "Learn more",
-        tag: "Free setup included",
-        img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=90&fit=crop",
-        bg: "#EBF5FB",
-        accent: "#0066C0",
-        accentDark: "#004B8D",
-        textDark: "#0F1111",
-        pill: "NEW LAUNCH",
-        link: "#",
-      },
-      {
-        id: 3,
-        badge: "Best Seller",
-        title: "Premium Audio",
-        subtitle: "Headphones & Earbuds",
-        desc: "Noise cancellation. Studio-grade sound. Ships in 24 hours.",
-        cta: "Shop Audio",
-        ctaSecondary: "Compare models",
-        tag: "Free returns",
-        img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1400&q=90&fit=crop",
-        bg: "#F0F4F0",
-        accent: "#007600",
-        accentDark: "#005A00",
-        textDark: "#0F1111",
-        pill: "TOP RATED",
-        link: "#",
-      },
-    ];
+
+    return fallbackSlides.map((slide) => ({
+      ...slide,
+      link: slide.categoryId,
+    }));
   }, [homePage.homePageData?.heroSlides]);
 
-  const [cur, setCur] = useState(0);
-  const [prev, setPrev] = useState<number | null>(null);
-  const [dir, setDir] = useState<1 | -1>(1);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [index, setIndex] = useState(0);
+  const active = slides[index];
 
-  const go = useCallback(
-    (idx: number, direction: 1 | -1 = 1) => {
-      setPrev(cur);
-      setDir(direction);
-      setCur(idx);
-      if (timerRef.current) clearInterval(timerRef.current);
-      timerRef.current = setInterval(
-        () => setCur((c) => {
-          setPrev(c);
-          setDir(1);
-          return (c + 1) % slides.length;
-        }),
-        DELAY
-      );
-    },
-    [cur, slides.length]
-  );
+  const move = (direction: 1 | -1) => {
+    setIndex((prev) => {
+      const next = prev + direction;
+      if (next < 0) return slides.length - 1;
+      if (next >= slides.length) return 0;
+      return next;
+    });
+  };
 
-  useEffect(() => {
-    timerRef.current = setInterval(
-      () => setCur((c) => {
-        setPrev(c);
-        setDir(1);
-        return (c + 1) % slides.length;
-      }),
-      DELAY
-    );
-    return () => timerRef.current && clearInterval(timerRef.current);
-  }, [slides.length]);
-
-  const s = slides[cur];
-
-  const handlePrimaryClick = () => {
-    if (s.link && s.link.startsWith("/")) navigate(s.link);
+  const handleCta = () => {
+    const target = active.link || "/";
+    if (target.startsWith("/")) {
+      navigate(target);
+      return;
+    }
+    navigate(`/products/${target}`);
   };
 
   return (
-    <>
-      <style>{`
-        .amz-carousel * { box-sizing: border-box; }
-        @keyframes amzFadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes amzImgIn { from { opacity: 0; transform: scale(1.04); } to { opacity: 1; transform: scale(1); } }
-        @keyframes amzProg { from { transform: scaleX(0); } to { transform: scaleX(1); } }
-        .amz-text-enter { animation: amzFadeIn 0.45s ease both; }
-        .amz-img-enter { animation: amzImgIn 0.6s ease both; }
-        .amz-prog-bar  { animation: amzProg ${DELAY}ms linear forwards; transform-origin: left; }
-        .amz-cta-primary {
-          display: inline-flex; align-items: center; gap: 6px;
-          padding: 10px 22px; border-radius: 20px;
-          font-size: 13px; font-weight: 700; cursor: pointer; border: none;
-          transition: all 0.18s ease; font-family: system-ui, sans-serif;
-        }
-        .amz-cta-primary:hover { filter: brightness(0.92); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.18); }
-        .amz-cta-secondary { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; cursor: pointer; background: none; border: none; }
-        .amz-nav-btn { position: absolute; top: 50%; transform: translateY(-50%); z-index: 20; width: 40px; height: 72px; border: none; cursor: pointer; display: flex; align-items: center; justifyContent: center; transition: all 0.2s ease; font-size: 22px; font-weight: 300; }
-        .amz-dot { border: none; padding: 0; cursor: pointer; border-radius: 50%; transition: all 0.25s ease; }
-        @media (max-width: 768px) {
-          .amz-content-grid { flex-direction: column !important; }
-          .amz-text-col { max-width: 100% !important; padding: clamp(20px, 5vw, 40px) !important; }
-          .amz-img-col { height: 220px !important; }
-          .amz-title { font-size: clamp(26px, 7vw, 40px) !important; }
-        }
-      `}</style>
-
-      <section
-        className="amz-carousel"
+    <section className="app-container" style={{ paddingTop: 26 }}>
+      <div
+        className="surface"
         style={{
-          position: "relative",
-          width: "100%",
-          height: "clamp(300px, 45vw, 560px)",
+          borderRadius: 26,
           overflow: "hidden",
-          background: s.bg,
-          transition: "background 0.5s ease",
-          zIndex: 1,
+          minHeight: "min(74vh, 560px)",
+          position: "relative",
+          background: "#0B1320",
         }}
       >
-        {slides.map((sl, i) => (
-          <div
-            key={sl.id}
-            style={{
-              position: "absolute",
-              inset: 0,
-              opacity: i === cur ? 1 : 0,
-              transition: "opacity 0.5s ease",
-              zIndex: i === cur ? 2 : 1,
-              background: sl.bg,
-            }}
-          />
-        ))}
-
-        <div
-          key={`content-${cur}`}
-          className="amz-content-grid"
+        <img
+          src={active.imageUrl}
+          alt={active.title}
           style={{
             position: "absolute",
             inset: 0,
-            zIndex: 10,
-            display: "flex",
-            alignItems: "stretch",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            objectPosition: "center",
+          }}
+        />
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(108deg, rgba(2,6,23,.82) 0%, rgba(2,6,23,.35) 42%, rgba(2,6,23,.62) 100%)",
+          }}
+        />
+
+        <div
+          onClick={handleCta}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              handleCta();
+            }
+          }}
+          style={{
+            position: "relative",
+            minHeight: "min(74vh, 560px)",
+            cursor: "pointer",
           }}
         >
           <div
-            className="amz-text-col"
             style={{
-              flex: "0 0 clamp(280px, 42%, 520px)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              padding: "clamp(24px, 5vw, 64px) clamp(20px, 4vw, 56px)",
-              position: "relative",
+              position: "absolute",
+              left: "clamp(18px, 5vw, 54px)",
+              right: "clamp(18px, 5vw, 54px)",
+              top: "50%",
+              transform: "translateY(-50%)",
+              maxWidth: 720,
+              borderRadius: 22,
+              border: "1px solid rgba(255,255,255,.26)",
+              background: "linear-gradient(140deg, rgba(2,6,23,.72) 0%, rgba(15,118,110,.36) 100%)",
+              backdropFilter: "blur(7px)",
+              padding: "clamp(18px, 4vw, 36px)",
+              display: "grid",
+              gap: 12,
             }}
           >
-            <div className="amz-text-enter" style={{ marginBottom: 12 }}>
-              <span
-                style={{
-                  display: "inline-block",
-                  background: s.accent,
-                  color: "#fff",
-                  fontSize: 9,
-                  fontWeight: 800,
-                  letterSpacing: "0.15em",
-                  padding: "3px 10px",
-                  borderRadius: 3,
-                  fontFamily: "system-ui, sans-serif",
+            <span
+              style={{
+                display: "inline-flex",
+                width: "fit-content",
+                borderRadius: 999,
+                border: "1px solid rgba(94,234,212,.38)",
+                background: "rgba(8,47,73,.5)",
+                color: "#99F6E4",
+                padding: "6px 12px",
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: ".12em",
+                textTransform: "uppercase",
+              }}
+            >
+              {active.subtitle}
+            </span>
+
+            <h1 style={{ color: "#F8FAFC", fontSize: "clamp(1.85rem,4vw,3.5rem)", lineHeight: 1.02 }}>
+              {active.title}
+            </h1>
+
+            <p style={{ color: "#D6E3E9", maxWidth: 620, lineHeight: 1.7 }}>
+              {active.description}
+            </p>
+
+            <div className="flex items-center gap-3 flex-wrap pt-2">
+              <Button
+                variant="contained"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleCta();
+                }}
+                endIcon={<ArrowOutwardRoundedIcon />}
+                sx={{
+                  bgcolor: "#0F766E",
+                  px: 3,
+                  py: 1.2,
+                  borderRadius: 999,
+                  "&:hover": { bgcolor: "#0B5F59" },
                 }}
               >
-                {s.pill}
+                {active.buttonText}
+              </Button>
+              <span style={{ color: "#C6D7DF", fontSize: "0.9rem", fontWeight: 700 }}>
+                {String(index + 1).padStart(2, "0")} / {String(slides.length).padStart(2, "0")}
               </span>
             </div>
-            <h2
-              className="amz-text-enter amz-title"
-              style={{
-                fontFamily: "'Georgia', 'Times New Roman', serif",
-                fontSize: "clamp(28px, 4vw, 52px)",
-                fontWeight: 700,
-                color: s.textDark,
-                margin: "0 0 4px",
-                lineHeight: 1.1,
-                letterSpacing: "-0.02em",
-              }}
-            >
-              {s.title}
-            </h2>
-            <p
-              className="amz-text-enter"
-              style={{
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "clamp(15px, 1.8vw, 20px)",
-                fontWeight: 400,
-                color: s.accent,
-                margin: "0 0 12px",
-                letterSpacing: "-0.01em",
-              }}
-            >
-              {s.subtitle}
-            </p>
-            <p
-              className="amz-text-enter"
-              style={{
-                fontFamily: "system-ui, sans-serif",
-                fontSize: "clamp(12px, 1.2vw, 14px)",
-                color: "#565959",
-                lineHeight: 1.6,
-                margin: "0 0 20px",
-                maxWidth: 420,
-              }}
-            >
-              {s.desc}
-            </p>
-            <div className="amz-text-enter" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+          </div>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              move(-1);
+            }}
+            style={{
+              position: "absolute",
+              bottom: 18,
+              right: 66,
+              border: "1px solid rgba(255,255,255,0.42)",
+              background: "rgba(2,6,23,0.34)",
+              color: "#fff",
+              width: 38,
+              height: 38,
+              borderRadius: "50%",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+            aria-label="previous slide"
+          >
+            <NavigateBeforeRoundedIcon />
+          </button>
+
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              move(1);
+            }}
+            style={{
+              position: "absolute",
+              bottom: 18,
+              right: 18,
+              border: "1px solid rgba(255,255,255,0.42)",
+              background: "rgba(2,6,23,0.34)",
+              color: "#fff",
+              width: 38,
+              height: 38,
+              borderRadius: "50%",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              cursor: "pointer",
+            }}
+            aria-label="next slide"
+          >
+            <NavigateNextRoundedIcon />
+          </button>
+
+          <div
+            style={{
+              position: "absolute",
+              bottom: 18,
+              left: 18,
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            {slides.map((_, dotIndex) => (
               <button
-                onClick={handlePrimaryClick}
-                className="amz-cta-primary"
-                style={{
-                  background: `linear-gradient(180deg, ${s.accent} 0%, ${s.accentDark} 100%)`,
-                  color: "#fff",
-                  boxShadow: `0 2px 8px ${s.accent}55`,
+                key={`dot-${dotIndex}`}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setIndex(dotIndex);
                 }}
-              >
-                {s.cta} →
-              </button>
-              <button className="amz-cta-secondary" style={{ color: s.accent }}>
-                {s.ctaSecondary} ›
-              </button>
-            </div>
-            <div className="amz-text-enter" style={{ marginTop: 18, display: "flex", alignItems: "center", gap: 6 }}>
-              <span
+                aria-label={`slide ${dotIndex + 1}`}
                 style={{
-                  width: 6, height: 6, borderRadius: "50%",
-                  background: s.accent,
-                  display: "inline-block",
+                  width: dotIndex === index ? 24 : 8,
+                  height: 8,
+                  borderRadius: 999,
+                  border: "none",
+                  background: dotIndex === index ? "#5EEAD4" : "rgba(255,255,255,.45)",
+                  cursor: "pointer",
+                  transition: "all .2s ease",
                 }}
               />
-              <span style={{ fontSize: 11, color: "#565959", fontFamily: "system-ui, sans-serif" }}>
-                {s.tag}
-              </span>
-            </div>
-          </div>
-
-          <div className="amz-img-col" style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-            <div
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 0,
-                bottom: 0,
-                width: "30%",
-                background: `linear-gradient(to right, ${s.bg}, transparent)`,
-                zIndex: 2,
-              }}
-            />
-            <img
-              key={`img-${cur}`}
-              src={s.img}
-              alt={s.title}
-              className="amz-img-enter"
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-                objectPosition: "center",
-              }}
-            />
-            <div
-              style={{
-                position: "absolute",
-                top: 16,
-                right: 16,
-                zIndex: 3,
-                background: s.accent,
-                color: "#fff",
-                fontFamily: "system-ui, sans-serif",
-                fontSize: 11,
-                fontWeight: 700,
-                padding: "6px 12px",
-                borderRadius: 4,
-                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-              }}
-            >
-              {s.badge}
-            </div>
+            ))}
           </div>
         </div>
-
-        <button
-          className="amz-nav-btn"
-          onClick={() => go((cur - 1 + slides.length) % slides.length, -1)}
-          style={{
-            left: 0,
-            background: "rgba(255,255,255,0.85)",
-            color: s.textDark,
-            borderRadius: "0 6px 6px 0",
-            boxShadow: "2px 0 8px rgba(0,0,0,0.12)",
-          }}
-        >
-          ‹
-        </button>
-
-        <button
-          className="amz-nav-btn"
-          onClick={() => go((cur + 1) % slides.length, 1)}
-          style={{
-            right: 0,
-            background: "rgba(255,255,255,0.85)",
-            color: s.textDark,
-            borderRadius: "6px 0 0 6px",
-            boxShadow: "-2px 0 8px rgba(0,0,0,0.12)",
-          }}
-        >
-          ›
-        </button>
-
-        <div
-          style={{
-            position: "absolute",
-            bottom: 14,
-            left: "50%",
-            transform: "translateX(-50%)",
-            zIndex: 20,
-            display: "flex",
-            alignItems: "center",
-            gap: 6,
-          }}
-        >
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              className="amz-dot"
-              onClick={() => go(i)}
-              style={{
-                width: i === cur ? 20 : 7,
-                height: 7,
-                background: i === cur ? s.accent : "rgba(0,0,0,0.2)",
-              }}
-            />
-          ))}
-        </div>
-
-        <div
-          style={{
-            position: "absolute",
-            bottom: 14,
-            right: 56,
-            zIndex: 20,
-            fontFamily: "system-ui, sans-serif",
-            fontSize: 10,
-            color: "#565959",
-            fontWeight: 600,
-            letterSpacing: "0.05em",
-          }}
-        >
-          {cur + 1} / {slides.length}
-        </div>
-
-        <div
-          style={{
-            position: "absolute",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 3,
-            background: "rgba(0,0,0,0.07)",
-            zIndex: 20,
-          }}
-        >
-          <div key={`prog-${cur}`} className="amz-prog-bar" style={{ height: "100%", background: s.accent }} />
-        </div>
-      </section>
-    </>
+      </div>
+    </section>
   );
 };
 

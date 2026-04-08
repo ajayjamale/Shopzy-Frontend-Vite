@@ -1,89 +1,112 @@
-import React, { useEffect, useState } from 'react'
-import AdminRoutes from '../../../routes/AdminRoutes'   // <-- updated routes file
-import Navbar from '../../../admin seller/components/navbar/Navbar'
-import AdminDrawerList from '../../components/DrawerList'
-import { Alert, Box, Snackbar } from '@mui/material'
-import { useAppSelector } from '../../../Redux Toolkit/Store'
+import { useMemo, useState } from "react";
+import { Drawer, IconButton, useMediaQuery, useTheme } from "@mui/material";
+import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
+import DashboardRoundedIcon from "@mui/icons-material/DashboardRounded";
+import { useLocation } from "react-router-dom";
+import AdminRoutes from "../../../routes/AdminRoutes";
+import AdminDrawerList from "../../components/DrawerList";
+
+const sectionTitleByPath: Record<string, string> = {
+  "": "Users & Sellers",
+  users: "User Management",
+  coupon: "Coupons",
+  "add-coupon": "Create Coupon",
+  "home-content": "Home Content Studio",
+  deals: "Daily Discounts",
+  "daily-deals": "Daily Discounts",
+  "daily-discounts": "Daily Discounts",
+  settlements: "Settlements",
+  returns: "Returns",
+};
 
 const AdminDashboard = () => {
-  const { deal, admin } = useAppSelector(store => store)
-  const [snackbarOpen, setOpenSnackbar] = useState(false);
+  const theme = useTheme();
+  const location = useLocation();
+  const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const handleCloseSnackbar = () => setOpenSnackbar(false);
+  const currentSection = useMemo(() => {
+    const adminPath = location.pathname.startsWith("/admin")
+      ? location.pathname.replace("/admin", "").replace(/^\/+/, "")
+      : location.pathname.replace(/^\/+/, "");
+    const key = adminPath.split("/")[0];
 
-  useEffect(() => {
-    if (deal.dealCreated || deal.dealUpdated || deal.error || admin.categoryUpdated) {
-      setOpenSnackbar(true)
+    if (sectionTitleByPath[key] !== undefined) {
+      return sectionTitleByPath[key];
     }
-  }, [deal.dealCreated, deal.dealUpdated, deal.error, admin.categoryUpdated])
+
+    return key
+      .split("-")
+      .filter(Boolean)
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }, [location.pathname]);
 
   return (
-    <>
-      {/* Amazon dark navy background for full shell */}
-      <Box sx={{ minHeight: '100vh', backgroundColor: '#f3f3f3' }}>
-        <Navbar DrawerList={AdminDrawerList} />
+    <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: isDesktop ? "260px 1fr" : "1fr" }}>
+      {isDesktop ? (
+        <AdminDrawerList />
+      ) : (
+        <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
+          <AdminDrawerList />
+        </Drawer>
+      )}
 
-        <section className="lg:flex lg:h-[90vh]">
-          {/* Sidebar */}
-          <Box
-            sx={{
-              display: { xs: 'none', lg: 'block' },
-              height: '100%',
-              backgroundColor: '#131921',
-              boxShadow: '2px 0 8px rgba(0,0,0,0.18)',
-              borderRight: '2px solid #FF9900',
-            }}
-          >
-            <AdminDrawerList />
-          </Box>
-
-          {/* Main content area – now renders the updated routes */}
-          <Box
-            sx={{
-              p: { xs: 3, lg: 4 },
-              width: { lg: '80%' },
-              flex: 1,
-              overflowY: 'auto',
-              backgroundColor: '#f3f3f3',
-            }}
-          >
-            <AdminRoutes />
-          </Box>
-        </section>
-      </Box>
-
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "right" }}
-        open={snackbarOpen}
-        autoHideDuration={6000}
-        onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={deal.error ? "error" : "success"}
-          variant="filled"
-          sx={{
-            width: '100%',
-            fontFamily: '"Amazon Ember", Arial, sans-serif',
-            fontWeight: 600,
-            fontSize: 13,
-            backgroundColor: deal.error ? '#CC0C39' : '#067D62',
-            '& .MuiAlert-icon': { fontSize: 20 },
+      <div style={{ minWidth: 0 }}>
+        <header
+          style={{
+            height: 68,
+            borderBottom: "1px solid #DCE8EC",
+            background: "rgba(248,251,252,0.92)",
+            backdropFilter: "blur(10px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 16px",
+            position: "sticky",
+            top: 0,
+            zIndex: 20,
           }}
         >
-          {deal.error
-            ? deal.error
-            : deal.dealCreated
-              ? "Deal created successfully"
-              : deal.dealUpdated
-                ? "Deal updated successfully"
-                : admin.categoryUpdated
-                  ? "Category updated successfully"
-                  : ""}
-        </Alert>
-      </Snackbar>
-    </>
-  )
-}
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {!isDesktop && (
+              <IconButton onClick={() => setDrawerOpen(true)}>
+                <MenuRoundedIcon />
+              </IconButton>
+            )}
+            <DashboardRoundedIcon sx={{ color: "#0F766E" }} />
+            <span style={{ fontWeight: 700, color: "#0F172A" }}>Admin Panel</span>
+          </div>
 
-export default AdminDashboard
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+            <span style={{ fontSize: 11, color: "#64748B", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+              Current Section
+            </span>
+            <span
+              style={{
+                border: "1px solid #CBE4E2",
+                background: "#ECF8F6",
+                color: "#0F766E",
+                borderRadius: 999,
+                padding: "5px 10px",
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: "0.07em",
+                textTransform: "uppercase",
+              }}
+            >
+              {currentSection || "Dashboard"}
+            </span>
+          </div>
+        </header>
+
+        <main style={{ padding: 18, background: "#F3F7F8", minHeight: "calc(100vh - 68px)" }}>
+          <AdminRoutes />
+        </main>
+      </div>
+
+    </div>
+  );
+};
+
+export default AdminDashboard;

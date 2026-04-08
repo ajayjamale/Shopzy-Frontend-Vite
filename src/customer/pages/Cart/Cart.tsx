@@ -1,263 +1,154 @@
-import {
-  Alert,
-  Button,
-  Snackbar,
-  TextField,
-} from "@mui/material";
-import React, { useEffect, useState } from "react";
-import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import { teal } from "@mui/material/colors";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import CartItemCard from "./CartItemCard";
+import { Alert, Button, Snackbar, TextField } from "@mui/material";
+import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
+import ShoppingBagRoundedIcon from "@mui/icons-material/ShoppingBagRounded";
+import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
+import LockRoundedIcon from "@mui/icons-material/LockRounded";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PricingCard from "./PricingCard";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { fetchUserCart, clearCart } from "../../../Redux Toolkit/Customer/CartSlice";
-import type { CartItem } from "../../../types/cartTypes";
 import { applyCoupon } from "../../../Redux Toolkit/Customer/CouponSlice";
-import { ShoppingCartOutlined } from "@mui/icons-material";
-import LockIcon from "@mui/icons-material/Lock";
-import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
+import { clearCart, fetchUserCart } from "../../../Redux Toolkit/Customer/CartSlice";
+import CartItemCard from "./CartItemCard";
+import PricingCard from "./PricingCard";
 
 const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { cart, auth, coupone } = useAppSelector((store) => store);
-  const paymentConfirmed = useAppSelector((store) => store.orders.paymentConfirmed);
-  const [couponCode, setCouponCode] = useState("");
-  const [snackbarOpen, setOpenSnackbar] = useState(false);
+  const { cart, auth, coupone, orders } = useAppSelector((store) => store);
 
-  // Fetch cart whenever JWT changes
+  const [couponCode, setCouponCode] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
   useEffect(() => {
     dispatch(fetchUserCart(localStorage.getItem("jwt") || ""));
-  }, [auth.jwt]);
+  }, [auth.jwt, dispatch]);
 
-  // Auto-clear cart ONLY after payment is confirmed by backend
   useEffect(() => {
-    if (paymentConfirmed) {
+    if (orders.paymentConfirmed) {
       dispatch(clearCart());
     }
-  }, [paymentConfirmed]);
+  }, [orders.paymentConfirmed, dispatch]);
 
-  const handleChangeCoupon = (e: any) => setCouponCode(e.target.value);
+  useEffect(() => {
+    if (coupone.couponApplied || coupone.error) {
+      setSnackbarOpen(true);
+      setCouponCode("");
+    }
+  }, [coupone.couponApplied, coupone.error]);
 
-  const handleApplyCoupon = (apply: string) => {
-    const code = apply === "false" ? cart.cart?.couponCode || "" : couponCode;
+  const cartItems = cart.cart?.cartItems || [];
+
+  const handleCoupon = (apply: "true" | "false") => {
     dispatch(
       applyCoupon({
         apply,
-        code,
-        orderValue: cart.cart?.totalSellingPrice || 100,
+        code: apply === "false" ? cart.cart?.couponCode || "" : couponCode,
+        orderValue: cart.cart?.totalSellingPrice || 0,
         jwt: localStorage.getItem("jwt") || "",
       })
     );
   };
 
-  const handleCloseSnackbar = () => setOpenSnackbar(false);
-
-  useEffect(() => {
-    if (coupone.couponApplied || coupone.error) {
-      setOpenSnackbar(true);
-      setCouponCode("");
-    }
-  }, [coupone.couponApplied, coupone.error]);
-
-  const cartItems: CartItem[] = cart.cart?.cartItems ?? [];
-  const itemCount = cartItems.length;
+  if (!cartItems.length) {
+    return (
+      <div className="app-container py-14">
+        <div className="surface p-10 text-center" style={{ borderRadius: 22, maxWidth: 520, margin: "0 auto" }}>
+          <ShoppingBagRoundedIcon sx={{ fontSize: 58, color: "#9BAFC0" }} />
+          <h2 style={{ fontSize: "1.4rem", marginTop: 10 }}>Your cart is empty</h2>
+          <p className="text-sm text-slate-500 mt-2">Looks like you have not added anything yet.</p>
+          <div className="mt-6 flex gap-2 justify-center flex-wrap">
+            <button className="btn-primary" onClick={() => navigate("/")}>Start Shopping</button>
+            <button className="btn-secondary" onClick={() => navigate("/wishlist")}>Open Wishlist</button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      {itemCount > 0 ? (
-        <div className="min-h-screen bg-[#f5f6f8]">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-12">
+    <div className="app-container py-7">
+      <div className="mb-5">
+        <p className="section-kicker mb-2">Checkout</p>
+        <h1 style={{ fontSize: "clamp(1.7rem, 3vw, 2.3rem)" }}>Shopping Cart</h1>
+      </div>
 
-          <div className="flex flex-wrap items-end justify-between gap-3 mb-5">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Shopping Cart</h1>
-              <p className="text-sm text-gray-500 mt-1">Review your items and checkout when you’re ready.</p>
-            </div>
-            <div className="hidden sm:flex items-center gap-2 text-xs text-gray-500">
-              <span className="px-2 py-1 rounded-full bg-white border border-gray-200">Secure checkout</span>
-              <span className="px-2 py-1 rounded-full bg-white border border-gray-200">Easy returns</span>
-            </div>
+      <div className="grid lg:grid-cols-[1fr_340px] gap-5 items-start">
+        <section className="surface overflow-hidden" style={{ borderRadius: 18 }}>
+          <div className="px-5 py-3 border-b border-[#E3ECEF] bg-[#F8FBFC] text-sm text-slate-600">
+            {cartItems.length} item{cartItems.length > 1 ? "s" : ""} ready for checkout
           </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-5 items-start">
-
-            {/* ── Left: Cart Items ── */}
-            <div className="lg:col-span-2 space-y-3">
-
-              {/* Free shipping banner */}
-              <div className="bg-white rounded-xl px-5 py-3 flex items-center gap-2 text-sm text-[#007600] border border-gray-200 shadow-sm">
-                <LocalShippingOutlinedIcon sx={{ fontSize: 17 }} />
-                <span>
-                  Your order qualifies for <strong>FREE Delivery</strong> on orders above ₹1500.
-                </span>
-              </div>
-
-              {/* Item count header */}
-              <div className="bg-white rounded-xl px-5 py-2 flex justify-between items-center border border-gray-200 shadow-sm">
-                <span className="text-sm text-gray-600">
-                  {itemCount} item{itemCount !== 1 ? "s" : ""} in cart
-                </span>
-                <span className="text-sm text-gray-500">Price</span>
-              </div>
-
-              {/* Item list */}
-              <div className="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100 shadow-sm">
-                {cartItems.map((item: CartItem) => (
-                  <CartItemCard key={item.id} item={item} />
-                ))}
-              </div>
-
-              {/* Subtotal */}
-              <div className="bg-white rounded-xl px-5 py-3 border border-gray-200 text-right shadow-sm">
-                <span className="text-base text-gray-800">
-                  Subtotal ({itemCount} item{itemCount !== 1 ? "s" : ""}):&nbsp;
-                  <strong className="text-lg">₹{cart.cart?.totalSellingPrice}</strong>
-                </span>
-              </div>
+          {cartItems.map((item) => (
+            <div key={item.id} className="border-b last:border-b-0 border-[#E8EFF2]">
+              <CartItemCard item={item} />
             </div>
+          ))}
+        </section>
 
-            {/* ── Right: Summary ── */}
-            <div className="col-span-1 space-y-3 lg:sticky lg:top-24">
-
-              {/* Order summary */}
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
-                <div className="px-5 pt-4 pb-2 flex items-center gap-1.5 text-xs text-[#007600]">
-                  <LockIcon sx={{ fontSize: 13 }} />
-                  <span>Secure transaction</span>
-                </div>
-                <PricingCard />
-                <div className="px-5 pb-5 pt-2">
-                  <button
-                    onClick={() => navigate("/checkout/address")}
-                    className="w-full py-2.5 btn-primary"
-                  >
-                    Proceed to Buy ({itemCount} item{itemCount !== 1 ? "s" : ""})
-                  </button>
-                </div>
-              </div>
-
-              {/* Coupon */}
-              <div className="bg-white rounded-xl border border-gray-200 px-5 py-4 space-y-3 shadow-sm">
-                <div className="flex items-center gap-2 text-sm font-semibold text-gray-800">
-                  <LocalOfferIcon sx={{ color: teal[600], fontSize: 17 }} />
-                  <span>Apply Coupon</span>
-                </div>
-
-                {!cart.cart?.couponCode ? (
-                  <div className="flex gap-2">
-                    <TextField
-                      value={couponCode}
-                      onChange={handleChangeCoupon}
-                      placeholder="Enter coupon code"
-                      size="small"
-                      fullWidth
-                      sx={{
-                        "& .MuiOutlinedInput-root": { borderRadius: "6px", fontSize: 13 },
-                      }}
-                    />
-                    <Button
-                      onClick={() => handleApplyCoupon("true")}
-                      disabled={!couponCode}
-                      size="small"
-                      variant="outlined"
-                      sx={{
-                        borderRadius: "999px",
-                        textTransform: "none",
-                        borderColor: "#0b7285",
-                        color: "#0b7285",
-                        whiteSpace: "nowrap",
-                        fontSize: 12,
-                        "&:hover": { borderColor: "#0a5b67", background: "#f0fafa" },
-                      }}
-                    >
-                      Apply
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-2 bg-[#e6f4f5] border border-[#b2dde3] rounded-full px-4 py-1.5 w-fit">
-                    <LocalOfferIcon sx={{ fontSize: 14, color: teal[600] }} />
-                    <span className="text-sm font-semibold text-[#0b7285]">
-                      {cart.cart.couponCode}
-                    </span>
-                    <span className="text-xs text-[#007600]">Applied</span>
-                    <button
-                      onClick={() => handleApplyCoupon("false")}
-                      className="ml-1 text-gray-400 hover:text-red-500 transition-colors text-base leading-none"
-                    >
-                      ×
-                    </button>
-                  </div>
-                )}
-              </div>
-
-              {/* Wishlist shortcut */}
-              <div
-                className="bg-white rounded-xl border border-gray-200 px-5 py-3 flex justify-between items-center cursor-pointer hover:bg-gray-50 transition shadow-sm"
-                onClick={() => navigate("/wishlist")}
-              >
-                <span className="text-sm text-[#0b7285] font-semibold hover:underline">
-                  Add items from Wishlist
-                </span>
-                <FavoriteIcon sx={{ color: teal[600], fontSize: 19 }} />
-              </div>
+        <aside className="grid gap-4 lg:sticky lg:top-28">
+          <section className="surface overflow-hidden" style={{ borderRadius: 18 }}>
+            <div className="px-5 pt-4 text-xs text-emerald-700 font-semibold flex items-center gap-1">
+              <LockRoundedIcon sx={{ fontSize: 13 }} />
+              Secure checkout
             </div>
-          </div>
-        </div>
-        </div>
-      ) : (
-        /* ── Empty Cart ── */
-        <div className="min-h-[85vh] flex justify-center items-center bg-[#f5f6f8]">
-          <div className="bg-white rounded-2xl border border-gray-200 px-10 py-10 flex flex-col items-center gap-4 max-w-sm w-full text-center shadow-sm">
-            <ShoppingCartOutlined sx={{ fontSize: 64, color: "#c8c8c8" }} />
-            <div>
-              <h1 className="text-lg font-semibold text-gray-800">Your Shopzy Cart is empty</h1>
-              <p className="text-sm text-gray-500 mt-1">
-                Looks like you haven't added anything yet.
-              </p>
+            <PricingCard />
+            <div className="px-5 pb-5">
+              <button className="btn-primary w-full" onClick={() => navigate("/checkout/address")}>
+                Proceed to address
+              </button>
             </div>
-            <button
-              onClick={() => navigate("/")}
-              className="w-full py-2.5 btn-primary mt-1"
-            >
-              Continue Shopping
-            </button>
-            <Button
-              onClick={() => navigate("/wishlist")}
-              variant="outlined"
-              fullWidth
-              sx={{
-                borderRadius: 999,
-                textTransform: "none",
-                borderColor: "#0b7285",
-                color: "#0b7285",
-                fontSize: 13,
-              }}
-            >
-              Add from Wishlist
-            </Button>
-          </div>
-        </div>
-      )}
+          </section>
+
+          <section className="surface p-4" style={{ borderRadius: 18 }}>
+            <p className="text-sm font-bold text-slate-800 flex items-center gap-2 mb-3">
+              <LocalOfferRoundedIcon sx={{ fontSize: 18, color: "#0F766E" }} />
+              Apply coupon
+            </p>
+
+            {!cart.cart?.couponCode ? (
+              <div className="flex gap-2">
+                <TextField
+                  size="small"
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value)}
+                  placeholder="Enter code"
+                  fullWidth
+                />
+                <Button variant="outlined" onClick={() => handleCoupon("true")} disabled={!couponCode}>
+                  Apply
+                </Button>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-3 bg-[#EAF7F5] border border-[#C7E2DE] rounded-xl px-3 py-2">
+                <span className="text-sm font-semibold text-teal-800">{cart.cart.couponCode}</span>
+                <button className="text-xs font-bold text-teal-700" onClick={() => handleCoupon("false")}>
+                  Remove
+                </button>
+              </div>
+            )}
+          </section>
+
+          <button
+            className="surface px-4 py-3 text-left flex items-center justify-between"
+            style={{ borderRadius: 16 }}
+            onClick={() => navigate("/wishlist")}
+          >
+            <span className="text-sm font-semibold text-slate-700">Add items from wishlist</span>
+            <FavoriteRoundedIcon sx={{ fontSize: 18, color: "#0F766E" }} />
+          </button>
+        </aside>
+      </div>
 
       <Snackbar
         anchorOrigin={{ vertical: "top", horizontal: "right" }}
         open={snackbarOpen}
-        autoHideDuration={4000}
-        onClose={handleCloseSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setSnackbarOpen(false)}
       >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={coupone.error ? "error" : "success"}
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {coupone.error ? coupone.error : "Coupon applied successfully!"}
+        <Alert onClose={() => setSnackbarOpen(false)} severity={coupone.error ? "error" : "success"} variant="filled">
+          {coupone.error || "Coupon applied successfully"}
         </Alert>
       </Snackbar>
-    </>
+    </div>
   );
 };
 

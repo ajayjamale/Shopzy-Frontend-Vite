@@ -5,12 +5,12 @@ import { createSeller } from "../../../Redux Toolkit/Seller/sellerAuthentication
 
 /* ─── tokens ─────────────────────────────────────────── */
 const C = {
-  orange:"#FF9900", blue:"#0F6094", red:"#C40000",
+  orange:"#0F766E", blue:"#0F6094", red:"#C40000",
   green:"#007600",  greenBg:"#EAF7EA", white:"#FFFFFF",
-  bg:"#F3F3F3",     border:"#CCCCCC", borderFoc:"#E77600",
-  shadowFoc:"rgba(231,118,0,0.35)", lightBlue:"#E8F4FD",
-  text:"#0F1111",   textMid:"#565959", textLight:"#8D8D8D",
-  divider:"#E7E7E7", orangeBg:"rgba(255,153,0,0.08)",
+  bg:"#F3F3F3",     border:"#CCCCCC", borderFoc:"#0F766E",
+  shadowFoc:"rgba(15,118,110,0.25)", lightBlue:"#E8F4FD",
+  text:"#0F172A",   textMid:"#64748B", textLight:"#8D8D8D",
+  divider:"#E7E7E7", orangeBg:"rgba(15,118,110,0.08)",
 };
 
 /* ─── icons ──────────────────────────────────────────── */
@@ -110,7 +110,7 @@ function Stepper({ active }: { active: number }) {
                 background: done ? C.orange : C.white,
                 border:`2px solid ${done||cur ? C.orange : C.border}`,
                 display:"flex", alignItems:"center", justifyContent:"center",
-                boxShadow: cur ? "0 0 0 4px rgba(255,153,0,0.18)" : "none",
+                boxShadow: cur ? "0 0 0 4px rgba(15,118,110,0.2)" : "none",
                 animation: cur ? "ringPulse 2.4s ease infinite" : "none",
                 transition:"all .35s ease",
               }}>
@@ -142,7 +142,7 @@ function Step1({ formik }: any) {
     <div style={{ display:"flex", flexDirection:"column", gap:16, animation:"fadeUp .28s ease" }}>
       <div style={{ paddingBottom:14, borderBottom:`1px solid ${C.divider}` }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(255,153,0,0.2)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(15,118,110,0.22)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
             <Ic d={P.phone} size={15} color={C.orange}/>
           </div>
           <h3 style={{ fontSize:15, fontWeight:700, color:C.text }}>Contact & Tax Details</h3>
@@ -169,7 +169,7 @@ function Step2({ formik }: any) {
     <div style={{ display:"flex", flexDirection:"column", gap:14, animation:"fadeUp .28s ease" }}>
       <div style={{ paddingBottom:14, borderBottom:`1px solid ${C.divider}` }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(255,153,0,0.2)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(15,118,110,0.22)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
             <Ic d={P.map} size={15} color={C.orange}/>
           </div>
           <h3 style={{ fontSize:15, fontWeight:700, color:C.text }}>Pickup Address</h3>
@@ -224,7 +224,7 @@ function Step3({ formik }: any) {
     <div style={{ display:"flex", flexDirection:"column", gap:16, animation:"fadeUp .28s ease" }}>
       <div style={{ paddingBottom:14, borderBottom:`1px solid ${C.divider}` }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(255,153,0,0.2)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(15,118,110,0.22)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
             <Ic d={P.bank} size={15} color={C.orange}/>
           </div>
           <h3 style={{ fontSize:15, fontWeight:700, color:C.text }}>Bank Account Details</h3>
@@ -264,7 +264,7 @@ function Step4({ formik }: any) {
     <div style={{ display:"flex", flexDirection:"column", gap:14, animation:"fadeUp .28s ease" }}>
       <div style={{ paddingBottom:14, borderBottom:`1px solid ${C.divider}` }}>
         <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(255,153,0,0.2)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(15,118,110,0.22)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
             <Ic d={P.bldg} size={15} color={C.orange}/>
           </div>
           <h3 style={{ fontSize:15, fontWeight:700, color:C.text }}>Business & Login Details</h3>
@@ -303,7 +303,7 @@ function Step4({ formik }: any) {
       </div>
       <div style={{ background:C.bg, border:`1px solid ${C.divider}`, borderRadius:4, padding:"11px 14px" }}>
         <p style={{ fontSize:12, color:C.textMid, lineHeight:1.65 }}>
-          By creating an account you agree to Amazon's{" "}
+          By creating an account you agree to Shopzy's{" "}
           <a href="#" style={{ color:C.blue }}>Seller Agreement</a>,{" "}
           <a href="#" style={{ color:C.blue }}>Privacy Notice</a>, and{" "}
           <a href="#" style={{ color:C.blue }}>Conditions of Use</a>.
@@ -348,7 +348,7 @@ const SellerAccountForm = () => {
       <style>{`
         @keyframes spin      { to { transform:rotate(360deg); } }
         @keyframes fadeUp    { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
-        @keyframes ringPulse { 0%,100%{box-shadow:0 0 0 0 rgba(255,153,0,0.45)}60%{box-shadow:0 0 0 7px rgba(255,153,0,0)} }
+        @keyframes ringPulse { 0%,100%{box-shadow:0 0 0 0 rgba(15,118,110,0.4)}60%{box-shadow:0 0 0 7px rgba(15,118,110,0)} }
       `}</style>
 
       <Stepper active={activeStep}/>
@@ -370,7 +370,7 @@ const SellerAccountForm = () => {
         <span style={{ fontSize:11.5, color:C.textLight }}>Step {activeStep+1} of {STEPS.length}</span>
 
         <button onClick={handleNext} disabled={loading}
-          style={{ background:"linear-gradient(to bottom,#f7dfa5,#f0c14b)", border:"1px solid #a88734", borderRadius:3, padding:"9px 22px", fontWeight:600, fontSize:13, cursor:loading?"not-allowed":"pointer", opacity:loading?.6:1, display:"flex", alignItems:"center", gap:6, fontFamily:"inherit", color:C.text }}>
+          style={{ background:"linear-gradient(135deg,#0F766E,#14B8A6)", border:"1px solid #a88734", borderRadius:3, padding:"9px 22px", fontWeight:600, fontSize:13, cursor:loading?"not-allowed":"pointer", opacity:loading?.6:1, display:"flex", alignItems:"center", gap:6, fontFamily:"inherit", color:C.text }}>
           {loading ? <Spin/> : activeStep === STEPS.length-1
             ? "Create Account"
             : <><span>Continue</span><Ic d={P.chevR} size={14}/></>}

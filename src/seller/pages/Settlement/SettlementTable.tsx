@@ -3,12 +3,12 @@ import type { Settlement, SettlementStatus } from "../../../types/settlementType
 import { useNavigate } from "react-router-dom";
 
 const C = {
-  navy: "#232F3E",
+  navy: "#1E293B",
   white: "#FFFFFF",
   bg: "#F9FAFB",
   border: "#E5E7EB",
   soft: "#EEF1F4",
-  text: "#0F1111",
+  text: "#0F172A",
   mid: "#4B5563",
   dim: "#9CA3AF",
   green: "#0F9D58",

@@ -8,18 +8,18 @@ import BankDetailsForm      from "./BankDetailsForm";
 
 /* ── palette ─────────────────────────────────────────── */
 const C = {
-  navy:       "#232F3E",
-  navyD:      "#131921",
-  orange:     "#FF9900",
-  orangeD:    "#E47911",
+  navy:       "#1E293B",
+  navyD:      "#0F172A",
+  orange:     "#0F766E",
+  orangeD:    "#0B5F59",
   white:      "#FFFFFF",
   bg:         "#F3F3F3",
-  border:     "#D5D9D9",
+  border:     "#DCE5E8",
   borderSoft: "#EAEDEE",
-  text:       "#0F1111",
-  mid:        "#565959",
+  text:       "#0F172A",
+  mid:        "#64748B",
   dim:        "#8D9095",
-  link:       "#007185",
+  link:       "#0E7490",
   green:      "#067D62",
   greenBg:    "#E6F4F1",
   red:        "#CC0C39",
@@ -57,8 +57,8 @@ const EditBtn = ({ onClick }: { onClick: () => void }) => {
         padding: "5px 14px", borderRadius: 3,
         border: "1px solid #C45500",
         background: h
-          ? "linear-gradient(to bottom,#f0a030,#df7921)"
-          : "linear-gradient(to bottom,#FFB84D,#FF9900)",
+          ? "linear-gradient(135deg,#0B5F59,#0F766E)"
+          : "linear-gradient(to bottom,#FFB84D,#0F766E)",
         color: "#111", fontSize: 12.5, fontWeight: 700,
         cursor: "pointer", fontFamily: "inherit",
         boxShadow: "0 1px 0 rgba(255,255,255,.3) inset",

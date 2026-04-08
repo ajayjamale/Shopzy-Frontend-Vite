@@ -125,7 +125,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 
   const activeRating = hovered || formik.values.reviewRating;
 
-  // ── Shared focus/blur handlers (Amazon orange ring) ──
+  // Shared focus/blur handlers for accessible highlight states.
   const onFocus = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     e.target.style.borderColor = "#e77600";
     e.target.style.boxShadow   = "0 0 0 3px rgba(228,121,17,0.5)";
@@ -171,7 +171,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           maxHeight: "92vh", overflowY: "auto",
           borderRadius: 4, border: "1px solid #d5d9d9",
           boxShadow: "0 10px 40px rgba(0,0,0,0.25)",
-          fontFamily: "'Amazon Ember','Helvetica Neue',Arial,sans-serif",
+          fontFamily: "'Manrope','Helvetica Neue',Arial,sans-serif",
         }}
       >
         {/* ── Header ── */}
@@ -198,7 +198,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                 <div style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f1111", marginBottom: 6 }}>
                   Thank you for your review!
                 </div>
-                <div style={{ fontSize: "0.875rem", color: "#565959", lineHeight: 1.6 }}>
+                <div style={{ fontSize: "0.875rem", color: "#64748B", lineHeight: 1.6 }}>
                   Your feedback helps millions of shoppers make better decisions.
                 </div>
               </div>
@@ -211,20 +211,20 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
               }}>
                 <img src={productImage} alt={productTitle} style={{ width: 60, height: 60, objectFit: "contain", borderRadius: 3, border: "1px solid #d5d9d9", background: "#fff" }} />
                 <div>
-                  {sellerName && <div style={{ fontSize: "0.75rem", color: "#565959" }}>{sellerName}</div>}
+                  {sellerName && <div style={{ fontSize: "0.75rem", color: "#64748B" }}>{sellerName}</div>}
                   <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#0f1111", lineHeight: 1.4 }}>{productTitle}</div>
                   {/* Show submitted rating as stars */}
                   <div style={{ display: "flex", gap: 2, marginTop: 4 }}>
                     {[1,2,3,4,5].map((s) => (
                       s <= formik.values.reviewRating
-                        ? <StarIcon     key={s} style={{ fontSize: "0.875rem", color: "#ff9900" }} />
+                        ? <StarIcon     key={s} style={{ fontSize: "0.875rem", color: "#0f766e" }} />
                         : <StarBorderIcon key={s} style={{ fontSize: "0.875rem", color: "#d5d9d9" }} />
                     ))}
                   </div>
                 </div>
               </div>
 
-              <div style={{ fontSize: "0.8125rem", color: "#565959" }}>
+              <div style={{ fontSize: "0.8125rem", color: "#64748B" }}>
                 Closing automatically…
               </div>
             </div>
@@ -244,9 +244,9 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                 style={{ width: 64, height: 64, objectFit: "contain", borderRadius: 3, border: "1px solid #d5d9d9", background: "#fff", flexShrink: 0 }}
               />
               <div>
-                {sellerName && <div style={{ fontSize: "0.75rem", color: "#565959", marginBottom: 2 }}>Sold by {sellerName}</div>}
+                {sellerName && <div style={{ fontSize: "0.75rem", color: "#64748B", marginBottom: 2 }}>Sold by {sellerName}</div>}
                 <div style={{ fontSize: "0.9375rem", fontWeight: 700, color: "#0f1111", lineHeight: 1.4 }}>{productTitle}</div>
-                <div style={{ fontSize: "0.8125rem", color: "#565959", marginTop: 4 }}>
+                <div style={{ fontSize: "0.8125rem", color: "#64748B", marginTop: 4 }}>
                   Share your experience to help other customers
                 </div>
               </div>
@@ -272,12 +272,12 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                     }}
                   >
                     {activeRating >= star
-                      ? <StarIcon      style={{ fontSize: "2.25rem", color: "#ff9900" }} />
+                      ? <StarIcon      style={{ fontSize: "2.25rem", color: "#0f766e" }} />
                       : <StarBorderIcon style={{ fontSize: "2.25rem", color: "#adb1b8" }} />}
                   </button>
                 ))}
                 {activeRating > 0 && (
-                  <span style={{ fontSize: "0.875rem", color: "#565959", marginLeft: 10 }}>
+                  <span style={{ fontSize: "0.875rem", color: "#64748B", marginLeft: 10 }}>
                     {RATING_LABELS[activeRating]}
                   </span>
                 )}
@@ -313,7 +313,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             {/* ── Photo upload — exact same as ReviewForm ── */}
             <div style={{ marginBottom: 22 }}>
               <label style={{ display: "block", fontSize: "0.8125rem", fontWeight: 700, color: "#0f1111", marginBottom: 8 }}>
-                Add photos <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "#565959" }}>(optional)</span>
+                Add photos <span style={{ fontSize: "0.75rem", fontWeight: "normal", color: "#64748B" }}>(optional)</span>
               </label>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 10, alignItems: "flex-start" }}>
 
@@ -325,13 +325,13 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                     border: "1px dashed #adb1b8", borderRadius: 3,
                     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                     cursor: "pointer", background: "#fafafa", gap: 4,
-                    fontSize: "0.625rem", color: "#565959",
+                    fontSize: "0.625rem", color: "#64748B",
                     transition: "border-color 0.15s, background 0.15s",
                   }}
                 >
                   {uploadingImg
                     ? <span style={{ width: 18, height: 18, border: "2px solid rgba(0,0,0,0.15)", borderTopColor: "#111", borderRadius: "50%", animation: "amz-spin 0.7s linear infinite", display: "inline-block" }} />
-                    : <><AddPhotoAlternateIcon style={{ fontSize: "1.5rem", color: "#565959" }} /><span>Add photo</span></>}
+                    : <><AddPhotoAlternateIcon style={{ fontSize: "1.5rem", color: "#64748B" }} /><span>Add photo</span></>}
                 </label>
                 <input
                   id="oi-fileInput"
@@ -366,7 +366,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
             <div style={{
               background: "#f7f8f8", border: "1px solid #d5d9d9", borderRadius: 3,
               padding: "10px 14px", marginBottom: 20,
-              fontSize: "0.8125rem", color: "#565959", lineHeight: 1.6,
+              fontSize: "0.8125rem", color: "#64748B", lineHeight: 1.6,
             }}>
               <strong style={{ color: "#0f1111" }}>Review guidelines: </strong>
               Focus on the product's features and your experience. Keep it helpful and relevant to other shoppers.
@@ -392,7 +392,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                 style={{
                   padding: "8px 24px",
                   display: "inline-flex", alignItems: "center", gap: 6,
-                  background: "linear-gradient(to bottom,#f7dfa5,#f0c14b)",
+                  background: "linear-gradient(135deg,#0F766E,#14B8A6)",
                   border: "1px solid #a88734", borderRadius: 3,
                   fontSize: "0.9375rem", cursor: "pointer",
                   fontFamily: "inherit", color: "#111",
@@ -477,7 +477,7 @@ const OrderItemCard: React.FC<Props> = ({ item, order }) => {
           <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 8, flexWrap: "wrap" }}>
             <span className={`amz-badge ${badgeCls}`}>{order.orderStatus}</span>
             {order.deliverDate && !isCancelled && (
-              <span style={{ fontSize: "0.75rem", color: "#565959" }}>
+              <span style={{ fontSize: "0.75rem", color: "#64748B" }}>
                 {isDelivered ? "Delivered " : "Arriving "}
                 <strong>{formatDate(order.deliverDate)}</strong>
               </span>
@@ -681,7 +681,7 @@ const ReturnRequestModal: React.FC<ReturnModalProps> = ({
           overflow: "hidden",
           border: "1px solid #d5d9d9",
           boxShadow: "0 18px 36px rgba(0,0,0,0.18)",
-          fontFamily: "'Amazon Ember','Helvetica Neue',Arial,sans-serif",
+          fontFamily: "'Manrope','Helvetica Neue',Arial,sans-serif",
         }}
       >
         <div style={{
@@ -703,7 +703,7 @@ const ReturnRequestModal: React.FC<ReturnModalProps> = ({
             <img src={productImage} alt={productTitle} style={{ width: 64, height: 64, objectFit: "contain", border: "1px solid #eee", borderRadius: 6 }} />
             <div>
               <div style={{ fontWeight: 700 }}>{productTitle}</div>
-              {sellerName && <div style={{ fontSize: 12, color: "#565959" }}>Sold by {sellerName}</div>}
+              {sellerName && <div style={{ fontSize: 12, color: "#64748B" }}>Sold by {sellerName}</div>}
             </div>
           </div>
 
@@ -794,7 +794,7 @@ const ReturnRequestModal: React.FC<ReturnModalProps> = ({
               style={{ display: "none" }}
               onChange={(e) => addImage(e.target.files?.[0] || undefined)}
             />
-            {uploading && <span style={{ fontSize: 12, color: "#565959" }}>Uploading...</span>}
+            {uploading && <span style={{ fontSize: 12, color: "#64748B" }}>Uploading...</span>}
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
               {formik.values.images.map((url, idx) => (
                 <div key={url} style={{ position: "relative" }}>

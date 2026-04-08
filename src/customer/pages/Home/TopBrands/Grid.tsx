@@ -1,94 +1,69 @@
-import React from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../Redux Toolkit/Store";
-import type { HomeContentItem } from "../../../../types/homeContentTypes";
 
 const fallback = [
-  { name:"Ethnic Plus",  image:"https://www.ethnicplus.in/cdn/shop/files/2_e396bfa9-adef-490a-9444-1095114de031.jpg?v=1771173950&width=640",  badge:"Women's Ethnic" },
-  { name:"Audio Lab",    image:"https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80&fit=crop",                             badge:"Electronics" },
-  { name:"Active Wear",  image:"https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/22109480/2023/9/5/06a17ac3-46b0-4f9d-bcb1-2d3582feda041693895310152PumaWomenBrandLogoPrintedPureCottonOutdoorT-shirt1.jpg", badge:"Sportswear" },
-  { name:"Kurta Studio", image:"https://www.ethnicplus.in/cdn/shop/files/4_2f2042d1-33c3-4f2c-8397-472e103fefb0.jpg?v=1768755972&width=640",   badge:"Menswear" },
-  { name:"Home Living",  image:"https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28460938/2024/3/22/7fb09e9c-86e0-4602-b54e-fa5c0171b50b1711104156746IrregularMirrorHomeDecor1.jpg", badge:"Home Décor" },
-  { name:"Footwear Co",  image:"https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28024048/2024/3/5/fca98389-f9d6-4f19-b82a-53c7ee0518ec1709633175836CORSICABlockSandalswithBows1.jpg",  badge:"Footwear" },
+  { name: "Ethnic Plus", image: "https://www.ethnicplus.in/cdn/shop/files/2_e396bfa9-adef-490a-9444-1095114de031.jpg?v=1771173950&width=640", badge: "Fashion", target: "women_indian_and_fusion_wear" },
+  { name: "Audio Lab", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80&fit=crop", badge: "Electronics", target: "headphones_headsets" },
+  { name: "Active Wear", image: "https://assets.myntassets.com/h_1440,q_90,w_1080/v1/assets/images/22109480/2023/9/5/06a17ac3-46b0-4f9d-bcb1-2d3582feda041693895310152PumaWomenBrandLogoPrintedPureCottonOutdoorT-shirt1.jpg", badge: "Sports", target: "women_sports_active_wear" },
+  { name: "Home Living", image: "https://assets.myntassets.com/h_720,q_90,w_540/v1/assets/images/28460938/2024/3/22/7fb09e9c-86e0-4602-b54e-fa5c0171b50b1711104156746IrregularMirrorHomeDecor1.jpg", badge: "Home", target: "home_decor" },
 ];
 
-/* ─── inject keyframes once ─── */
-const STYLE_ID = "topbrand-marquee-style";
-if (typeof document !== "undefined" && !document.getElementById(STYLE_ID)) {
-  const s = document.createElement("style");
-  s.id = STYLE_ID;
-  s.textContent = `
-    @keyframes marquee-pingpong {
-      0%        { transform: translateX(0); }
-      50%       { transform: translateX(-50%); }
-      100%      { transform: translateX(0); }
+const TopBrand = () => {
+  const navigate = useNavigate();
+  const { homePage } = useAppSelector((store) => store);
+
+  const brands =
+    homePage.homePageData?.topBrands?.map((item) => ({
+      name: item.title || item.subtitle || "Brand",
+      image: item.imageUrl,
+      badge: item.badgeText,
+      target: item.redirectLink || item.categoryId || "/products",
+    })) || fallback;
+
+  const handleNavigate = (target: string) => {
+    if (!target) return;
+    if (target.startsWith("/")) {
+      navigate(target);
+      return;
     }
-    .tb-track  { display:flex; width:max-content; animation: marquee-pingpong 32s ease-in-out infinite; }
-    .tb-card img       { transition: transform .6s ease; }
-    .tb-card:hover img { transform: scale(1.05); }
-    .tb-card           { transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease; }
-    .tb-card:hover     { transform: translateY(-6px); box-shadow: 0 20px 48px rgba(13,13,13,.14); border-color: #C9A84C !important; }
-  `;
-  document.head.appendChild(s);
-}
-
-const TopBrand: React.FC = () => {
-  const { homePage } = useAppSelector(s => s);
-  const items: any[] = homePage.homePageData?.topBrands?.map((i: HomeContentItem) => ({
-    name: i.title,
-    image: i.imageUrl,
-    badge: i.badgeText || i.subtitle
-  })) || fallback;
-
-  // Duplicate items so the loop is seamless (track is 2× the original list)
-  const doubled = [...items, ...items];
+    navigate(`/products/${target}`);
+  };
 
   return (
-    <section style={{ background:"#FAFAF8", padding:"clamp(40px,5.5vw,72px) 0", borderBottom:"1px solid #E0DBD3", overflow:"hidden" }}>
-
-      {/* ── Header ── */}
-      <div style={{ padding:"0 clamp(16px,5.5vw,80px)", marginBottom:"clamp(20px,2.8vw,32px)", display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap" as const, gap:12 }}>
-        <div>
-          <span style={{ fontFamily:"'Syne',sans-serif", fontSize:10, fontWeight:700, letterSpacing:".22em", textTransform:"uppercase" as const, color:"#7A7570", display:"flex", alignItems:"center", gap:12, marginBottom:12 }}>
-            <span style={{ width:24, height:1.5, background:"#C9A84C", display:"inline-block" }} />Curated for You
-          </span>
-          <h2 style={{ fontFamily:"'Playfair Display',Georgia,serif", fontSize:"clamp(26px,3.8vw,52px)", fontWeight:600, color:"#0D0D0D", letterSpacing:"-.02em", lineHeight:1.15, margin:0 }}>Top Brand Picks</h2>
+    <section className="app-container" style={{ marginTop: 34 }}>
+      <div className="surface p-6 lg:p-8">
+        <div className="flex items-end justify-between gap-4 flex-wrap mb-6">
+          <div>
+            <p className="section-kicker mb-2">Brand Spotlight</p>
+            <h2 className="section-title" style={{ fontSize: "clamp(1.4rem, 3vw, 2rem)" }}>
+              Premium Picks From Top Labels
+            </h2>
+          </div>
         </div>
-        <button
-          style={{ fontFamily:"'Syne',sans-serif", fontSize:11, fontWeight:600, letterSpacing:".08em", textTransform:"uppercase" as const, padding:"11px 24px", borderRadius:4, border:"1.5px solid #0D0D0D", background:"transparent", color:"#0D0D0D", cursor:"pointer", transition:"all .22s ease" }}
-          onMouseEnter={e=>{const b=e.currentTarget;b.style.background="#0D0D0D";b.style.color="#FAFAF8";}}
-          onMouseLeave={e=>{const b=e.currentTarget;b.style.background="transparent";b.style.color="#0D0D0D";}}
-        >Browse All Brands →</button>
-      </div>
 
-      {/* ── Marquee track ── */}
-      {/* Left + right fade edges */}
-      <div style={{ position:"relative" }}>
-        <div style={{ position:"absolute", left:0, top:0, bottom:0, width:80, background:"linear-gradient(to right,#FAFAF8,transparent)", zIndex:2, pointerEvents:"none" }} />
-        <div style={{ position:"absolute", right:0, top:0, bottom:0, width:80, background:"linear-gradient(to left,#FAFAF8,transparent)", zIndex:2, pointerEvents:"none" }} />
-
-        <div
-          className="tb-track"
-          style={{ gap:"clamp(14px,2vw,22px)", padding:"8px clamp(16px,5.5vw,80px) 16px" }}
-        >
-          {doubled.map((item: any, i: number) => (
-            <div
-              key={i}
-              className="tb-card"
-              style={{ flexShrink:0, width:"clamp(220px,26vw,340px)", borderRadius:18, overflow:"hidden", cursor:"pointer", border:"1px solid #E0DBD3", background:"#F7F4EF", position:"relative" }}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {brands.slice(0, 8).map((brand) => (
+            <button
+              key={`${brand.name}-${brand.image}`}
+              onClick={() => handleNavigate(brand.target)}
+              className="relative overflow-hidden rounded-2xl border border-[#DDE8EC] group"
+              style={{
+                minHeight: 220,
+                textAlign: "left",
+                cursor: "pointer",
+                width: "100%",
+                border: "1px solid #DDE8EC",
+                padding: 0,
+                background: "transparent",
+              }}
             >
-              <img
-                src={item.image}
-                alt={item.name || "brand"}
-                style={{ width:"100%", height:"clamp(240px,30vw,380px)", objectFit:"cover", objectPosition:"center top" }}
-              />
-              {(item.badge || item.name) && (
-                <div style={{ position:"absolute", bottom:14, left:14, background:"rgba(13,13,13,.72)", backdropFilter:"blur(12px)", borderRadius:8, padding:"6px 14px" }}>
-                  <span style={{ fontSize:10, fontWeight:700, color:"#FAFAF8", letterSpacing:".1em", textTransform:"uppercase" as const, fontFamily:"'Syne',sans-serif" }}>
-                    {item.badge || item.name}
-                  </span>
-                </div>
-              )}
-            </div>
+              <img src={brand.image || fallback[0].image} alt={brand.name} className="w-full h-full object-cover transition duration-500 group-hover:scale-105" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/10 to-transparent" />
+              <div className="absolute left-4 right-4 bottom-4 text-white">
+                <p className="text-xs uppercase tracking-[0.16em] opacity-85">{brand.badge || "Featured"}</p>
+                <p className="text-lg font-semibold mt-1">{brand.name}</p>
+              </div>
+            </button>
           ))}
         </div>
       </div>
