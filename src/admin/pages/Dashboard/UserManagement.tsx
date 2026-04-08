@@ -10,6 +10,8 @@ import { getAdminToken } from "../../../util/authToken";
 import { useSearchParams } from "react-router-dom";
 import SellersTable from "../sellers/SellersTable";
 
+const DEFAULT_SELLER_STATUS = "PENDING_VERIFICATION";
+
 const UserManagement: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [tab, setTab] = useState<"customers" | "sellers">(
@@ -35,7 +37,10 @@ const UserManagement: React.FC = () => {
       setTab(incoming);
       return;
     }
-    setSearchParams({ tab: "customers" }, { replace: true });
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("tab", "customers");
+    nextParams.delete("status");
+    setSearchParams(nextParams, { replace: true });
   }, [searchParams, setSearchParams]);
 
   const filteredCustomers = customers.filter((u) =>
@@ -49,9 +54,20 @@ const UserManagement: React.FC = () => {
       <Paper sx={{ p: 1.5, display: "flex", alignItems: "center", gap: 1 }}>
         <Tabs
           value={tab}
-          onChange={(_, v) => {
+          onChange={(_, v: "customers" | "sellers") => {
             setTab(v);
-            setSearchParams({ tab: v }, { replace: true });
+            const nextParams = new URLSearchParams(searchParams);
+            nextParams.set("tab", v);
+
+            if (v === "sellers") {
+              if (!nextParams.get("status")) {
+                nextParams.set("status", DEFAULT_SELLER_STATUS);
+              }
+            } else {
+              nextParams.delete("status");
+            }
+
+            setSearchParams(nextParams, { replace: true });
           }}
         >
           <Tab label="Customers" value="customers" />

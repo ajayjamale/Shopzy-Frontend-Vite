@@ -1,4 +1,3 @@
-// src/slices/orderSlice.ts
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
 import { api } from "../../Config/Api";
@@ -19,6 +18,15 @@ const initialState: OrderState = {
 };
 
 const API_URL = "/api/orders";
+
+export interface CheckoutInitPayload {
+  payment_order_id: number;
+  razorpay_order_id: string;
+  razorpay_key: string;
+  amount: number;
+  currency: string;
+  payment_link_url?: string;
+}
 
 // Fetch user order history
 export const fetchUserOrderHistory = createAsyncThunk<Order[], string>(
@@ -50,34 +58,23 @@ export const fetchOrderById = createAsyncThunk<Order, { orderId: number; jwt: st
   }
 );
 
-// Create a new order and return the payment link.
-// FIX: Removed window.location.href from the thunk.
-// A Redux thunk must NOT perform browser navigation — it's a pure data layer.
-// Reasons this was causing the bug:
-//   1. If payment_link_url was undefined/null in the response, the redirect
-//      never happened but the thunk still returned successfully. The component
-//      had no way to know the redirect failed.
-//   2. The component called dispatch() synchronously (no await), so by the time
-//      the async thunk resolved and tried to redirect, React may have already
-//      re-rendered or unmounted the component.
-//   3. Putting navigation in a thunk makes it impossible to test and impossible
-//      for the component to handle errors gracefully.
-//
-// The component (AddressPage) now awaits the result via .unwrap() and performs
-// the redirect itself — giving full control and error handling to the UI layer.
 export const createOrder = createAsyncThunk<
-  any,
+  CheckoutInitPayload,
   { address: Address; jwt: string; paymentGateway: string }
 >("orders/createOrder", async ({ address, jwt, paymentGateway }, { rejectWithValue }) => {
   try {
-    const response = await api.post<any>(API_URL, address, {
+    const response = await api.post<Record<string, any>>(API_URL, address, {
       headers: { Authorization: `Bearer ${jwt}` },
       params: { paymentMethod: paymentGateway },
     });
 
-    console.log("createOrder raw response:", response.data);
-
     const data = response.data ?? {};
+    const paymentOrderId = Number(data.payment_order_id ?? data.paymentOrderId ?? 0);
+    const razorpayOrderId = String(data.razorpay_order_id ?? data.razorpayOrderId ?? "");
+    const razorpayKey = String(data.razorpay_key ?? data.razorpayKey ?? import.meta.env.VITE_RAZORPAY_KEY_ID ?? "");
+    const amount = Number(data.amount ?? 0);
+    const currency = String(data.currency ?? "INR");
+
     const paymentUrl =
       data.payment_link_url ||
       data.paymentLinkUrl ||
@@ -90,30 +87,47 @@ export const createOrder = createAsyncThunk<
       data?.payment_link?.short_url ||
       data?.payment_link?.long_url;
 
-    // Check for a usable payment URL — log full response so we can see
-    // the exact field names the backend returns
-    if (!paymentUrl) {
-      console.error(
-        "payment_link_url missing. Backend returned:",
-        JSON.stringify(data, null, 2)
-      );
-      return rejectWithValue(
-        "Order created but payment_link_url missing. See console for backend response."
-      );
+    const hasCheckoutPayload =
+      paymentOrderId > 0 &&
+      razorpayOrderId.length > 0 &&
+      razorpayKey.length > 0 &&
+      Number.isFinite(amount) &&
+      amount > 0;
+
+    if (hasCheckoutPayload) {
+      return {
+        payment_order_id: paymentOrderId,
+        razorpay_order_id: razorpayOrderId,
+        razorpay_key: razorpayKey,
+        amount,
+        currency,
+        payment_link_url: paymentUrl ? String(paymentUrl) : undefined,
+      };
     }
 
-    return { ...data, payment_link_url: paymentUrl };
-  } catch (error: any) {
-    // Log the full error so we can see HTTP status, headers, and body
-    console.error("createOrder error status :", error.response?.status);
-    console.error("createOrder error body   :", error.response?.data);
-    console.error("createOrder error message:", error.message);
+    // Backward compatibility for payment-link based flow.
+    if (paymentUrl) {
+      return {
+        payment_order_id: paymentOrderId,
+        razorpay_order_id: "",
+        razorpay_key: "",
+        amount: 0,
+        currency: "INR",
+        payment_link_url: String(paymentUrl),
+      };
+    }
 
+    console.error(
+      "Razorpay checkout fields missing. Backend returned:",
+      JSON.stringify(data, null, 2)
+    );
+    return rejectWithValue("Unable to initialize payment. Razorpay order details were not returned.");
+  } catch (error: any) {
     const message =
       error.response?.data?.message ||
-      error.response?.data?.error  ||
-      error.response?.data         ||
-      error.message                ||
+      error.response?.data?.error ||
+      error.response?.data ||
+      error.message ||
       "Failed to create order";
 
     return rejectWithValue(message);
@@ -134,7 +148,52 @@ export const fetchOrderItemById = createAsyncThunk<
   }
 });
 
-// Called by Razorpay redirect — confirms payment and finalises the order
+export const verifyRazorpayPayment = createAsyncThunk<
+  ApiResponse,
+  {
+    jwt: string;
+    paymentOrderId: number;
+    razorpayPaymentId: string;
+    razorpayOrderId: string;
+    razorpaySignature: string;
+  },
+  { rejectValue: string }
+>(
+  "orders/verifyRazorpayPayment",
+  async ({ jwt, paymentOrderId, razorpayPaymentId, razorpayOrderId, razorpaySignature }, { rejectWithValue }) => {
+    try {
+      const response = await api.post(
+        "/api/payment/verify",
+        { paymentOrderId, razorpayPaymentId, razorpayOrderId, razorpaySignature },
+        { headers: { Authorization: `Bearer ${jwt}` } }
+      );
+      return response.data;
+    } catch (error: any) {
+      if (error.response) return rejectWithValue(error.response.data?.message || "Payment verification failed");
+      return rejectWithValue("Failed to verify payment");
+    }
+  }
+);
+
+export const markPaymentFailed = createAsyncThunk<
+  ApiResponse,
+  { jwt: string; paymentOrderId: number; reason?: string },
+  { rejectValue: string }
+>("orders/markPaymentFailed", async ({ jwt, paymentOrderId, reason }, { rejectWithValue }) => {
+  try {
+    const response = await api.post(
+      "/api/payment/fail",
+      { paymentOrderId, reason },
+      { headers: { Authorization: `Bearer ${jwt}` } }
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response) return rejectWithValue(error.response.data?.message || "Failed to mark payment failed");
+    return rejectWithValue("Failed to mark payment failed");
+  }
+});
+
+// Legacy redirect callback support (payment links)
 export const paymentSuccess = createAsyncThunk<
   ApiResponse,
   { paymentId: string; jwt: string; paymentLinkId: string },
@@ -145,10 +204,9 @@ export const paymentSuccess = createAsyncThunk<
       headers: { Authorization: `Bearer ${jwt}` },
       params: { paymentLinkId },
     });
-    console.log("payment success ", response.data);
     return response.data;
   } catch (error: any) {
-    if (error.response) return rejectWithValue(error.response.data.message);
+    if (error.response) return rejectWithValue(error.response.data?.message || "Payment verification failed");
     return rejectWithValue("Failed to process payment");
   }
 });
@@ -212,7 +270,7 @@ const orderSlice = createSlice({
         state.error = null;
         state.paymentConfirmed = false;
       })
-      .addCase(createOrder.fulfilled, (state, action: PayloadAction<any>) => {
+      .addCase(createOrder.fulfilled, (state, action: PayloadAction<CheckoutInitPayload>) => {
         state.paymentOrder = action.payload;
         state.loading = false;
       })
@@ -234,15 +292,42 @@ const orderSlice = createSlice({
         state.error = action.payload as string;
       })
 
+      .addCase(verifyRazorpayPayment.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.paymentConfirmed = false;
+      })
+      .addCase(verifyRazorpayPayment.fulfilled, (state) => {
+        state.loading = false;
+        state.paymentConfirmed = true;
+      })
+      .addCase(verifyRazorpayPayment.rejected, (state, action) => {
+        state.loading = false;
+        state.paymentConfirmed = false;
+        state.error = action.payload as string;
+      })
+
+      .addCase(markPaymentFailed.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(markPaymentFailed.fulfilled, (state) => {
+        state.loading = false;
+        state.paymentConfirmed = false;
+      })
+      .addCase(markPaymentFailed.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
       .addCase(paymentSuccess.pending, (state) => {
         state.loading = true;
         state.error = null;
         state.paymentConfirmed = false;
       })
-      .addCase(paymentSuccess.fulfilled, (state, action) => {
+      .addCase(paymentSuccess.fulfilled, (state) => {
         state.loading = false;
         state.paymentConfirmed = true;
-        state.currentOrder = action.payload as any;
       })
       .addCase(paymentSuccess.rejected, (state, action) => {
         state.loading = false;
@@ -257,7 +342,7 @@ const orderSlice = createSlice({
       })
       .addCase(cancelOrder.fulfilled, (state, action) => {
         state.loading = false;
-        state.orders = state.orders.map(order =>
+        state.orders = state.orders.map((order) =>
           order.id === action.payload.id ? action.payload : order
         );
         state.orderCanceled = true;
@@ -273,9 +358,9 @@ const orderSlice = createSlice({
 export default orderSlice.reducer;
 export const { resetPaymentConfirmed } = orderSlice.actions;
 
-export const selectOrders          = (state: RootState) => state.orders.orders;
-export const selectCurrentOrder    = (state: RootState) => state.orders.currentOrder;
-export const selectPaymentOrder    = (state: RootState) => state.orders.paymentOrder;
-export const selectOrdersLoading   = (state: RootState) => state.orders.loading;
-export const selectOrdersError     = (state: RootState) => state.orders.error;
+export const selectOrders = (state: RootState) => state.orders.orders;
+export const selectCurrentOrder = (state: RootState) => state.orders.currentOrder;
+export const selectPaymentOrder = (state: RootState) => state.orders.paymentOrder;
+export const selectOrdersLoading = (state: RootState) => state.orders.loading;
+export const selectOrdersError = (state: RootState) => state.orders.error;
 export const selectPaymentConfirmed = (state: RootState) => state.orders.paymentConfirmed;

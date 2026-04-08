@@ -17,7 +17,7 @@ const initialState: SellerAuthState = {
     error: null,
     loading: false,
     jwt: null,
-    sellerCreated:""
+    sellerCreated: null
 };
 
 const API_URL = '/sellers';
@@ -34,20 +34,53 @@ export const sendLoginOtp = createAsyncThunk('otp/sendLoginOtp', async (email: s
     }
 });
 
-export const verifyLoginOtp = createAsyncThunk('otp/verifyLoginOtp', 
-    async (data: { email: string; otp: string, navigate:any }, { rejectWithValue }) => {
-    try {
-        const response = await api.post('/sellers/verify/login-top', data);
-        console.log("login seller success - ", response.data)
-        // Store seller token under a seller-specific key to avoid clashing with customer JWT
-        localStorage.setItem("seller_jwt",response.data.jwt)
-        data.navigate("/seller")
-        return response.data;
-    } catch (error:any) {
-        console.log("error",error.response?.data)
-        return rejectWithValue(error.response?.data?.message || 'Failed to verify OTP');
+export const verifyLoginOtp = createAsyncThunk(
+    'otp/verifyLoginOtp',
+    async (data: { email: string; otp: string; navigate: any }, { rejectWithValue }) => {
+        try {
+            const response = await api.post('/sellers/verify/login-top', {
+                email: data.email,
+                otp: data.otp,
+            });
+            const jwt = response.data?.jwt as string | undefined;
+
+            if (!jwt) {
+                return rejectWithValue('Seller login failed. Please try again.');
+            }
+
+            const profileResponse = await api.get('/sellers/profile', {
+                headers: {
+                    Authorization: `Bearer ${jwt}`,
+                },
+            });
+            const accountStatus = profileResponse.data?.accountStatus?.toUpperCase?.() || '';
+
+            if (accountStatus !== 'ACTIVE') {
+                localStorage.removeItem('seller_jwt');
+
+                if (accountStatus === 'PENDING_VERIFICATION') {
+                    return rejectWithValue('Your seller account is pending verification. Please wait for admin approval.');
+                }
+
+                if (accountStatus) {
+                    const readableStatus = accountStatus.toLowerCase().replace(/_/g, ' ');
+                    return rejectWithValue(`Seller account is ${readableStatus}. Please contact support.`);
+                }
+
+                return rejectWithValue('Seller account is not active yet.');
+            }
+
+            console.log("login seller success - ", response.data)
+            // Store seller token under a seller-specific key to avoid clashing with customer JWT
+            localStorage.setItem("seller_jwt", jwt)
+            data.navigate("/seller")
+            return response.data;
+        } catch (error:any) {
+            console.log("error",error.response?.data)
+            return rejectWithValue(error.response?.data?.message || 'Failed to verify OTP');
+        }
     }
-});
+);
 
 export const createSeller = createAsyncThunk<Seller, Seller>(
     'sellers/createSeller',
@@ -80,6 +113,7 @@ const sellerAuthSlice = createSlice({
             state.error = null;
             state.loading = false;
             state.jwt = null;
+            state.sellerCreated = null;
         },
     },
     extraReducers: (builder) => {
@@ -118,10 +152,14 @@ const sellerAuthSlice = createSlice({
             .addCase(createSeller.pending, (state) => {
                 state.loading = true;
                 state.error = null;
+                state.sellerCreated = null;
             })
             .addCase(createSeller.fulfilled, (state, action: PayloadAction<Seller>) => {
                 // state.sellers.push(action.payload);
-                state.sellerCreated = "verification email sent to you"
+                const status = action.payload.accountStatus?.toUpperCase?.();
+                state.sellerCreated = status === "PENDING_VERIFICATION"
+                    ? "Seller account created. It is pending admin verification."
+                    : "Seller account created successfully.";
                 state.loading = false;
             })
             .addCase(createSeller.rejected, (state, action) => {

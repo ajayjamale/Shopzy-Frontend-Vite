@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
@@ -31,9 +31,11 @@ const ReviewForm: React.FC = () => {
 
   // ✅ Granular selectors
   const reviewLoading = useAppSelector((s) => s.review.loading);
+  const reviewError = useAppSelector((s) => s.review.error);
 
   const [hovered, setHovered] = useState(0);
   const [uploadingImg, setUploadingImg] = useState(false);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
 
   const formik = useFormik<CreateReviewRequest>({
     initialValues: {
@@ -50,16 +52,29 @@ const ReviewForm: React.FC = () => {
         .min(1, 'Please select a rating')
         .max(5),
     }),
-    onSubmit: (values) => {
-      if (productId) {
-        dispatch(createReview({
+    onSubmit: async (values, { resetForm }) => {
+      if (!productId) return;
+
+      setReviewSubmitted(false);
+      try {
+        await dispatch(createReview({
           productId: Number(productId),
           review: values,
           jwt: localStorage.getItem("jwt") || "",
-        }));
+        })).unwrap();
+        setReviewSubmitted(true);
+        resetForm();
+      } catch {
+        // Error is rendered from redux state via reviewError.
       }
     },
   });
+
+  useEffect(() => {
+    if (!reviewSubmitted) return;
+    const timeoutId = window.setTimeout(() => setReviewSubmitted(false), 4000);
+    return () => window.clearTimeout(timeoutId);
+  }, [reviewSubmitted]);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -111,6 +126,39 @@ const ReviewForm: React.FC = () => {
 
   return (
     <form onSubmit={formik.handleSubmit} noValidate>
+      {reviewSubmitted && (
+        <div
+          style={{
+            background: "#ecfdf3",
+            border: "1px solid #86efac",
+            color: "#166534",
+            borderRadius: 4,
+            padding: "10px 12px",
+            marginBottom: 14,
+            fontSize: "0.85rem",
+            fontWeight: 600,
+          }}
+        >
+          Review submitted successfully.
+        </div>
+      )}
+
+      {reviewError && !reviewLoading && (
+        <div
+          style={{
+            background: "#fef2f2",
+            border: "1px solid #fca5a5",
+            color: "#991b1b",
+            borderRadius: 4,
+            padding: "10px 12px",
+            marginBottom: 14,
+            fontSize: "0.85rem",
+            fontWeight: 600,
+          }}
+        >
+          {reviewError}
+        </div>
+      )}
 
       {/* ── Overall Rating ── */}
       <div style={{ marginBottom: 18 }}>

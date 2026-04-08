@@ -2,11 +2,48 @@ import { Box, Modal, Radio, RadioGroup } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { createOrder } from "../../../Redux Toolkit/Customer/OrderSlice";
+import {
+  createOrder,
+  markPaymentFailed,
+  type CheckoutInitPayload,
+  verifyRazorpayPayment,
+} from "../../../Redux Toolkit/Customer/OrderSlice";
+import { clearCart } from "../../../Redux Toolkit/Customer/CartSlice";
 import AddressCard from "./AddressCard";
 import AddressForm from "./AddresssForm";
 import PricingCard from "../Cart/PricingCard";
+
+declare global {
+  interface Window {
+    Razorpay?: any;
+  }
+}
+
+type RazorpaySuccessResponse = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
+
+let razorpayScriptPromise: Promise<boolean> | null = null;
+
+const loadRazorpayCheckoutScript = (): Promise<boolean> => {
+  if (window.Razorpay) return Promise.resolve(true);
+  if (razorpayScriptPromise) return razorpayScriptPromise;
+
+  razorpayScriptPromise = new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+
+  return razorpayScriptPromise;
+};
 
 const paymentOptions = [
   { value: "RAZORPAY", label: "Razorpay", subtitle: "Cards, UPI, netbanking" },
@@ -22,6 +59,7 @@ const modalStyle = {
 
 const AddressPage = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { user, orders } = useAppSelector((store) => store);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -30,16 +68,114 @@ const AddressPage = () => {
   const [placingOrder, setPlacingOrder] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inFlightRef = useRef(false);
+  const checkoutSettledRef = useRef(false);
 
   const addresses = user.user?.addresses || [];
+
+  const lockCheckout = () => {
+    setPlacingOrder(true);
+    inFlightRef.current = true;
+  };
+
+  const unlockCheckout = () => {
+    setPlacingOrder(false);
+    inFlightRef.current = false;
+  };
+
+  const markFailure = async (paymentOrderId: number, reason: string) => {
+    try {
+      await dispatch(
+        markPaymentFailed({
+          paymentOrderId,
+          reason,
+          jwt: localStorage.getItem("jwt") || "",
+        })
+      ).unwrap();
+    } catch {
+      // Ignore failure-status update errors; primary checkout errors are shown to user.
+    }
+  };
+
+  const openRazorpayCheckout = async (payload: CheckoutInitPayload) => {
+    checkoutSettledRef.current = false;
+
+    const loaded = await loadRazorpayCheckoutScript();
+    if (!loaded || !window.Razorpay) {
+      setError("Unable to load Razorpay checkout. Please check your connection and retry.");
+      unlockCheckout();
+      return;
+    }
+
+    const options = {
+      key: payload.razorpay_key,
+      amount: payload.amount,
+      currency: payload.currency || "INR",
+      order_id: payload.razorpay_order_id,
+      name: "Shopzy",
+      description: `Payment Order #${payload.payment_order_id}`,
+      prefill: {
+        name: user.user?.fullName || "",
+        email: user.user?.email || "",
+      },
+      theme: { color: "#0F766E" },
+      modal: {
+        ondismiss: async () => {
+          if (checkoutSettledRef.current) return;
+          checkoutSettledRef.current = true;
+          await markFailure(payload.payment_order_id, "Checkout dismissed by customer");
+          unlockCheckout();
+        },
+      },
+      handler: async (response: RazorpaySuccessResponse) => {
+        checkoutSettledRef.current = true;
+        try {
+          await dispatch(
+            verifyRazorpayPayment({
+              jwt: localStorage.getItem("jwt") || "",
+              paymentOrderId: payload.payment_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            })
+          ).unwrap();
+
+          dispatch(clearCart());
+          navigate("/order-placed", {
+            state: {
+              paymentId: response.razorpay_payment_id,
+            },
+          });
+        } catch (err: any) {
+          await markFailure(payload.payment_order_id, "Verification failed after payment authorization");
+          setError(typeof err === "string" ? err : "Payment verification failed. Please contact support.");
+        } finally {
+          unlockCheckout();
+        }
+      },
+    };
+
+    const instance = new window.Razorpay(options);
+    instance.on("payment.failed", async (response: any) => {
+      if (checkoutSettledRef.current) return;
+      checkoutSettledRef.current = true;
+      const reason =
+        response?.error?.description ||
+        response?.error?.reason ||
+        response?.error?.code ||
+        "Payment failed";
+      await markFailure(payload.payment_order_id, reason);
+      setError(reason);
+      unlockCheckout();
+    });
+    instance.open();
+  };
 
   const placeOrder = async (address: any) => {
     if (inFlightRef.current || placingOrder || orders.loading) return;
 
     setError(null);
-    setPlacingOrder(true);
-    inFlightRef.current = true;
-    let shouldUnlock = true;
+    lockCheckout();
+    let handedOffToCheckout = false;
 
     try {
       const result = await dispatch(
@@ -50,19 +186,24 @@ const AddressPage = () => {
         })
       ).unwrap();
 
-      if (result?.payment_link_url) {
-        shouldUnlock = false;
-        window.location.assign(result.payment_link_url);
+      const canOpenRazorpay =
+        Boolean(result?.payment_order_id) &&
+        Boolean(result?.razorpay_order_id) &&
+        Boolean(result?.razorpay_key) &&
+        Number(result?.amount) > 0;
+
+      if (!canOpenRazorpay) {
+        setError("Unable to initialize Razorpay checkout. Please try again.");
         return;
       }
 
-      setError("Payment link was not received. Please try again.");
+      handedOffToCheckout = true;
+      await openRazorpayCheckout(result);
     } catch (err: any) {
       setError(typeof err === "string" ? err : "Could not create order");
     } finally {
-      if (shouldUnlock) {
-        setPlacingOrder(false);
-        inFlightRef.current = false;
+      if (!handedOffToCheckout) {
+        unlockCheckout();
       }
     }
   };

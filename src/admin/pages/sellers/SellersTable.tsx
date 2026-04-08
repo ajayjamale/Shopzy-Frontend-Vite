@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { fetchSellers, updateSellerAccountStatus } from "../../../Redux Toolkit/Seller/sellerSlice";
+import { useSearchParams } from "react-router-dom";
 
 const accountStatuses = [
   { status: "PENDING_VERIFICATION", title: "Pending Verification" },
@@ -26,17 +27,43 @@ const accountStatuses = [
   { status: "BANNED", title: "Banned" },
   { status: "CLOSED", title: "Closed" },
 ];
+const DEFAULT_STATUS = "PENDING_VERIFICATION";
+
+const isValidSellerStatus = (status: string | null): status is string =>
+  Boolean(status && accountStatuses.some((item) => item.status === status));
 
 const SellersTable = () => {
   const dispatch = useAppDispatch();
   const { sellers } = useAppSelector((store) => store);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const statusFromQuery = searchParams.get("status");
 
-  const [accountStatus, setAccountStatus] = useState("ACTIVE");
+  const [accountStatus, setAccountStatus] = useState(
+    isValidSellerStatus(statusFromQuery) ? statusFromQuery : DEFAULT_STATUS
+  );
   const [anchorEl, setAnchorEl] = useState<{ [key: number]: HTMLElement | null }>({});
+
+  useEffect(() => {
+    if (!isValidSellerStatus(statusFromQuery)) {
+      return;
+    }
+
+    if (statusFromQuery !== accountStatus) {
+      setAccountStatus(statusFromQuery);
+    }
+  }, [accountStatus, statusFromQuery]);
 
   useEffect(() => {
     dispatch(fetchSellers(accountStatus));
   }, [accountStatus, dispatch]);
+
+  const handleStatusFilterChange = (nextStatus: string) => {
+    setAccountStatus(nextStatus);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("tab", "sellers");
+    nextParams.set("status", nextStatus);
+    setSearchParams(nextParams, { replace: true });
+  };
 
   const openMenu = (event: React.MouseEvent<HTMLButtonElement>, sellerId: number) => {
     setAnchorEl((prev) => ({ ...prev, [sellerId]: event.currentTarget }));
@@ -53,7 +80,7 @@ const SellersTable = () => {
           Seller Management
         </Typography>
         <FormControl size="small" sx={{ minWidth: 220 }}>
-          <Select value={accountStatus} onChange={(event) => setAccountStatus(event.target.value)}>
+          <Select value={accountStatus} onChange={(event) => handleStatusFilterChange(event.target.value)}>
             {accountStatuses.map((status) => (
               <MenuItem key={status.status} value={status.status}>{status.title}</MenuItem>
             ))}
@@ -96,7 +123,8 @@ const SellersTable = () => {
                       <MenuItem
                         key={status.status}
                         onClick={() => {
-                          dispatch(updateSellerAccountStatus({ id: seller.id || 1, status: status.status }));
+                          dispatch(updateSellerAccountStatus({ id: seller.id || 1, status: status.status }))
+                            .finally(() => dispatch(fetchSellers(accountStatus)));
                           closeMenu(seller.id || 1);
                         }}
                       >

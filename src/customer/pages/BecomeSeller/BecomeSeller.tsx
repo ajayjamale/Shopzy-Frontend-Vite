@@ -1,194 +1,449 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { resetSellerAuthState } from "../../../Redux Toolkit/Seller/sellerAuthenticationSlice";
 import SellerAccountForm from "./SellerAccountForm";
 import SellerLoginForm from "./SellerLoginForm";
 
 const C = {
-  orange:"#0F766E", navy:"#0F172A", navyMid:"#1E293B",
-  blue:"#0F6094",   red:"#C40000",  green:"#007600",
-  greenBg:"#EAF7EA", white:"#FFFFFF", bg:"#F3F3F3",
-  border:"#CCCCCC", text:"#0F172A", textMid:"#64748B",
-  textLight:"#8D8D8D", divider:"#E7E7E7",
+  ink: "#091627",
+  panel: "#FFFFFF",
+  panelSoft: "#F8FBFC",
+  border: "#D8E6EA",
+  text: "#0E1B2C",
+  muted: "#607284",
+  teal: "#0F766E",
+  tealSoft: "#DDF3EF",
+  promoA: "#0A223D",
+  promoB: "#113C6B",
+  success: "#157347",
+  successBg: "#E9F8EF",
+  error: "#B42318",
+  errorBg: "#FEF0EE",
 };
 
-/* ─── Toast (replaces MUI Snackbar — no dependency needed) ── */
-function Toast({ msg, type, onClose }: { msg:string; type:"success"|"error"; onClose:()=>void }) {
-  const [out, setOut] = useState(false);
-  useEffect(() => {
-    const t1 = setTimeout(() => setOut(true), 4500);
-    const t2 = setTimeout(onClose, 5000);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, []);
-  const fg  = type === "error" ? C.red   : C.green;
-  const bg  = type === "error" ? "#FFF3F3" : C.greenBg;
-  const bdr = type === "error" ? "#FFBDBC" : "#B3DFBA";
+type ToastType = "success" | "error";
+
+function Toast({
+  msg,
+  type,
+  onClose,
+}: {
+  msg: string;
+  type: ToastType;
+  onClose: () => void;
+}) {
+  const fg = type === "error" ? C.error : C.success;
+  const bg = type === "error" ? C.errorBg : C.successBg;
+
   return (
-    <div style={{
-      background:bg, border:`1px solid ${bdr}`, borderRadius:5,
-      padding:"12px 16px", display:"flex", gap:10, alignItems:"center",
-      animation:`${out?"toastOut":"toastIn"} .35s ease both`,
-      boxShadow:"0 4px 18px rgba(0,0,0,0.11)", maxWidth:340, minWidth:240,
-      fontFamily:"'DM Sans',sans-serif",
-    }}>
-      <span style={{ fontSize:13, color:fg, fontWeight:500, flex:1, lineHeight:1.45 }}>{msg}</span>
-      <button onClick={onClose}
-        style={{ background:"none", border:"none", cursor:"pointer", fontSize:18, color:fg, opacity:.7, padding:0, lineHeight:1 }}>
-        ×
+    <div
+      style={{
+        background: bg,
+        border: `1px solid ${fg}33`,
+        color: fg,
+        borderRadius: 12,
+        padding: "10px 12px",
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        boxShadow: "0 8px 22px rgba(15,23,42,0.14)",
+        fontSize: 13,
+        fontWeight: 600,
+        minWidth: 250,
+      }}
+    >
+      <span style={{ flex: 1, lineHeight: 1.45 }}>{msg}</span>
+      <button
+        onClick={onClose}
+        style={{
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          color: fg,
+          fontSize: 16,
+          lineHeight: 1,
+          padding: 0,
+        }}
+      >
+        x
       </button>
     </div>
   );
 }
 
-/* ─── Right promo panel ─────────────────────────────── */
-function RightPanel() {
-  return (
-    <div style={{ padding:"40px 30px", height:"100%", display:"flex", flexDirection:"column", gap:28 }}>
-      <div>
-        <div style={{ display:"flex", alignItems:"baseline", gap:3, marginBottom:6 }}>
-          <span className="logo" style={{ fontSize: 26, color: "#ffffff", fontWeight: 800 }}>Shopzy</span>
-          <span style={{ fontSize:12, fontWeight:700, color:C.orange, letterSpacing:".06em", textTransform:"uppercase" }}>seller</span>
-        </div>
-        <p style={{ fontSize:13.5, color:"rgba(255,255,255,0.5)", lineHeight:1.55 }}>
-          Over 10 lakh sellers. 19 crore+ customers.<br/>Your growth starts here.
-        </p>
-      </div>
+const promoItems = [
+  {
+    title: "Reach high-intent buyers",
+    desc: "Launch your catalog where customers already come to buy.",
+  },
+  {
+    title: "Simple weekly payouts",
+    desc: "Track earnings and settlements in one seller dashboard.",
+  },
+  {
+    title: "Operations support",
+    desc: "Manage orders, returns, and inventory with seller tools.",
+  },
+];
 
-      {[
-        ["Reach crores of customers",  "Instantly list on India's most trusted marketplace."],
-        ["Fast, secure payments",       "Payments credited every 7 days to your bank."],
-        ["Hassle-free fulfilment",       "Shopzy FBF handles packing, shipping & returns."],
-        ["Seller protection & support", "A-to-Z Guarantee and 24/7 seller success team."],
-      ].map(([t,d],i) => (
-        <div key={t} style={{ display:"flex", gap:13, alignItems:"flex-start" }}>
-          <div style={{ width:8, height:8, borderRadius:"50%", background:C.orange, marginTop:5, flexShrink:0 }}/>
-          <div>
-            <p style={{ fontSize:13, fontWeight:700, color:C.white, marginBottom:2 }}>{t}</p>
-            <p style={{ fontSize:12, color:"rgba(255,255,255,0.45)", lineHeight:1.5 }}>{d}</p>
-          </div>
-        </div>
-      ))}
+const promoStats = [
+  { value: "10L+", label: "Sellers" },
+  { value: "19Cr+", label: "Shoppers" },
+  { value: "160+", label: "Countries" },
+];
 
-      <div style={{ marginTop:"auto", display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
-        {[["10L+","Sellers"],["19Cr+","Customers"],["160+","Countries"]].map(([n,l]) => (
-          <div key={l} style={{ background:"rgba(255,255,255,0.05)", border:"1px solid rgba(255,255,255,0.09)", borderRadius:9, padding:"13px 6px", textAlign:"center" }}>
-            <p style={{ fontSize:18, fontWeight:800, color:C.orange }}>{n}</p>
-            <p style={{ fontSize:10.5, color:"rgba(255,255,255,0.38)", marginTop:2 }}>{l}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-/* ─── BecomeSeller ──────────────────────────────────── */
 const BecomeSeller = () => {
-  const { sellerAuth } = useAppSelector(store => store);
+  const dispatch = useAppDispatch();
+  const { sellerAuth } = useAppSelector((store) => store);
+
   const [isLoginPage, setIsLoginPage] = useState(false);
-  const [toasts, setToasts] = useState<{ id:number; msg:string; type:"success"|"error" }[]>([]);
+  const [toasts, setToasts] = useState<{ id: number; msg: string; type: ToastType }[]>([]);
+  const lastError = useRef<string>("");
+  const lastSuccess = useRef<string>("");
+  const lastOtp = useRef(false);
 
-  const addToast = (msg: string, type: "success"|"error") =>
-    setToasts(t => [...t, { id: Date.now(), msg, type }]);
-  const rmToast  = (id: number) =>
-    setToasts(t => t.filter(x => x.id !== id));
+  const addToast = (msg: string, type: ToastType) => {
+    const id = Date.now() + Math.floor(Math.random() * 1000);
+    setToasts((current) => [...current, { id, msg, type }]);
+  };
 
-  /* Mirror your original useEffect — show toast on Redux state changes */
+  const removeToast = (id: number) => setToasts((current) => current.filter((t) => t.id !== id));
+
   useEffect(() => {
-    if (sellerAuth.error)        addToast(sellerAuth.error,        "error");
+    if (sellerAuth.error && sellerAuth.error !== lastError.current) {
+      lastError.current = sellerAuth.error;
+      addToast(sellerAuth.error, "error");
+    }
   }, [sellerAuth.error]);
 
   useEffect(() => {
-    if (sellerAuth.sellerCreated) addToast(sellerAuth.sellerCreated, "success");
+    const msg = sellerAuth.sellerCreated || "";
+    if (msg && msg !== lastSuccess.current) {
+      lastSuccess.current = msg;
+      addToast(msg, "success");
+    }
   }, [sellerAuth.sellerCreated]);
 
   useEffect(() => {
-    if (sellerAuth.otpSent)       addToast("OTP sent to your email!", "success");
+    if (sellerAuth.otpSent && !lastOtp.current) {
+      addToast("OTP sent to your email.", "success");
+    }
+    lastOtp.current = sellerAuth.otpSent;
   }, [sellerAuth.otpSent]);
+
+  const switchMode = (nextIsLogin: boolean) => {
+    setIsLoginPage(nextIsLogin);
+    dispatch(resetSellerAuthState());
+  };
 
   return (
     <>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@600;700&display=swap"
+        rel="stylesheet"
+      />
       <style>{`
-        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-        body { font-family:'DM Sans',sans-serif; background:${C.bg}; }
-        input, button { font-family:'DM Sans',sans-serif; }
-        @keyframes toastIn  { from{transform:translateX(110%);opacity:0} to{transform:translateX(0);opacity:1} }
-        @keyframes toastOut { from{transform:translateX(0);opacity:1} to{transform:translateX(110%);opacity:0} }
-        @keyframes fadeUp   { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
+        .seller-auth-page {
+          min-height: 100vh;
+          background:
+            radial-gradient(1200px 600px at 90% -10%, rgba(15, 118, 110, 0.18), transparent 55%),
+            radial-gradient(900px 500px at -10% 10%, rgba(17, 60, 107, 0.2), transparent 55%),
+            #f2f7f9;
+          color: ${C.text};
+          font-family: "Manrope", sans-serif;
+          padding: 20px 0 26px;
+        }
+        .seller-auth-wrap {
+          width: min(1220px, 95vw);
+          margin: 0 auto;
+          display: grid;
+          gap: 14px;
+        }
+        .seller-auth-topbar {
+          background: linear-gradient(110deg, ${C.ink}, #133154);
+          border: 1px solid #183757;
+          border-radius: 16px;
+          padding: 12px 16px;
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+        .seller-auth-brand {
+          display: flex;
+          align-items: baseline;
+          gap: 6px;
+        }
+        .seller-auth-brand-name {
+          font-family: "Sora", sans-serif;
+          font-size: 20px;
+          color: #f8fbfd;
+          letter-spacing: -0.02em;
+        }
+        .seller-auth-brand-kicker {
+          font-size: 10px;
+          color: #82e4da;
+          font-weight: 700;
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+        .seller-auth-topbar-right {
+          margin-left: auto;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          color: #cfdae6;
+          font-size: 12px;
+        }
+        .seller-auth-toggle-btn {
+          border: 1px solid #41607f;
+          color: #f8fbfd;
+          background: rgba(255,255,255,0.06);
+          border-radius: 999px;
+          padding: 6px 14px;
+          font-size: 12px;
+          font-weight: 700;
+          cursor: pointer;
+        }
+        .seller-auth-main {
+          display: grid;
+          grid-template-columns: minmax(0, 640px) minmax(0, 1fr);
+          gap: 14px;
+          align-items: stretch;
+        }
+        .seller-auth-card {
+          background: ${C.panel};
+          border: 1px solid ${C.border};
+          border-radius: 18px;
+          overflow: hidden;
+          box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
+          min-height: 720px;
+          display: flex;
+          flex-direction: column;
+        }
+        .seller-auth-tabs {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          background: ${C.panelSoft};
+          border-bottom: 1px solid ${C.border};
+          padding: 8px;
+          gap: 8px;
+        }
+        .seller-auth-tab-btn {
+          border: 1px solid transparent;
+          border-radius: 12px;
+          padding: 10px 12px;
+          background: transparent;
+          color: ${C.muted};
+          font-weight: 700;
+          font-size: 13px;
+          cursor: pointer;
+        }
+        .seller-auth-tab-btn.active {
+          background: #ffffff;
+          border-color: ${C.border};
+          color: ${C.text};
+          box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+        }
+        .seller-auth-body {
+          flex: 1;
+          padding: 18px 18px 16px;
+          overflow: auto;
+        }
+        .seller-auth-footer {
+          border-top: 1px solid ${C.border};
+          padding: 12px 18px 14px;
+          color: ${C.muted};
+          font-size: 11px;
+          line-height: 1.6;
+          text-align: center;
+        }
+        .seller-auth-footer a {
+          color: #0f6094;
+          text-decoration: none;
+          font-weight: 700;
+        }
+        .seller-promo-panel {
+          border-radius: 18px;
+          border: 1px solid #1a4268;
+          background:
+            radial-gradient(600px 260px at 80% -5%, rgba(130, 228, 218, 0.18), transparent 60%),
+            linear-gradient(145deg, ${C.promoA}, ${C.promoB});
+          color: #f3f8fd;
+          box-shadow: 0 16px 34px rgba(9, 22, 39, 0.35);
+          padding: 24px;
+          display: grid;
+          gap: 16px;
+          align-content: start;
+        }
+        .seller-promo-title {
+          font-family: "Sora", sans-serif;
+          font-size: clamp(24px, 2.4vw, 34px);
+          line-height: 1.12;
+          letter-spacing: -0.025em;
+        }
+        .seller-promo-sub {
+          color: rgba(240, 247, 255, 0.82);
+          font-size: 13px;
+          line-height: 1.6;
+          max-width: 55ch;
+        }
+        .seller-promo-item {
+          background: rgba(255,255,255,0.07);
+          border: 1px solid rgba(201, 232, 255, 0.2);
+          border-radius: 14px;
+          padding: 12px 13px;
+          display: grid;
+          gap: 3px;
+        }
+        .seller-promo-item h4 {
+          font-size: 13px;
+          line-height: 1.4;
+          margin: 0;
+          color: #f6fbff;
+        }
+        .seller-promo-item p {
+          font-size: 12px;
+          line-height: 1.55;
+          margin: 0;
+          color: rgba(233, 245, 255, 0.82);
+        }
+        .seller-promo-stats {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 8px;
+          margin-top: 4px;
+        }
+        .seller-promo-stat {
+          background: rgba(9, 22, 39, 0.35);
+          border: 1px solid rgba(201, 232, 255, 0.24);
+          border-radius: 11px;
+          padding: 10px 8px;
+          text-align: center;
+        }
+        .seller-promo-stat strong {
+          display: block;
+          font-size: 17px;
+          line-height: 1;
+          color: #80ebdf;
+          margin-bottom: 4px;
+        }
+        .seller-promo-stat span {
+          font-size: 11px;
+          color: rgba(238, 248, 255, 0.76);
+        }
+        @media (max-width: 1080px) {
+          .seller-auth-main {
+            grid-template-columns: 1fr;
+          }
+          .seller-auth-card {
+            min-height: unset;
+          }
+        }
+        @media (max-width: 700px) {
+          .seller-auth-topbar {
+            flex-wrap: wrap;
+            row-gap: 8px;
+          }
+          .seller-auth-topbar-right {
+            margin-left: 0;
+            width: 100%;
+            justify-content: space-between;
+          }
+          .seller-promo-stats {
+            grid-template-columns: 1fr 1fr 1fr;
+          }
+          .seller-auth-body {
+            padding: 14px;
+          }
+        }
       `}</style>
 
-      {/* Toast stack — replaces MUI Snackbar */}
-      <div style={{ position:"fixed", top:18, right:18, zIndex:9999, display:"flex", flexDirection:"column", gap:8 }}>
-        {toasts.map(t => <Toast key={t.id} {...t} onClose={() => rmToast(t.id)}/>)}
+      <div style={{ position: "fixed", top: 16, right: 16, zIndex: 9999, display: "grid", gap: 8 }}>
+        {toasts.map((toast) => (
+          <Toast key={toast.id} msg={toast.msg} type={toast.type} onClose={() => removeToast(toast.id)} />
+        ))}
       </div>
 
-      <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", background:C.bg, fontFamily:"'DM Sans',sans-serif" }}>
-
-        {/* Seller header */}
-        <header style={{ background:C.navy, padding:"8px 24px", display:"flex", alignItems:"center", gap:16, borderBottom:`2px solid ${C.orange}` }}>
-          <div style={{ display:"flex", alignItems:"baseline", gap:4 }}>
-            <span className="logo" style={{ fontSize: 22, color: "#ffffff", fontWeight: 800 }}>Shopzy</span>
-            <span style={{ fontSize:11, fontWeight:700, color:C.orange, letterSpacing:".08em", textTransform:"uppercase" }}>seller central</span>
-          </div>
-          <div style={{ marginLeft:"auto", display:"flex", alignItems:"center", gap:12 }}>
-            <span style={{ fontSize:12, color:"rgba(255,255,255,0.45)" }}>
-              {isLoginPage ? "New to Shopzy?" : "Already a seller?"}
-            </span>
-            <button onClick={() => setIsLoginPage(v => !v)}
-              style={{ background:"none", border:"1px solid rgba(255,255,255,0.22)", borderRadius:3, padding:"5px 13px", color:C.white, fontSize:12, fontWeight:600, cursor:"pointer" }}>
-              {isLoginPage ? "Register" : "Sign In"}
-            </button>
-          </div>
-        </header>
-
-        {/* Main layout */}
-        <div style={{ flex:1, display:"flex" }}>
-
-          {/* Form panel */}
-          <div style={{ width:560, flexShrink:0, background:C.white, borderRight:`1px solid ${C.divider}`, display:"flex", flexDirection:"column" }}>
-
-            {/* Tab bar */}
-            <div style={{ display:"flex", borderBottom:`1px solid ${C.divider}` }}>
-              {(["Register","Sign In"] as const).map((tab, i) => {
-                const on = isLoginPage === (i === 1);
-                return (
-                  <button key={tab} onClick={() => setIsLoginPage(i === 1)}
-                    style={{ flex:1, padding:"13px", border:"none", fontFamily:"inherit",
-                      background: on ? C.white : C.bg,
-                      borderBottom:`3px solid ${on ? C.orange : "transparent"}`,
-                      color: on ? C.text : C.textMid,
-                      fontWeight: on ? 700 : 500, fontSize:13.5, cursor:"pointer", transition:"all .2s" }}>
-                    {tab}
-                  </button>
-                );
-              })}
+      <div className="seller-auth-page">
+        <div className="seller-auth-wrap">
+          <header className="seller-auth-topbar">
+            <div className="seller-auth-brand">
+              <span className="seller-auth-brand-name">Shopzy</span>
+              <span className="seller-auth-brand-kicker">Seller Central</span>
             </div>
+            <div className="seller-auth-topbar-right">
+              <span>{isLoginPage ? "New to Shopzy?" : "Already a seller?"}</span>
+              <button className="seller-auth-toggle-btn" onClick={() => switchMode(!isLoginPage)}>
+                {isLoginPage ? "Create account" : "Sign in"}
+              </button>
+            </div>
+          </header>
 
-            {/* Form body */}
-            <div style={{ flex:1, overflowY:"auto", padding:"26px 30px" }}>
-              <div key={isLoginPage ? "login" : "register"} style={{ animation:"fadeUp .25s ease" }}>
-                {isLoginPage ? <SellerLoginForm/> : <SellerAccountForm/>}
+          <section className="seller-auth-main">
+            <div className="seller-auth-card">
+              <div className="seller-auth-tabs">
+                <button
+                  className={`seller-auth-tab-btn ${!isLoginPage ? "active" : ""}`}
+                  onClick={() => switchMode(false)}
+                >
+                  Register
+                </button>
+                <button
+                  className={`seller-auth-tab-btn ${isLoginPage ? "active" : ""}`}
+                  onClick={() => switchMode(true)}
+                >
+                  Login
+                </button>
+              </div>
+
+              <div className="seller-auth-body">{isLoginPage ? <SellerLoginForm /> : <SellerAccountForm />}</div>
+
+              <div className="seller-auth-footer">
+                <a href="#">Conditions of Use</a> | <a href="#">Privacy Notice</a> | <a href="#">Help</a>
+                <div>Copyright 2026 Shopzy.com, Inc. or its affiliates.</div>
               </div>
             </div>
 
-            {/* Footer */}
-            <div style={{ padding:"13px 30px", borderTop:`1px solid ${C.divider}`, textAlign:"center" }}>
-              <p style={{ fontSize:11, color:C.textLight, lineHeight:1.7 }}>
-                <a href="#" style={{ color:C.blue }}>Conditions of Use</a>
-                {" · "}
-                <a href="#" style={{ color:C.blue }}>Privacy Notice</a>
-                {" · "}
-                <a href="#" style={{ color:C.blue }}>Help</a>
-              </p>
-              <p style={{ fontSize:11, color:C.textLight, marginTop:3 }}>
-                © 1996–2025 Shopzy.com, Inc. or its affiliates. All rights reserved.
-              </p>
-            </div>
-          </div>
+            <aside className="seller-promo-panel">
+              <div>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: 11,
+                    letterSpacing: "0.14em",
+                    textTransform: "uppercase",
+                    color: "#86ebdf",
+                    fontWeight: 700,
+                  }}
+                >
+                  Grow With Shopzy
+                </p>
+                <h2 className="seller-promo-title" style={{ margin: "8px 0 10px" }}>
+                  Sell smarter. Scale faster. Keep control.
+                </h2>
+                <p className="seller-promo-sub">
+                  Build your brand with focused storefront tools, transparent settlements, and order workflows made
+                  for multi-category sellers.
+                </p>
+              </div>
 
-          {/* Promo panel */}
-          <div style={{ flex:1, background:C.navyMid, overflowY:"auto" }}>
-            <RightPanel/>
-          </div>
+              {promoItems.map((item) => (
+                <article key={item.title} className="seller-promo-item">
+                  <h4>{item.title}</h4>
+                  <p>{item.desc}</p>
+                </article>
+              ))}
+
+              <div className="seller-promo-stats">
+                {promoStats.map((stat) => (
+                  <div key={stat.label} className="seller-promo-stat">
+                    <strong>{stat.value}</strong>
+                    <span>{stat.label}</span>
+                  </div>
+                ))}
+              </div>
+            </aside>
+          </section>
         </div>
       </div>
     </>

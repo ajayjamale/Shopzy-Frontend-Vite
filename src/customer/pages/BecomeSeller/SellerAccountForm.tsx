@@ -1,382 +1,600 @@
-import { useState, useRef } from "react";
+import { useMemo, useState } from "react";
 import { useFormik } from "formik";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { createSeller } from "../../../Redux Toolkit/Seller/sellerAuthenticationSlice";
 
-/* ─── tokens ─────────────────────────────────────────── */
 const C = {
-  orange:"#0F766E", blue:"#0F6094", red:"#C40000",
-  green:"#007600",  greenBg:"#EAF7EA", white:"#FFFFFF",
-  bg:"#F3F3F3",     border:"#CCCCCC", borderFoc:"#0F766E",
-  shadowFoc:"rgba(15,118,110,0.25)", lightBlue:"#E8F4FD",
-  text:"#0F172A",   textMid:"#64748B", textLight:"#8D8D8D",
-  divider:"#E7E7E7", orangeBg:"rgba(15,118,110,0.08)",
+  text: "#0E1B2C",
+  muted: "#65798A",
+  border: "#CFE0E5",
+  borderFocus: "#0F766E",
+  focusRing: "rgba(15,118,110,0.18)",
+  teal: "#0F766E",
+  tealDark: "#0C5E58",
+  error: "#B42318",
+  errorBg: "#FEF0EE",
+  softBg: "#F6FAFC",
+  divider: "#DDE9ED",
 };
 
-/* ─── icons ──────────────────────────────────────────── */
-const Ic = ({ d, size=16, color="currentColor", sw=1.8 }: any) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
-    stroke={color} strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0}}>
-    <path d={d}/>
-  </svg>
-);
-const P = {
-  check:"M20 6L9 17l-5-5", chevR:"M9 18l6-6-6-6", chevL:"M15 18l-6-6 6-6",
-  eye:"M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z M12 9a3 3 0 100 6 3 3 0 000-6z",
-  eyeOff:"M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94 M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19 M1 1l22 22",
-  phone:"M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8 19.79 19.79 0 01.22 1.18 2 2 0 012.18 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.72 6.72l1.48-1.48a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z",
-  map:"M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z M12 11.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z",
-  bank:"M3 21h18 M3 10h18 M5 6l7-3 7 3 M4 10v11 M20 10v11 M8 14v3 M12 14v3 M16 14v3",
-  bldg:"M3 21h18 M9 21V7l3-4 3 4v14 M3 21V11l6-4 M21 21V11l-6-4",
-  shield:"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z",
-  info:"M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z M12 16v-4 M12 8h.01",
-  mail:"M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6",
+type SellerFormValues = {
+  mobile: string;
+  gstin: string;
+  pickupAddress: {
+    name: string;
+    mobile: string;
+    pincode: string;
+    address: string;
+    locality: string;
+    city: string;
+    state: string;
+  };
+  bankDetails: {
+    accountNumber: string;
+    confirmAccount: string;
+    ifscCode: string;
+    accountHolderName: string;
+  };
+  sellerName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  businessDetails: {
+    businessName: string;
+  };
+  otp: string;
 };
 
-/* ─── atoms ──────────────────────────────────────────── */
-const Spin = () => (
-  <span style={{ display:"inline-block", width:15, height:15, border:"2px solid rgba(0,0,0,0.2)", borderTopColor:C.text, borderRadius:"50%", animation:"spin .7s linear infinite" }}/>
-);
-
-function InfoBox({ children, type="info" }: any) {
-  const cfg: any = {
-    info:    { bg:C.lightBlue, bdr:"#B3D9F0", fg:C.blue,  icon:P.info  },
-    warning: { bg:"#FFFBEF",   bdr:"#F0D28B", fg:"#7A5100",icon:P.info },
-  }[type];
-  return (
-    <div style={{ background:cfg.bg, border:`1px solid ${cfg.bdr}`, borderRadius:4, padding:"10px 14px", display:"flex", gap:9, alignItems:"flex-start" }}>
-      <Ic d={cfg.icon} size={14} color={cfg.fg}/>
-      <span style={{ fontSize:12.5, color:cfg.fg, lineHeight:1.55 }}>{children}</span>
-    </div>
-  );
-}
-
-function Field({ label, name, value, onChange, onBlur, error, helperText, type="text", placeholder, required }: any) {
-  const [showP, setShowP] = useState(false);
-  const isP = type === "password";
-  return (
-    <div style={{ display:"flex", flexDirection:"column", gap:4 }}>
-      <label style={{ fontSize:13, fontWeight:700, color:C.text }}>
-        {label}{required && <span style={{ color:C.red, marginLeft:2 }}>*</span>}
-      </label>
-      <div style={{ position:"relative" }}>
-        <input name={name} value={value} onChange={onChange}
-          type={isP && !showP ? "password" : "text"} placeholder={placeholder}
-          style={{
-            width:"100%", padding:"9px 12px", paddingRight: isP ? 34 : 12,
-            fontSize:13, color:C.text, background:C.white, fontFamily:"inherit",
-            border:`1px solid ${error ? C.red : C.border}`, borderRadius:3, outline:"none",
-            boxShadow: error ? "0 0 0 3px rgba(196,0,0,0.15)" : "none",
-            transition:"border-color .15s, box-shadow .15s",
-          }}
-          onFocus={e => { e.target.style.borderColor=C.borderFoc; e.target.style.boxShadow=`0 0 0 3px ${C.shadowFoc}`; }}
-          onBlur={e => { 
-            onBlur?.(e); 
-            e.target.style.borderColor=error?C.red:C.border; 
-            e.target.style.boxShadow=error?"0 0 0 3px rgba(196,0,0,0.15)":"none"; 
-          }}
-        />
-        {isP && (
-          <button type="button" onClick={() => setShowP(v => !v)}
-            style={{ position:"absolute", right:9, top:"50%", transform:"translateY(-50%)", background:"none", border:"none", cursor:"pointer", display:"flex", padding:0 }}>
-            <Ic d={showP ? P.eyeOff : P.eye} size={15} color={C.blue}/>
-          </button>
-        )}
-      </div>
-      {error && helperText   && <span style={{ fontSize:12, color:C.red      }}>{helperText}</span>}
-      {!error && helperText  && <span style={{ fontSize:12, color:C.textLight }}>{helperText}</span>}
-    </div>
-  );
-}
-
-/* ─── Stepper ────────────────────────────────────────── */
 const STEPS = [
-  { short:"Contact", icon:P.phone },
-  { short:"Address", icon:P.map   },
-  { short:"Bank",    icon:P.bank  },
-  { short:"Business",icon:P.bldg  },
+  {
+    title: "Contact and tax",
+    subtitle: "Primary contact details used for account verification.",
+  },
+  {
+    title: "Pickup address",
+    subtitle: "Where your products will be picked for shipping.",
+  },
+  {
+    title: "Bank details",
+    subtitle: "Used for seller payouts and settlement processing.",
+  },
+  {
+    title: "Business login",
+    subtitle: "Store profile and credentials for Seller Central.",
+  },
 ];
 
-function Stepper({ active }: { active: number }) {
+const inputBaseStyle: React.CSSProperties = {
+  width: "100%",
+  minHeight: 44,
+  borderRadius: 12,
+  border: `1px solid ${C.border}`,
+  background: "#fff",
+  outline: "none",
+  color: C.text,
+  fontSize: 14,
+  padding: "0 12px",
+  transition: "border-color .16s, box-shadow .16s",
+};
+
+const Spinner = () => (
+  <span
+    style={{
+      width: 14,
+      height: 14,
+      borderRadius: "50%",
+      border: "2px solid rgba(255,255,255,0.45)",
+      borderTopColor: "#fff",
+      display: "inline-block",
+      animation: "seller-spin 0.7s linear infinite",
+    }}
+  />
+);
+
+function Field({
+  label,
+  name,
+  value,
+  onChange,
+  placeholder,
+  required,
+  type = "text",
+  error,
+  helper,
+}: {
+  label: string;
+  name: string;
+  value: string;
+  onChange: React.ChangeEventHandler<HTMLInputElement>;
+  placeholder?: string;
+  required?: boolean;
+  type?: string;
+  error?: string;
+  helper?: string;
+}) {
   return (
-    <div style={{ display:"flex", alignItems:"flex-start", marginBottom:28 }}>
-      {STEPS.map((s, i) => {
-        const done=i<active, cur=i===active, last=i===STEPS.length-1;
-        return (
-          <div key={s.short} style={{ display:"flex", alignItems:"flex-start", flex:last?0:1 }}>
-            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:6 }}>
-              <div style={{
-                width:36, height:36, borderRadius:"50%", flexShrink:0,
-                background: done ? C.orange : C.white,
-                border:`2px solid ${done||cur ? C.orange : C.border}`,
-                display:"flex", alignItems:"center", justifyContent:"center",
-                boxShadow: cur ? "0 0 0 4px rgba(15,118,110,0.2)" : "none",
-                animation: cur ? "ringPulse 2.4s ease infinite" : "none",
-                transition:"all .35s ease",
-              }}>
-                {done
-                  ? <Ic d={P.check} size={15} color={C.white} sw={2.5}/>
-                  : <Ic d={s.icon}  size={14} color={cur ? C.orange : C.border}/>}
-              </div>
-              <span style={{ fontSize:10.5, fontWeight:cur?700:done?600:400, color:cur?C.orange:done?C.text:C.textLight, whiteSpace:"nowrap" }}>
-                {s.short}
-              </span>
-            </div>
-            {!last && (
-              <div style={{ flex:1, paddingTop:17, paddingInline:4 }}>
-                <div style={{ height:2, background:C.divider, borderRadius:2, position:"relative", overflow:"hidden" }}>
-                  <div style={{ position:"absolute", inset:0, background:C.orange, width:done?"100%":cur?"40%":"0%", transition:"width .55s cubic-bezier(.4,0,.2,1)" }}/>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
+    <div style={{ display: "grid", gap: 5 }}>
+      <label style={{ fontSize: 13, fontWeight: 700, color: C.text }}>
+        {label}
+        {required ? <span style={{ color: C.error, marginLeft: 2 }}>*</span> : null}
+      </label>
+      <input
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        style={{
+          ...inputBaseStyle,
+          borderColor: error ? C.error : C.border,
+          boxShadow: error ? "0 0 0 3px rgba(180,35,24,0.14)" : "none",
+        }}
+        onFocus={(e) => {
+          if (!error) {
+            e.currentTarget.style.borderColor = C.borderFocus;
+            e.currentTarget.style.boxShadow = `0 0 0 3px ${C.focusRing}`;
+          }
+        }}
+        onBlur={(e) => {
+          e.currentTarget.style.borderColor = error ? C.error : C.border;
+          e.currentTarget.style.boxShadow = error ? "0 0 0 3px rgba(180,35,24,0.14)" : "none";
+        }}
+      />
+      {error ? <span style={{ color: C.error, fontSize: 12 }}>{error}</span> : null}
+      {!error && helper ? <span style={{ color: C.muted, fontSize: 12 }}>{helper}</span> : null}
     </div>
   );
 }
 
-/* ─── Step panels ────────────────────────────────────── */
-function Step1({ formik }: any) {
-  return (
-    <div style={{ display:"flex", flexDirection:"column", gap:16, animation:"fadeUp .28s ease" }}>
-      <div style={{ paddingBottom:14, borderBottom:`1px solid ${C.divider}` }}>
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(15,118,110,0.22)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <Ic d={P.phone} size={15} color={C.orange}/>
-          </div>
-          <h3 style={{ fontSize:15, fontWeight:700, color:C.text }}>Contact & Tax Details</h3>
-        </div>
-      </div>
-      <Field required label="Mobile Number" name="mobile"
-        value={formik.values.mobile} onChange={formik.handleChange} onBlur={formik.handleBlur}
-        error={formik.touched.mobile && Boolean(formik.errors.mobile)}
-        helperText={formik.touched.mobile ? formik.errors.mobile as string : "10-digit Indian mobile number"}
-        placeholder="e.g. 9876543210"/>
-      <Field required label="GSTIN Number" name="gstin"
-        value={formik.values.gstin} onChange={formik.handleChange} onBlur={formik.handleBlur}
-        error={formik.touched.gstin && Boolean(formik.errors.gstin)}
-        helperText={formik.touched.gstin ? formik.errors.gstin as string : "15-character GST Identification Number"}
-        placeholder="e.g. 22AAAAA0000A1Z5"/>
-      <InfoBox type="info">Your GSTIN is verified with the GST portal in real time. Ensure it is active and linked to your business.</InfoBox>
-    </div>
-  );
-}
-
-function Step2({ formik }: any) {
-  const pa = "pickupAddress";
-  return (
-    <div style={{ display:"flex", flexDirection:"column", gap:14, animation:"fadeUp .28s ease" }}>
-      <div style={{ paddingBottom:14, borderBottom:`1px solid ${C.divider}` }}>
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(15,118,110,0.22)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <Ic d={P.map} size={15} color={C.orange}/>
-          </div>
-          <h3 style={{ fontSize:15, fontWeight:700, color:C.text }}>Pickup Address</h3>
-        </div>
-      </div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-        <Field required label="Full Name" name={`${pa}.name`}
-          value={formik.values.pickupAddress.name} onChange={formik.handleChange} onBlur={formik.handleBlur}
-          error={formik.touched.pickupAddress?.name && Boolean(formik.errors.pickupAddress?.name)}
-          helperText={(formik.touched.pickupAddress?.name && formik.errors.pickupAddress?.name as string) || ""}
-          placeholder="Contact person"/>
-        <Field required label="Mobile" name={`${pa}.mobile`}
-          value={formik.values.pickupAddress.mobile} onChange={formik.handleChange} onBlur={formik.handleBlur}
-          error={formik.touched.pickupAddress?.mobile && Boolean(formik.errors.pickupAddress?.mobile)}
-          helperText={(formik.touched.pickupAddress?.mobile && formik.errors.pickupAddress?.mobile as string)||""}
-          placeholder="10-digit number"/>
-      </div>
-      <Field required label="Flat / House No, Building, Street" name={`${pa}.address`}
-        value={formik.values.pickupAddress.address} onChange={formik.handleChange} onBlur={formik.handleBlur}
-        error={formik.touched.pickupAddress?.address && Boolean(formik.errors.pickupAddress?.address)}
-        helperText={(formik.touched.pickupAddress?.address && formik.errors.pickupAddress?.address as string)||""}
-        placeholder="e.g. 12A, Sunrise Apartments, MG Road"/>
-      <Field required label="Locality / Town" name={`${pa}.locality`}
-        value={formik.values.pickupAddress.locality} onChange={formik.handleChange} onBlur={formik.handleBlur}
-        error={formik.touched.pickupAddress?.locality && Boolean(formik.errors.pickupAddress?.locality)}
-        helperText={(formik.touched.pickupAddress?.locality && formik.errors.pickupAddress?.locality as string)||""}
-        placeholder="Area or town name"/>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:14 }}>
-        <Field required label="Pincode" name={`${pa}.pincode`}
-          value={formik.values.pickupAddress.pincode} onChange={formik.handleChange} onBlur={formik.handleBlur}
-          error={formik.touched.pickupAddress?.pincode && Boolean(formik.errors.pickupAddress?.pincode)}
-          helperText={(formik.touched.pickupAddress?.pincode && formik.errors.pickupAddress?.pincode as string)||""}
-          placeholder="6 digits"/>
-        <Field required label="City" name={`${pa}.city`}
-          value={formik.values.pickupAddress.city} onChange={formik.handleChange} onBlur={formik.handleBlur}
-          error={formik.touched.pickupAddress?.city && Boolean(formik.errors.pickupAddress?.city)}
-          helperText={(formik.touched.pickupAddress?.city && formik.errors.pickupAddress?.city as string)||""}/>
-        <Field required label="State" name={`${pa}.state`}
-          value={formik.values.pickupAddress.state} onChange={formik.handleChange} onBlur={formik.handleBlur}
-          error={formik.touched.pickupAddress?.state && Boolean(formik.errors.pickupAddress?.state)}
-          helperText={(formik.touched.pickupAddress?.state && formik.errors.pickupAddress?.state as string)||""}/>
-      </div>
-    </div>
-  );
-}
-
-function Step3({ formik }: any) {
-  const bk = "bankDetails";
-  const mismatch = formik.values.bankDetails.confirmAccount &&
-    formik.values.bankDetails.accountNumber !== formik.values.bankDetails.confirmAccount;
-  return (
-    <div style={{ display:"flex", flexDirection:"column", gap:16, animation:"fadeUp .28s ease" }}>
-      <div style={{ paddingBottom:14, borderBottom:`1px solid ${C.divider}` }}>
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(15,118,110,0.22)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <Ic d={P.bank} size={15} color={C.orange}/>
-          </div>
-          <h3 style={{ fontSize:15, fontWeight:700, color:C.text }}>Bank Account Details</h3>
-        </div>
-      </div>
-      <InfoBox type="warning">Ensure your account is active and linked to your PAN. Incorrect details can delay payouts.</InfoBox>
-      <Field required label="Account Holder Name" name={`${bk}.accountHolderName`}
-        value={formik.values.bankDetails.accountHolderName} onChange={formik.handleChange} onBlur={formik.handleBlur}
-        error={formik.touched.bankDetails?.accountHolderName && Boolean(formik.errors.bankDetails?.accountHolderName)}
-        helperText={(formik.touched.bankDetails?.accountHolderName && formik.errors.bankDetails?.accountHolderName as string)||"Exactly as per bank records"}
-        placeholder="As per bank records"/>
-      <Field required label="Account Number" name={`${bk}.accountNumber`}
-        value={formik.values.bankDetails.accountNumber} onChange={formik.handleChange} onBlur={formik.handleBlur}
-        error={formik.touched.bankDetails?.accountNumber && Boolean(formik.errors.bankDetails?.accountNumber)}
-        helperText={(formik.touched.bankDetails?.accountNumber && formik.errors.bankDetails?.accountNumber as string)||""}
-        placeholder="Enter account number"/>
-      <Field required label="Confirm Account Number" name={`${bk}.confirmAccount`}
-        value={formik.values.bankDetails.confirmAccount} onChange={formik.handleChange}
-        error={Boolean(mismatch)} helperText={mismatch ? "Account numbers do not match" : ""}
-        placeholder="Re-enter to confirm"/>
-      <Field required label="IFSC Code" name={`${bk}.ifscCode`}
-        value={formik.values.bankDetails.ifscCode}
-        onChange={e => formik.setFieldValue(`${bk}.ifscCode`, (e.target as HTMLInputElement).value.toUpperCase())}
-        onBlur={formik.handleBlur}
-        error={formik.touched.bankDetails?.ifscCode && Boolean(formik.errors.bankDetails?.ifscCode)}
-        helperText={(formik.touched.bankDetails?.ifscCode && formik.errors.bankDetails?.ifscCode as string)||"11-char code — e.g. SBIN0001234"}
-        placeholder="e.g. HDFC0001234"/>
-      <InfoBox type="info"><Ic d={P.shield} size={12} color={C.blue}/> Banking data is encrypted with 256-bit SSL.</InfoBox>
-    </div>
-  );
-}
-
-function Step4({ formik }: any) {
-  const passMatch = formik.values.confirmPassword &&
-    formik.values.password !== formik.values.confirmPassword;
-  return (
-    <div style={{ display:"flex", flexDirection:"column", gap:14, animation:"fadeUp .28s ease" }}>
-      <div style={{ paddingBottom:14, borderBottom:`1px solid ${C.divider}` }}>
-        <div style={{ display:"flex", alignItems:"center", gap:8 }}>
-          <div style={{ width:32, height:32, background:C.orangeBg, border:"1px solid rgba(15,118,110,0.22)", borderRadius:6, display:"flex", alignItems:"center", justifyContent:"center" }}>
-            <Ic d={P.bldg} size={15} color={C.orange}/>
-          </div>
-          <h3 style={{ fontSize:15, fontWeight:700, color:C.text }}>Business & Login Details</h3>
-        </div>
-      </div>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-        <Field required label="Business / Store Name" name="businessDetails.businessName"
-          value={formik.values.businessDetails.businessName} onChange={formik.handleChange} onBlur={formik.handleBlur}
-          error={formik.touched.businessDetails?.businessName && Boolean(formik.errors.businessDetails?.businessName)}
-          helperText={(formik.touched.businessDetails?.businessName && formik.errors.businessDetails?.businessName as string)||"Displayed to customers"}
-          placeholder="Your brand or store name"/>
-        <Field required label="Seller Display Name" name="sellerName"
-          value={formik.values.sellerName} onChange={formik.handleChange} onBlur={formik.handleBlur}
-          error={formik.touched.sellerName && Boolean(formik.errors.sellerName)}
-          helperText={(formik.touched.sellerName && formik.errors.sellerName as string)||""}
-          placeholder="Your public seller name"/>
-      </div>
-      <Field required label="Business Email" name="email"
-        value={formik.values.email} onChange={formik.handleChange} onBlur={formik.handleBlur}
-        error={formik.touched.email && Boolean(formik.errors.email)}
-        helperText={(formik.touched.email && formik.errors.email as string)||"Used for notifications & invoices"}
-        placeholder="business@example.com"/>
-      <Field label="Registered Business Address" name="businessDetails.businessAddress"
-        value={formik.values.businessDetails.businessAddress || ""} onChange={formik.handleChange}
-        placeholder="Official registered address"/>
-      <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 }}>
-        <Field required label="Password" name="password" type="password"
-          value={formik.values.password} onChange={formik.handleChange} onBlur={formik.handleBlur}
-          error={formik.touched.password && Boolean(formik.errors.password)}
-          helperText={(formik.touched.password && formik.errors.password as string)||"Minimum 8 characters"}
-          placeholder="Create a strong password"/>
-        <Field required label="Confirm Password" name="confirmPassword" type="password"
-          value={formik.values.confirmPassword || ""} onChange={formik.handleChange}
-          error={Boolean(passMatch)} helperText={passMatch ? "Passwords do not match" : ""}
-          placeholder="Re-enter password"/>
-      </div>
-      <div style={{ background:C.bg, border:`1px solid ${C.divider}`, borderRadius:4, padding:"11px 14px" }}>
-        <p style={{ fontSize:12, color:C.textMid, lineHeight:1.65 }}>
-          By creating an account you agree to Shopzy's{" "}
-          <a href="#" style={{ color:C.blue }}>Seller Agreement</a>,{" "}
-          <a href="#" style={{ color:C.blue }}>Privacy Notice</a>, and{" "}
-          <a href="#" style={{ color:C.blue }}>Conditions of Use</a>.
-        </p>
-      </div>
-    </div>
-  );
-}
-
-/* ─── SellerAccountForm ───────────────────────────────── */
 const SellerAccountForm = () => {
   const dispatch = useAppDispatch();
-  const sellerAuth = useAppSelector(state => state.sellerAuth);
-  const [activeStep, setActiveStep] = useState(0);
+  const sellerAuth = useAppSelector((state) => state.sellerAuth);
 
-  const formik = useFormik({
+  const [activeStep, setActiveStep] = useState(0);
+  const [stepError, setStepError] = useState("");
+
+  const formik = useFormik<SellerFormValues>({
     initialValues: {
-      mobile: "", gstin: "",
-      pickupAddress: { name:"", mobile:"", pincode:"", address:"", locality:"", city:"", state:"" },
-      /* confirmAccount is UI-only — not sent to API */
-      bankDetails: { accountNumber:"", confirmAccount:"", ifscCode:"", accountHolderName:"" },
-      sellerName: "", email: "", password: "", confirmPassword: "",
-      businessDetails: { businessName:"", businessEmail:"", businessMobile:"", logo:"", banner:"", businessAddress:"" },
+      mobile: "",
+      gstin: "",
+      pickupAddress: {
+        name: "",
+        mobile: "",
+        pincode: "",
+        address: "",
+        locality: "",
+        city: "",
+        state: "",
+      },
+      bankDetails: {
+        accountNumber: "",
+        confirmAccount: "",
+        ifscCode: "",
+        accountHolderName: "",
+      },
+      sellerName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      businessDetails: {
+        businessName: "",
+      },
       otp: "",
     },
     onSubmit: (values) => {
-      // strip UI-only fields before dispatching
-      const { bankDetails: { confirmAccount, ...bank }, confirmPassword, ...rest } = values as any;
-      dispatch(createSeller({ ...rest, bankDetails: bank }));
+      const payload = {
+        mobile: values.mobile.trim(),
+        gstin: values.gstin.trim().toUpperCase(),
+        pickupAddress: {
+          name: values.pickupAddress.name.trim(),
+          mobile: values.pickupAddress.mobile.trim(),
+          pincode: values.pickupAddress.pincode.trim(),
+          address: values.pickupAddress.address.trim(),
+          locality: values.pickupAddress.locality.trim(),
+          city: values.pickupAddress.city.trim(),
+          state: values.pickupAddress.state.trim(),
+        },
+        bankDetails: {
+          accountNumber: values.bankDetails.accountNumber.trim(),
+          ifscCode: values.bankDetails.ifscCode.trim().toUpperCase(),
+          accountHolderName: values.bankDetails.accountHolderName.trim(),
+        },
+        sellerName: values.sellerName.trim(),
+        email: values.email.trim().toLowerCase(),
+        businessDetails: {
+          businessName: values.businessDetails.businessName.trim(),
+        },
+        password: values.password,
+        accountStatus: "PENDING_VERIFICATION",
+        otp: values.otp || "",
+      };
+
+      dispatch(createSeller(payload as any));
     },
   });
 
-  const handleNext = () => {
-    if (activeStep < STEPS.length - 1) { setActiveStep(s => s + 1); return; }
+  const passwordMismatch = useMemo(
+    () => Boolean(formik.values.confirmPassword) && formik.values.password !== formik.values.confirmPassword,
+    [formik.values.confirmPassword, formik.values.password]
+  );
+
+  const accountMismatch = useMemo(
+    () =>
+      Boolean(formik.values.bankDetails.confirmAccount) &&
+      formik.values.bankDetails.accountNumber !== formik.values.bankDetails.confirmAccount,
+    [formik.values.bankDetails.accountNumber, formik.values.bankDetails.confirmAccount]
+  );
+
+  const validateStep = (step: number): string => {
+    const { values } = formik;
+    if (step === 0) {
+      if (!/^\d{10}$/.test(values.mobile.trim())) return "Enter a valid 10-digit mobile number.";
+      if (!/^[0-9A-Z]{15}$/i.test(values.gstin.trim())) return "Enter a valid 15-character GSTIN.";
+      return "";
+    }
+    if (step === 1) {
+      const p = values.pickupAddress;
+      if (!p.name.trim() || !p.mobile.trim() || !p.pincode.trim() || !p.address.trim() || !p.locality.trim() || !p.city.trim() || !p.state.trim()) {
+        return "Please complete all pickup address fields.";
+      }
+      if (!/^\d{10}$/.test(p.mobile.trim())) return "Pickup mobile must be a valid 10-digit number.";
+      if (!/^\d{6}$/.test(p.pincode.trim())) return "Pincode must be 6 digits.";
+      return "";
+    }
+    if (step === 2) {
+      const b = values.bankDetails;
+      if (!b.accountHolderName.trim() || !b.accountNumber.trim() || !b.ifscCode.trim()) {
+        return "Please complete all bank details.";
+      }
+      if (accountMismatch) return "Account number and confirmation do not match.";
+      if (!/^[A-Z]{4}0[A-Z0-9]{6}$/i.test(b.ifscCode.trim())) return "Enter a valid IFSC code.";
+      return "";
+    }
+    if (step === 3) {
+      if (!values.businessDetails.businessName.trim()) return "Business name is required.";
+      if (!values.sellerName.trim()) return "Seller display name is required.";
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim())) return "Enter a valid email address.";
+      if (values.password.length < 8) return "Password must be at least 8 characters.";
+      if (passwordMismatch) return "Password and confirm password do not match.";
+    }
+    return "";
+  };
+
+  const continueFlow = () => {
+    const err = validateStep(activeStep);
+    setStepError(err);
+    if (err) return;
+
+    if (activeStep < STEPS.length - 1) {
+      setActiveStep((current) => current + 1);
+      return;
+    }
+
     formik.handleSubmit();
   };
 
-  const loading = sellerAuth.loading;
+  const stepCardHeader = (
+    <header
+      style={{
+        borderRadius: 14,
+        border: `1px solid ${C.border}`,
+        background: C.softBg,
+        padding: "13px 14px",
+        display: "grid",
+        gap: 4,
+      }}
+    >
+      <h3 style={{ margin: 0, fontSize: 17, color: C.text }}>{STEPS[activeStep].title}</h3>
+      <p style={{ margin: 0, fontSize: 12.5, color: C.muted, lineHeight: 1.55 }}>{STEPS[activeStep].subtitle}</p>
+    </header>
+  );
 
   return (
-    <>
+    <div style={{ display: "grid", gap: 14 }}>
       <style>{`
-        @keyframes spin      { to { transform:rotate(360deg); } }
-        @keyframes fadeUp    { from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)} }
-        @keyframes ringPulse { 0%,100%{box-shadow:0 0 0 0 rgba(15,118,110,0.4)}60%{box-shadow:0 0 0 7px rgba(15,118,110,0)} }
+        @keyframes seller-spin { to { transform: rotate(360deg); } }
+        @media (max-width: 760px) {
+          .seller-reg-grid-2,
+          .seller-reg-grid-3 {
+            grid-template-columns: 1fr !important;
+          }
+        }
       `}</style>
 
-      <Stepper active={activeStep}/>
-
-      <div style={{ minHeight:300 }}>
-        {activeStep === 0 && <Step1 formik={formik}/>}
-        {activeStep === 1 && <Step2 formik={formik}/>}
-        {activeStep === 2 && <Step3 formik={formik}/>}
-        {activeStep === 3 && <Step4 formik={formik}/>}
+      <div
+        style={{
+          border: `1px solid ${C.border}`,
+          borderRadius: 14,
+          padding: "10px 10px 12px",
+          background: C.softBg,
+        }}
+      >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0,1fr))", gap: 8 }}>
+          {STEPS.map((step, index) => {
+            const done = index < activeStep;
+            const active = index === activeStep;
+            return (
+              <div key={step.title} style={{ textAlign: "center", display: "grid", gap: 6 }}>
+                <div
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: "50%",
+                    margin: "0 auto",
+                    border: `1px solid ${done || active ? C.teal : C.border}`,
+                    background: done || active ? C.teal : "#fff",
+                    color: done || active ? "#fff" : C.muted,
+                    fontSize: 12,
+                    fontWeight: 800,
+                    display: "grid",
+                    placeItems: "center",
+                  }}
+                >
+                  {index + 1}
+                </div>
+                <span style={{ fontSize: 11.5, color: active ? C.text : C.muted, fontWeight: active ? 700 : 600 }}>
+                  {step.title}
+                </span>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      {/* Navigation */}
-      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:22, paddingTop:16, borderTop:`1px solid ${C.divider}` }}>
-        <button onClick={() => setActiveStep(s => s-1)} disabled={activeStep === 0}
-          style={{ background:"linear-gradient(to bottom,#f7f8f8,#e7e9ec)", border:"1px solid #adb1b8", borderRadius:3, padding:"9px 18px", fontWeight:500, fontSize:13, cursor:activeStep===0?"not-allowed":"pointer", opacity:activeStep===0?.55:1, display:"flex", alignItems:"center", gap:6, fontFamily:"inherit" }}>
-          <Ic d={P.chevL} size={14}/> Back
+      {stepCardHeader}
+
+      {activeStep === 0 && (
+        <div style={{ display: "grid", gap: 12 }}>
+          <Field
+            label="Mobile number"
+            required
+            name="mobile"
+            value={formik.values.mobile}
+            onChange={formik.handleChange}
+            placeholder="10-digit mobile number"
+            helper="This number is used for account notifications."
+          />
+          <Field
+            label="GSTIN"
+            required
+            name="gstin"
+            value={formik.values.gstin}
+            onChange={formik.handleChange}
+            placeholder="15-character GSTIN"
+            helper="Example: 22AAAAA0000A1Z5"
+          />
+        </div>
+      )}
+
+      {activeStep === 1 && (
+        <div style={{ display: "grid", gap: 12 }}>
+          <div className="seller-reg-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <Field
+              label="Contact name"
+              required
+              name="pickupAddress.name"
+              value={formik.values.pickupAddress.name}
+              onChange={formik.handleChange}
+            />
+            <Field
+              label="Pickup mobile"
+              required
+              name="pickupAddress.mobile"
+              value={formik.values.pickupAddress.mobile}
+              onChange={formik.handleChange}
+            />
+          </div>
+          <Field
+            label="Address line"
+            required
+            name="pickupAddress.address"
+            value={formik.values.pickupAddress.address}
+            onChange={formik.handleChange}
+            placeholder="House no, building, street"
+          />
+          <Field
+            label="Locality"
+            required
+            name="pickupAddress.locality"
+            value={formik.values.pickupAddress.locality}
+            onChange={formik.handleChange}
+          />
+          <div className="seller-reg-grid-3" style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+            <Field
+              label="Pincode"
+              required
+              name="pickupAddress.pincode"
+              value={formik.values.pickupAddress.pincode}
+              onChange={formik.handleChange}
+            />
+            <Field
+              label="City"
+              required
+              name="pickupAddress.city"
+              value={formik.values.pickupAddress.city}
+              onChange={formik.handleChange}
+            />
+            <Field
+              label="State"
+              required
+              name="pickupAddress.state"
+              value={formik.values.pickupAddress.state}
+              onChange={formik.handleChange}
+            />
+          </div>
+        </div>
+      )}
+
+      {activeStep === 2 && (
+        <div style={{ display: "grid", gap: 12 }}>
+          <Field
+            label="Account holder name"
+            required
+            name="bankDetails.accountHolderName"
+            value={formik.values.bankDetails.accountHolderName}
+            onChange={formik.handleChange}
+          />
+          <div className="seller-reg-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <Field
+              label="Account number"
+              required
+              name="bankDetails.accountNumber"
+              value={formik.values.bankDetails.accountNumber}
+              onChange={formik.handleChange}
+            />
+            <Field
+              label="Confirm account number"
+              required
+              name="bankDetails.confirmAccount"
+              value={formik.values.bankDetails.confirmAccount}
+              onChange={formik.handleChange}
+              error={accountMismatch ? "Account numbers do not match." : ""}
+            />
+          </div>
+          <Field
+            label="IFSC code"
+            required
+            name="bankDetails.ifscCode"
+            value={formik.values.bankDetails.ifscCode}
+            onChange={(e) => formik.setFieldValue("bankDetails.ifscCode", e.target.value.toUpperCase())}
+            placeholder="Example: HDFC0001234"
+          />
+        </div>
+      )}
+
+      {activeStep === 3 && (
+        <div style={{ display: "grid", gap: 12 }}>
+          <div className="seller-reg-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <Field
+              label="Business name"
+              required
+              name="businessDetails.businessName"
+              value={formik.values.businessDetails.businessName}
+              onChange={formik.handleChange}
+            />
+            <Field
+              label="Seller display name"
+              required
+              name="sellerName"
+              value={formik.values.sellerName}
+              onChange={formik.handleChange}
+            />
+          </div>
+
+          <Field
+            label="Business email"
+            required
+            name="email"
+            type="email"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+            placeholder="business@example.com"
+          />
+
+          <div className="seller-reg-grid-2" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+            <Field
+              label="Password"
+              required
+              name="password"
+              type="password"
+              value={formik.values.password}
+              onChange={formik.handleChange}
+              helper="Minimum 8 characters."
+            />
+            <Field
+              label="Confirm password"
+              required
+              name="confirmPassword"
+              type="password"
+              value={formik.values.confirmPassword}
+              onChange={formik.handleChange}
+              error={passwordMismatch ? "Passwords do not match." : ""}
+            />
+          </div>
+        </div>
+      )}
+
+      {(stepError || sellerAuth.error) && (
+        <div
+          style={{
+            borderRadius: 12,
+            border: `1px solid ${C.error}40`,
+            background: C.errorBg,
+            color: C.error,
+            padding: "9px 10px",
+            fontSize: 12.5,
+            lineHeight: 1.45,
+          }}
+        >
+          {stepError || sellerAuth.error}
+        </div>
+      )}
+
+      <div
+        style={{
+          marginTop: 2,
+          paddingTop: 12,
+          borderTop: `1px solid ${C.divider}`,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: 10,
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => {
+            if (activeStep === 0) return;
+            setStepError("");
+            setActiveStep((current) => current - 1);
+          }}
+          disabled={activeStep === 0 || sellerAuth.loading}
+          style={{
+            minHeight: 42,
+            borderRadius: 11,
+            border: `1px solid ${C.border}`,
+            background: "#fff",
+            color: C.text,
+            fontSize: 13,
+            fontWeight: 700,
+            padding: "0 14px",
+            cursor: activeStep === 0 || sellerAuth.loading ? "not-allowed" : "pointer",
+            opacity: activeStep === 0 || sellerAuth.loading ? 0.55 : 1,
+          }}
+        >
+          Back
         </button>
 
-        <span style={{ fontSize:11.5, color:C.textLight }}>Step {activeStep+1} of {STEPS.length}</span>
+        <span style={{ fontSize: 11.5, color: C.muted, fontWeight: 700 }}>
+          Step {activeStep + 1} / {STEPS.length}
+        </span>
 
-        <button onClick={handleNext} disabled={loading}
-          style={{ background:"linear-gradient(135deg,#0F766E,#14B8A6)", border:"1px solid #a88734", borderRadius:3, padding:"9px 22px", fontWeight:600, fontSize:13, cursor:loading?"not-allowed":"pointer", opacity:loading?.6:1, display:"flex", alignItems:"center", gap:6, fontFamily:"inherit", color:C.text }}>
-          {loading ? <Spin/> : activeStep === STEPS.length-1
-            ? "Create Account"
-            : <><span>Continue</span><Ic d={P.chevR} size={14}/></>}
+        <button
+          type="button"
+          onClick={continueFlow}
+          disabled={sellerAuth.loading}
+          style={{
+            minHeight: 42,
+            borderRadius: 11,
+            border: `1px solid ${C.tealDark}`,
+            background: `linear-gradient(135deg, ${C.tealDark}, ${C.teal})`,
+            color: "#fff",
+            fontSize: 13,
+            fontWeight: 700,
+            padding: "0 16px",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 8,
+            cursor: sellerAuth.loading ? "not-allowed" : "pointer",
+            opacity: sellerAuth.loading ? 0.65 : 1,
+          }}
+        >
+          {sellerAuth.loading ? <Spinner /> : null}
+          {activeStep === STEPS.length - 1 ? "Create seller account" : "Continue"}
         </button>
       </div>
-    </>
+    </div>
   );
 };
 
