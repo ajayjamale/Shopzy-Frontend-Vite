@@ -1,14 +1,17 @@
 import MenuRoundedIcon from "@mui/icons-material/MenuRounded";
 import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
-import { Drawer, IconButton, useMediaQuery, useTheme } from "@mui/material";
+import ChatBubbleRoundedIcon from "@mui/icons-material/ChatBubbleRounded";
+import { Button, Drawer, IconButton, useMediaQuery, useTheme } from "@mui/material";
 import { useState } from "react";
 import SellerRoutes from "../../../routes/SellerRoutes";
 import SellerDrawerList from "../../components/SideBar/DrawerList";
+import ChatBot from "../../../customer/pages/ChatBot/ChatBot";
 
 const SellerDashboard = () => {
   const theme = useTheme();
   const isDesktop = useMediaQuery(theme.breakpoints.up("lg"));
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [showChatBot, setShowChatBot] = useState(false);
 
   return (
     <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: isDesktop ? "250px 1fr" : "1fr" }}>
@@ -53,6 +56,28 @@ const SellerDashboard = () => {
         <main style={{ padding: "18px", background: "#F3F7F8", minHeight: "calc(100vh - 68px)" }}>
           <SellerRoutes />
         </main>
+
+        <section style={{ position: "fixed", right: 24, bottom: 24, zIndex: 1200 }}>
+          {showChatBot ? (
+            <ChatBot handleClose={() => setShowChatBot(false)} mode="seller" />
+          ) : (
+            <Button
+              variant="contained"
+              onClick={() => setShowChatBot(true)}
+              sx={{
+                width: 58,
+                minWidth: 58,
+                height: 58,
+                borderRadius: "50%",
+                bgcolor: "#0F766E",
+                boxShadow: "0 12px 20px rgba(15, 118, 110, 0.28)",
+                "&:hover": { bgcolor: "#0B5F59" },
+              }}
+            >
+              <ChatBubbleRoundedIcon sx={{ color: "#fff" }} />
+            </Button>
+          )}
+        </section>
       </div>
     </div>
   );

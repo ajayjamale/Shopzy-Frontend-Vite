@@ -137,7 +137,7 @@ const Home = () => {
 
       <section className="fixed right-5 bottom-5 sm:right-8 sm:bottom-8 z-[1200]">
         {showChatBot ? (
-          <ChatBot handleClose={() => setShowChatBot(false)} />
+          <ChatBot handleClose={() => setShowChatBot(false)} mode="customer" />
         ) : (
           <Button
             variant="contained"

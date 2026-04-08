@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
 import { chatBot, clearMessages } from "../../../Redux Toolkit/Customer/AiChatBotSlice";
+import type { ChatBotMode } from "../../../Redux Toolkit/Customer/AiChatBotSlice";
 import { IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";
@@ -11,13 +12,15 @@ import ResponseMessage from "./ResponseMessage";
 interface ChatBotProps {
   handleClose: (e: any) => void;
   productId?: number;
+  mode?: ChatBotMode;
 }
 
-const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
+const ChatBot = ({ handleClose, productId, mode = "customer" }: ChatBotProps) => {
   const dispatch = useAppDispatch();
   const [prompt, setPrompt] = useState("");
   const chatBottomRef = useRef<HTMLDivElement>(null);
   const { aiChatBot } = useAppSelector((store) => store);
+  const isSellerMode = mode === "seller";
 
   const handleGivePrompt = (e: any) => {
     e.stopPropagation();
@@ -26,8 +29,8 @@ const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
       chatBot({
         prompt: { prompt: prompt.trim() },
         productId,
-        // Temporarily avoid sending userId until backend user-context query is stable.
         userId: null,
+        mode,
       })
     );
     setPrompt("");
@@ -55,9 +58,13 @@ const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
             <AutoAwesomeIcon style={{ fontSize: 16, color: "#fff" }} />
           </div>
           <div>
-            <p style={styles.headerTitle}>Shopzy Assistant</p>
+            <p style={styles.headerTitle}>{isSellerMode ? "Seller Assistant" : "Shopzy Assistant"}</p>
             <p style={styles.headerSub}>
-              {productId ? `Product #${productId}` : "Cart & order support"}
+              {productId
+                ? `Product #${productId}`
+                : isSellerMode
+                  ? "Orders, products & settlements"
+                  : "Cart & order support"}
             </p>
           </div>
         </div>
@@ -71,7 +78,9 @@ const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
         <div style={styles.welcomeBadge}>
           {productId
             ? `Asking about product #${productId}`
-            : "Ask me about your cart or order history"}
+            : isSellerMode
+              ? "Ask about your orders, returns, payouts, or inventory"
+              : "Ask me about your cart or order history"}
         </div>
 
         {aiChatBot.messages.map((item: any, index: number) =>
@@ -100,7 +109,7 @@ const ChatBot = ({ handleClose, productId }: ChatBotProps) => {
           onChange={(e) => setPrompt(e.target.value)}
           onKeyDown={handleKeyDown}
           type="text"
-          placeholder="Ask something…"
+          placeholder={isSellerMode ? "Ask about your seller data..." : "Ask something..."}
           style={styles.input}
         />
         <button

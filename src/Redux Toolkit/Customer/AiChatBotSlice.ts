@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { api } from "../../Config/Api";
+import { getCustomerToken, getSellerToken } from "../../util/authToken";
+
+export type ChatBotMode = "customer" | "seller";
 
 interface Message {
   message: string;
@@ -26,8 +29,46 @@ const getPromptText = (prompt: any): string => {
   return "";
 };
 
+const parseJwtPayload = (token: string): Record<string, any> | null => {
+  try {
+    const parts = token.split(".");
+    if (parts.length < 2) return null;
+    const base64 = parts[1].replace(/-/g, "+").replace(/_/g, "/");
+    const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+    return JSON.parse(atob(padded));
+  } catch {
+    return null;
+  }
+};
+
+const getSafeAuthToken = (mode: ChatBotMode): string => {
+  const token = mode === "seller" ? getSellerToken() : getCustomerToken();
+  if (!token) return "";
+
+  const payload = parseJwtPayload(token);
+  if (!payload) return "";
+
+  const exp = Number(payload.exp || 0);
+  if (exp && exp * 1000 <= Date.now()) {
+    return "";
+  }
+
+  return token;
+};
+
+const extractErrorText = (raw: any): string => {
+  if (!raw) return "";
+  if (typeof raw === "string") return raw;
+  if (typeof raw?.message === "string") return raw.message;
+  if (typeof raw?.error === "string") return raw.error;
+  if (typeof raw?.details === "string") return raw.details;
+  if (typeof raw?.data?.message === "string") return raw.data.message;
+  if (typeof raw?.data?.error === "string") return raw.data.error;
+  return "";
+};
+
 const normalizeChatError = (raw: any): string => {
-  const text = String(raw || "").trim();
+  const text = extractErrorText(raw).trim();
   const lower = text.toLowerCase();
 
   if (!text) {
@@ -66,21 +107,27 @@ const extractModelMessage = (payload: any): string => {
 
 export const chatBot = createAsyncThunk<
   any,
-  { prompt: any; productId: number | null | undefined; userId: number | null }
+  { prompt: any; productId: number | null | undefined; userId: number | null; mode?: ChatBotMode }
 >(
   "aiChatBot/generateResponse",
-  async ({ prompt, productId, userId }, { rejectWithValue }) => {
+  async ({ prompt, productId, userId, mode }, { rejectWithValue }) => {
     const promptText = getPromptText(prompt);
     if (!promptText) return rejectWithValue("Prompt is required");
+    const selectedMode: ChatBotMode = mode === "seller" ? "seller" : "customer";
 
-    const headers: Record<string, string> = {
+    const guestHeaders: Record<string, string> = {
       "Content-Type": "application/json",
     };
+    const headers: Record<string, string> = { ...guestHeaders };
+    const token = getSafeAuthToken(selectedMode);
+    if (token) {
+      headers.Authorization = token.startsWith("Bearer ") ? token : `Bearer ${token}`;
+    }
 
     const baseParams: Record<string, string | number> = {};
     if (productId !== null && productId !== undefined) baseParams.productId = productId;
-    // Keep chatbot in guest-safe mode by default to avoid backend user-context auth failures.
-    // We intentionally do not send userId here.
+    baseParams.mode = selectedMode;
+    // User context is resolved by backend from Authorization header when present.
     void userId;
 
     const payload = { prompt: promptText };
@@ -100,27 +147,23 @@ export const chatBot = createAsyncThunk<
     try {
       return await requestChat("/ai/chat", baseParams);
     } catch (error: any) {
+      if (error?.response?.status === 401 && token) {
+        try {
+          return await requestChat("/ai/chat", baseParams, guestHeaders);
+        } catch {
+          // Keep flowing to existing fallback paths.
+        }
+      }
+
       if (error?.response?.status === 500 || error?.response?.status === 404) {
         try {
           return await requestChat("/api/ai/chat", baseParams);
         } catch (retryError: any) {
-          return rejectWithValue(
-            normalizeChatError(
-              retryError.response?.data?.message ||
-                retryError.response?.data?.error ||
-                "Failed to generate chatbot response"
-            )
-          );
+          return rejectWithValue(normalizeChatError(retryError.response?.data || retryError));
         }
       }
 
-      return rejectWithValue(
-        normalizeChatError(
-          error.response?.data?.message ||
-            error.response?.data?.error ||
-            "Failed to generate chatbot response"
-        )
-      );
+      return rejectWithValue(normalizeChatError(error.response?.data || error));
     }
   }
 );
