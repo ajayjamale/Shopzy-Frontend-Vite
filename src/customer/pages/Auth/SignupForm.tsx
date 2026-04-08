@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { sendLoginSignupOtp, signup } from "../../../Redux Toolkit/Customer/AuthSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { sendLoginSignupOtp, signup } from "../../../store/customer/AuthSlice";
 import OTPInput from "../../components/OtpFild/OTPInput";
 import "./Auth.css";
 

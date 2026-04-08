@@ -16,15 +16,15 @@ import { womenLevelTwo } from "../../../data/category/level two/womenLevelTwo";
 import { menLevelThree } from "../../../data/category/level three/menLevelThree";
 import { womenLevelThree } from "../../../data/category/level three/womenLevelThree";
 import { colors } from "../../../data/Filter/color";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { updateProduct } from "../../../Redux Toolkit/Seller/sellerProductSlice";
-import { uploadToCloudinary } from "../../../util/uploadToCloudnary";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { updateProduct } from "../../../store/seller/sellerProductSlice";
+import { uploadToCloudinary } from "../../../utils/uploadToCloudnary";
 import { electronicsLevelThree } from "../../../data/category/level three/electronicsLevelThree";
 import { electronicsLevelTwo } from "../../../data/category/level two/electronicsLavelTwo";
 import { furnitureLevelTwo } from "../../../data/category/level two/furnitureLevleTwo";
 import { furnitureLevelThree } from "../../../data/category/level three/furnitureLevelThree";
 import { useParams, useNavigate } from "react-router-dom";
-import { fetchProductById } from "../../../Redux Toolkit/Customer/ProductSlice";
+import { fetchProductById } from "../../../store/customer/ProductSlice";
 import type { Seller } from "../../../types/sellerTypes";
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────

@@ -1,7 +1,7 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useAppSelector } from "../Redux Toolkit/Store";
-import { getCustomerToken, getRoleFromToken, getSellerToken } from "../util/authToken";
+import { useAppSelector } from "../store";
+import { getCustomerToken, getRoleFromToken, getSellerToken } from "../utils/authToken";
 
 type Role = "ROLE_ADMIN" | "ROLE_SELLER" | "ROLE_CUSTOMER" | string;
 

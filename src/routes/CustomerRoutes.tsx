@@ -10,17 +10,17 @@ import Footer from "../customer/components/Footer/Footer";
 import Navbar from "../customer/components/Navbar/Navbar";
 import NotFound from "../customer/pages/NotFound/NotFound";
 import Auth from "../customer/pages/Auth/Auth";
-import { useAppDispatch, useAppSelector } from "../Redux Toolkit/Store";
-import { fetchUserCart } from "../Redux Toolkit/Customer/CartSlice";
+import { useAppDispatch, useAppSelector } from "../store";
+import { fetchUserCart } from "../store/customer/CartSlice";
 import PaymentSuccessHandler from "../customer/pages/Pyement/PaymentSuccessHandler";
 import OrderPlaced from "../customer/pages/Checkout/OrderPlaced";
 import Reviews from "../customer/pages/Review/Reviews";
 import WriteReviews from "../customer/pages/Review/WriteReview";
 import Wishlist from "../customer/pages/Wishlist/Wishlist";
-import { getWishlistByUserId } from "../Redux Toolkit/Customer/WishlistSlice";
+import { getWishlistByUserId } from "../store/customer/WishlistSlice";
 import SearchProducts from "../customer/pages/Search/SearchProducts";
 import ProtectedRoute from "./ProtectedRoute";
-import { getCustomerToken } from "../util/authToken";
+import { getCustomerToken } from "../utils/authToken";
 
 const CustomerRoutes = () => {
   const dispatch = useAppDispatch();

@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { fetchPayoutsBySeller } from "../../../Redux Toolkit/Seller/payoutSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { fetchPayoutsBySeller } from "../../../store/seller/payoutSlice";
 import type { Payouts } from "../../../types/payoutsType";
-import { getSellerToken } from "../../../util/authToken";
+import { getSellerToken } from "../../../utils/authToken";
 
 const C = {
   navy: "#1E293B",

@@ -8,11 +8,11 @@ import AddShoppingCartRoundedIcon from "@mui/icons-material/AddShoppingCartRound
 import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../../Redux Toolkit/Store";
-import { fetchProductById, getAllProducts } from "../../../../Redux Toolkit/Customer/ProductSlice";
-import { addItemToCart } from "../../../../Redux Toolkit/Customer/CartSlice";
-import { addProductToWishlist } from "../../../../Redux Toolkit/Customer/WishlistSlice";
-import { fetchReviewsByProductId } from "../../../../Redux Toolkit/Customer/ReviewSlice";
+import { useAppDispatch, useAppSelector } from "../../../../store";
+import { fetchProductById, getAllProducts } from "../../../../store/customer/ProductSlice";
+import { addItemToCart } from "../../../../store/customer/CartSlice";
+import { addProductToWishlist } from "../../../../store/customer/WishlistSlice";
+import { fetchReviewsByProductId } from "../../../../store/customer/ReviewSlice";
 import RatingCard from "../../Review/RatingCard";
 import ProductReviewCard from "../../Review/ProductReviewCard";
 import SmilarProduct from "../SimilarProduct/SmilarProduct";

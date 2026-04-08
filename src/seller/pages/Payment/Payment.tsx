@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { fetchSettlementSummary, fetchSettlements } from "../../../Redux Toolkit/Seller/settlementSlice";
-import { getSellerToken } from "../../../util/authToken";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { fetchSettlementSummary, fetchSettlements } from "../../../store/seller/settlementSlice";
+import { getSellerToken } from "../../../utils/authToken";
 import TransactionTable from "./TransactionTable";
 
 const tabs = ["Transactions", "Settlements"] as const;

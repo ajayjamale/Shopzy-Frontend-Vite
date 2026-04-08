@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import ShoppingBagRoundedIcon from "@mui/icons-material/ShoppingBagRounded";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { fetchUserOrderHistory } from "../../../Redux Toolkit/Customer/OrderSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { fetchUserOrderHistory } from "../../../store/customer/OrderSlice";
 import OrderItemCard from "./OrderItemCard";
 import "./Profile.css";
 

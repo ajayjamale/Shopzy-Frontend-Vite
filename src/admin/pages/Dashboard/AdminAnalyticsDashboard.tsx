@@ -4,8 +4,8 @@ import {
     Table, TableBody, TableCell, TableContainer, TableHead,
     TableRow, Chip, styled, tableCellClasses,
 } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
-import { fetchSellers } from '../../../Redux Toolkit/Seller/sellerSlice';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import { fetchSellers } from '../../../store/seller/sellerSlice';
 import {
     AreaChart, Area, XAxis, YAxis, CartesianGrid,
     Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend,

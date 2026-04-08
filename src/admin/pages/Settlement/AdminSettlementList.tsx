@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import {
   fetchSettlementSummary,
   fetchSettlements,
   updateSettlementStatus,
-} from "../../../Redux Toolkit/Seller/settlementSlice";
+} from "../../../store/seller/settlementSlice";
 import type { SettlementStatus } from "../../../types/settlementTypes";
-import { getAdminToken } from "../../../util/authToken";
+import { getAdminToken } from "../../../utils/authToken";
 
 const C = {
   text: "#0F172A",

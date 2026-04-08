@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useFormik } from "formik";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { createSeller } from "../../../Redux Toolkit/Seller/sellerAuthenticationSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { createSeller } from "../../../store/seller/sellerAuthenticationSlice";
 
 const C = {
   text: "#0E1B2C",

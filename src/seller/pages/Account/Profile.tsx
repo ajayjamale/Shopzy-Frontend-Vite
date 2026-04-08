@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppSelector } from "../../../store";
 import ProfileFieldCard     from "./ProfileFildCard";
 import PersonalDetailsForm  from "./PersionalDetailsForm";
 import BusinessDetailsForm  from "./BussinessDetailsForm";

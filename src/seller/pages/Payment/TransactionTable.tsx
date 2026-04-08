@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { fetchTransactionsBySeller } from "../../../Redux Toolkit/Seller/transactionSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { fetchTransactionsBySeller } from "../../../store/seller/transactionSlice";
 import type { Transaction } from "../../../types/Transaction";
-import { redableDateTime } from "../../../util/redableDateTime";
-import { getSellerToken } from "../../../util/authToken";
+import { redableDateTime } from "../../../utils/redableDateTime";
+import { getSellerToken } from "../../../utils/authToken";
 
 const C = {
   navy:   "#1E293B",

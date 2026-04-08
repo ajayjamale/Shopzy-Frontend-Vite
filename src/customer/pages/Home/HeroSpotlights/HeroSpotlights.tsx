@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../../../Redux Toolkit/Store";
+import { useAppSelector } from "../../../../store";
 
 type SpotlightCard = {
   title: string;

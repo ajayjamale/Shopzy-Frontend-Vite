@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import {
   cancelOrder,
   fetchOrderById,
   fetchOrderItemById,
-} from "../../../Redux Toolkit/Customer/OrderSlice";
-import { createReview } from "../../../Redux Toolkit/Customer/ReviewSlice";
-import { uploadToCloudinary } from "../../../util/uploadToCloudnary";
+} from "../../../store/customer/OrderSlice";
+import { createReview } from "../../../store/customer/ReviewSlice";
+import { uploadToCloudinary } from "../../../utils/uploadToCloudnary";
 import { useNavigate, useParams } from "react-router-dom";
 import OrderStepper from "./OrderStepper";
 import PaymentsIcon from "@mui/icons-material/Payments";

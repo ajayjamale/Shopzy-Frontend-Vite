@@ -2,10 +2,10 @@ import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import type { MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../../Redux Toolkit/Store";
-import { addItemToCart } from "../../../../Redux Toolkit/Customer/CartSlice";
-import { addProductToWishlist } from "../../../../Redux Toolkit/Customer/WishlistSlice";
-import { isWishlisted } from "../../../../util/isWishlisted";
+import { useAppDispatch, useAppSelector } from "../../../../store";
+import { addItemToCart } from "../../../../store/customer/CartSlice";
+import { addProductToWishlist } from "../../../../store/customer/WishlistSlice";
+import { isWishlisted } from "../../../../utils/isWishlisted";
 import type { Product } from "../../../../types/productTypes";
 import "./ProductCard.css";
 

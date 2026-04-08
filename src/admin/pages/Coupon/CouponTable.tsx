@@ -6,10 +6,10 @@ import {
     TableContainer, Table, TableHead, TableRow, TableBody,
     TableCell, tableCellClasses, Paper, Fade
 } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
+import { useAppDispatch, useAppSelector } from '../../../store';
 import type { Coupon } from '../../../types/couponTypes';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import { deleteCoupon } from '../../../Redux Toolkit/Admin/AdminCouponSlice';
+import { deleteCoupon } from '../../../store/admin/AdminCouponSlice';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';

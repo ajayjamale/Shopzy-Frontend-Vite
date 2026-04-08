@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { resetSellerAuthState } from "../../../Redux Toolkit/Seller/sellerAuthenticationSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { resetSellerAuthState } from "../../../store/seller/sellerAuthenticationSlice";
 import SellerAccountForm from "./SellerAccountForm";
 import SellerLoginForm from "./SellerLoginForm";
 

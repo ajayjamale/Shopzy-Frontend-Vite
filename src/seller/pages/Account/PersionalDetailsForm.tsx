@@ -3,8 +3,8 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Field, SaveButton } from "./FormPrimitives";
 import type { UpdateDetailsFormProps } from "./BussinessDetailsForm";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { updateSeller } from "../../../Redux Toolkit/Seller/sellerSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { updateSeller } from "../../../store/seller/sellerSlice";
 
 const PersonalDetailsForm = ({ onClose }: UpdateDetailsFormProps) => {
   const { sellers } = useAppSelector((s) => s);

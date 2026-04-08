@@ -10,9 +10,9 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { getAllDailyDiscounts, updateDailyDiscount } from "../../../Redux Toolkit/Admin/DealSlice";
-import { fetchHomePageData } from "../../../Redux Toolkit/Customer/Customer/AsyncThunk";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { getAllDailyDiscounts, updateDailyDiscount } from "../../../store/admin/DealSlice";
+import { fetchHomePageData } from "../../../store/customer/home/AsyncThunk";
 
 const modernTextField = {
   "& label.Mui-focused": { color: "#1E293B" },

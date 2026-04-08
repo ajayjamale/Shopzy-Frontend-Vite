@@ -1,9 +1,9 @@
 import { useEffect, useRef } from "react";
 import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { clearCart } from "../../../Redux Toolkit/Customer/CartSlice";
-import { paymentSuccess } from "../../../Redux Toolkit/Customer/OrderSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { clearCart } from "../../../store/customer/CartSlice";
+import { paymentSuccess } from "../../../store/customer/OrderSlice";
 
 const PaymentSuccessHandler = () => {
   const dispatch = useAppDispatch();

@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { fetchSellerOrders, updateOrderStatus } from "../../../Redux Toolkit/Seller/sellerOrderSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { fetchSellerOrders, updateOrderStatus } from "../../../store/seller/sellerOrderSlice";
 import { Order, OrderItem, OrderStatus } from "../../../types/orderTypes";
-import { getSellerToken } from "../../../util/authToken";
+import { getSellerToken } from "../../../utils/authToken";
 
 /* ── palette ─────────────────────────────────────────── */
 const C = {

@@ -2,8 +2,8 @@ import RemoveRoundedIcon from "@mui/icons-material/RemoveRounded";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import type { CartItem } from "../../../types/cartTypes";
-import { useAppDispatch } from "../../../Redux Toolkit/Store";
-import { deleteCartItem, updateCartItem } from "../../../Redux Toolkit/Customer/CartSlice";
+import { useAppDispatch } from "../../../store";
+import { deleteCartItem, updateCartItem } from "../../../store/customer/CartSlice";
 
 interface CartItemProps {
   item: CartItem;

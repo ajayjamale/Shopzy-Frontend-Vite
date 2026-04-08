@@ -1,6 +1,6 @@
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
-import { useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppSelector } from "../../../store";
 import UserAddressCard from "./UserAddressCard";
 import "./Profile.css";
 

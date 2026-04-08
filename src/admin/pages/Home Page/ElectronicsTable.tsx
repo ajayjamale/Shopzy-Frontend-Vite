@@ -1,4 +1,4 @@
-import { useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppSelector } from "../../../store";
 import HomeCategoryTable from "./HomeCategoryTable";
 
 function ElectronicsTable() {

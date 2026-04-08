@@ -4,9 +4,9 @@ import TrendingUpRoundedIcon from "@mui/icons-material/TrendingUpRounded";
 import ShoppingBagRoundedIcon from "@mui/icons-material/ShoppingBagRounded";
 import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
 import CancelRoundedIcon from "@mui/icons-material/CancelRounded";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { fetchSellerReport } from "../../../Redux Toolkit/Seller/sellerSlice";
-import { getSellerToken } from "../../../util/authToken";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { fetchSellerReport } from "../../../store/seller/sellerSlice";
+import { getSellerToken } from "../../../utils/authToken";
 import SellingChart from "./SellingChart";
 
 const chartTypes = [

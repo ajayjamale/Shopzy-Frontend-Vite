@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { getWishlistByUserId } from "../../../Redux Toolkit/Customer/WishlistSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { getWishlistByUserId } from "../../../store/customer/WishlistSlice";
 import WishlistProductCard from "./WishlistProductCard";
 
 const Wishlist = () => {

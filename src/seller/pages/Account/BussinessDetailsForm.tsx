@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { Field, SaveButton } from "./FormPrimitives";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { updateSeller } from "../../../Redux Toolkit/Seller/sellerSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { updateSeller } from "../../../store/seller/sellerSlice";
 
 export interface UpdateDetailsFormProps {
   onClose: () => void;

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { chatBot, clearMessages } from "../../../Redux Toolkit/Customer/AiChatBotSlice";
-import type { ChatBotMode } from "../../../Redux Toolkit/Customer/AiChatBotSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { chatBot, clearMessages } from "../../../store/customer/AiChatBotSlice";
+import type { ChatBotMode } from "../../../store/customer/AiChatBotSlice";
 import { IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import CloseIcon from "@mui/icons-material/Close";

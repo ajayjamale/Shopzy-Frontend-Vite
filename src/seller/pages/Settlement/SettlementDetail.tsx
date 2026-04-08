@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import {
   fetchSettlementById,
   updateSettlementStatus,
-} from "../../../Redux Toolkit/Seller/settlementSlice";
+} from "../../../store/seller/settlementSlice";
 import type { SettlementStatus } from "../../../types/settlementTypes";
-import { getSellerToken } from "../../../util/authToken";
+import { getSellerToken } from "../../../utils/authToken";
 
 const C = {
   text: "#0F1111",

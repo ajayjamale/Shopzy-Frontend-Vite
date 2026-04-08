@@ -4,9 +4,9 @@ import {
   Typography, InputBase
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { api } from "../../../Config/Api";
+import { api } from "../../../config/Api";
 import type { User } from "../../../types/userTypes";
-import { getAdminToken } from "../../../util/authToken";
+import { getAdminToken } from "../../../utils/authToken";
 import { useSearchParams } from "react-router-dom";
 import SellersTable from "../sellers/SellersTable";
 

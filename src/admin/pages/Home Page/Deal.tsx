@@ -6,8 +6,8 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
 import DealsTable from './DealsTable'
 import CreateDealForm from './CreateDealForm'
-import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store'
-import { getAllDailyDiscounts } from '../../../Redux Toolkit/Admin/DealSlice'
+import { useAppDispatch, useAppSelector } from '../../../store'
+import { getAllDailyDiscounts } from '../../../store/admin/DealSlice'
 
 const tabs = [
     { name: 'Daily Discounts', icon: <TableChartIcon sx={{ fontSize: 15 }} /> },

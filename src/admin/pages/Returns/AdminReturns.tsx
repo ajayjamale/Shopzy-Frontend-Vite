@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { clearReturnError, fetchReturnRequests, updateReturnStatus } from "../../../Redux Toolkit/Customer/ReturnSlice";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { clearReturnError, fetchReturnRequests, updateReturnStatus } from "../../../store/customer/ReturnSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import type { ReturnRequest, ReturnStatus } from "../../../types/orderTypes";
-import { getAdminToken } from "../../../util/authToken";
+import { getAdminToken } from "../../../utils/authToken";
 
 const ALL_STATUSES: ReturnStatus[] = [
   "REQUESTED",

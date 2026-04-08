@@ -6,12 +6,12 @@ import {
   type KeyboardEvent,
 } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import {
   resetSellerAuthState,
   sendLoginOtp,
   verifyLoginOtp,
-} from "../../../Redux Toolkit/Seller/sellerAuthenticationSlice";
+} from "../../../store/seller/sellerAuthenticationSlice";
 
 const C = {
   text: "#0E1B2C",

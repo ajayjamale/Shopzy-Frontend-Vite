@@ -27,13 +27,13 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
-import { api } from "../../../Config/Api";
+import { api } from "../../../config/Api";
 import type {
   HomeContentItem,
   HomeSectionConfig,
   HomeSectionKey,
 } from "../../../types/homeContentTypes";
-import { getAdminToken } from "../../../util/authToken";
+import { getAdminToken } from "../../../utils/authToken";
 
 const sectionOptions: { key: HomeSectionKey; label: string; description: string }[] = [
   { key: "HERO", label: "Hero", description: "Primary carousel banners on top of homepage" },

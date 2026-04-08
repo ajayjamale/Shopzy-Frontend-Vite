@@ -3,8 +3,8 @@ import { FormControl, MenuItem, Pagination, Select, type SelectChangeEvent, useM
 import FilterAltRoundedIcon from "@mui/icons-material/FilterAltRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import { useParams, useSearchParams } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { getAllProducts } from "../../../Redux Toolkit/Customer/ProductSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { getAllProducts } from "../../../store/customer/ProductSlice";
 import ProductCard from "./ProductCard/ProductCard";
 import FilterSection from "./FilterSection";
 

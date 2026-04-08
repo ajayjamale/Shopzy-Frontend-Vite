@@ -3,14 +3,14 @@ import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import CreditCardRoundedIcon from "@mui/icons-material/CreditCardRounded";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import {
   createOrder,
   markPaymentFailed,
   type CheckoutInitPayload,
   verifyRazorpayPayment,
-} from "../../../Redux Toolkit/Customer/OrderSlice";
-import { clearCart } from "../../../Redux Toolkit/Customer/CartSlice";
+} from "../../../store/customer/OrderSlice";
+import { clearCart } from "../../../store/customer/CartSlice";
 import AddressCard from "./AddressCard";
 import AddressForm from "./AddresssForm";
 import PricingCard from "../Cart/PricingCard";

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAppSelector } from '../../../Redux Toolkit/Store'
+import { useAppSelector } from '../../../store'
 import HomeCategoryTable from './HomeCategoryTable'
 import { Box, Typography } from '@mui/material'
 import CategoryIcon from '@mui/icons-material/Category'

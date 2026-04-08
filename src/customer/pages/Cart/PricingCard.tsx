@@ -1,6 +1,6 @@
 import Divider from "@mui/material/Divider";
-import { useAppSelector } from "../../../Redux Toolkit/Store";
-import { sumCartItemMrpPrice, sumCartItemSellingPrice } from "../../../util/cartCalculator";
+import { useAppSelector } from "../../../store";
+import { sumCartItemMrpPrice, sumCartItemSellingPrice } from "../../../utils/cartCalculator";
 
 const PricingCard = () => {
   const { cart } = useAppSelector((store) => store);

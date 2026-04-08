@@ -27,12 +27,12 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import ToggleOnRoundedIcon from "@mui/icons-material/ToggleOnRounded";
 import ToggleOffRoundedIcon from "@mui/icons-material/ToggleOffRounded";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import {
   deleteDailyDiscount,
   updateDailyDiscountStatus,
-} from "../../../Redux Toolkit/Admin/DealSlice";
-import { fetchHomePageData } from "../../../Redux Toolkit/Customer/Customer/AsyncThunk";
+} from "../../../store/admin/DealSlice";
+import { fetchHomePageData } from "../../../store/customer/home/AsyncThunk";
 import UpdateDealForm from "./UpdateDealForm";
 import type { DailyDiscount } from "../../../types/dealTypes";
 

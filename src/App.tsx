@@ -1,13 +1,13 @@
 import "./App.css";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import customeTheme from "./Theme/customeTheme";
+import customeTheme from "./theme/customeTheme";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "./Redux Toolkit/Store";
-import { fetchSellerProfile } from "./Redux Toolkit/Seller/sellerSlice";
-import { fetchUserProfile } from "./Redux Toolkit/Customer/UserSlice";
-import { fetchHomePageData } from "./Redux Toolkit/Customer/Customer/AsyncThunk";
+import { useAppDispatch, useAppSelector } from "./store";
+import { fetchSellerProfile } from "./store/seller/sellerSlice";
+import { fetchUserProfile } from "./store/customer/UserSlice";
+import { fetchHomePageData } from "./store/customer/home/AsyncThunk";
 import CustomerRoutes from "./routes/CustomerRoutes";
 import SellerDashboard from "./seller/pages/SellerDashboard/SellerDashboard";
 import AdminDashboard from "./admin/pages/Dashboard/Dashboard";
@@ -17,7 +17,7 @@ import BecomeSeller from "./customer/pages/BecomeSeller/BecomeSeller";
 import AdminAuth from "./admin/pages/Auth/AdminAuth";
 import Mobile from "./data/Products/mobile";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import { getCustomerToken, getSellerToken } from "./util/authToken";
+import { getCustomerToken, getSellerToken } from "./utils/authToken";
 
 function App() {
   const dispatch = useAppDispatch();

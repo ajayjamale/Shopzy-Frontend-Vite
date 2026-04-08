@@ -15,10 +15,10 @@ import InventoryOutlinedIcon from '@mui/icons-material/InventoryOutlined';
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
-import { fetchSellerProducts, updateProductStock } from '../../../Redux Toolkit/Seller/sellerProductSlice';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import { fetchSellerProducts, updateProductStock } from '../../../store/seller/sellerProductSlice';
 import { useNavigate } from 'react-router-dom';
-import { getSellerToken } from '../../../util/authToken';
+import { getSellerToken } from '../../../utils/authToken';
 
 // ─── Design Tokens ────────────────────────────────────────────────────────────
 const UI = {

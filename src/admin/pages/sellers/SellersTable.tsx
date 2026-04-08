@@ -15,8 +15,8 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { fetchSellers, updateSellerAccountStatus } from "../../../Redux Toolkit/Seller/sellerSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { fetchSellers, updateSellerAccountStatus } from "../../../store/seller/sellerSlice";
 import { useSearchParams } from "react-router-dom";
 
 const accountStatuses = [

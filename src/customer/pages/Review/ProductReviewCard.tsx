@@ -3,8 +3,8 @@ import StarIcon from "@mui/icons-material/Star";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import type { Review } from "../../../types/reviewTypes";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { deleteReview } from "../../../Redux Toolkit/Customer/ReviewSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { deleteReview } from "../../../store/customer/ReviewSlice";
 import "./Reviews.css";
 
 interface ProductReviewCardProps {

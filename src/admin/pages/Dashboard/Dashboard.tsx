@@ -6,8 +6,8 @@ import NotificationsRoundedIcon from "@mui/icons-material/NotificationsRounded";
 import { useLocation, useNavigate } from "react-router-dom";
 import AdminRoutes from "../../../routes/AdminRoutes";
 import AdminDrawerList from "../../components/DrawerList";
-import { api } from "../../../Config/Api";
-import { getAdminToken } from "../../../util/authToken";
+import { api } from "../../../config/Api";
+import { getAdminToken } from "../../../utils/authToken";
 import type { Seller } from "../../../types/sellerTypes";
 
 const PENDING_SELLER_STATUS = "PENDING_VERIFICATION";
@@ -60,7 +60,7 @@ const AdminDashboard = () => {
     }
 
     try {
-      const response = await api.get<Seller[]>("/sellers", {
+      const response = await api.get<Seller[]>("/api/sellers", {
         params: {
           status: PENDING_SELLER_STATUS,
         },

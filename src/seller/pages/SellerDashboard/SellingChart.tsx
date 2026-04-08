@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { fetchRevenueChart } from "../../../Redux Toolkit/Seller/revenueChartSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { fetchRevenueChart } from "../../../store/seller/revenueChartSlice";
 import { Skeleton } from "@mui/material";
 
 const SellingChart = ({ chartType }: { chartType: string }) => {

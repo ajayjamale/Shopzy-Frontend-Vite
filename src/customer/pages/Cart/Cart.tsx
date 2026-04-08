@@ -5,9 +5,9 @@ import FavoriteRoundedIcon from "@mui/icons-material/FavoriteRounded";
 import LockRoundedIcon from "@mui/icons-material/LockRounded";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { applyCoupon } from "../../../Redux Toolkit/Customer/CouponSlice";
-import { clearCart, fetchUserCart } from "../../../Redux Toolkit/Customer/CartSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { applyCoupon } from "../../../store/customer/CouponSlice";
+import { clearCart, fetchUserCart } from "../../../store/customer/CartSlice";
 import CartItemCard from "./CartItemCard";
 import PricingCard from "./PricingCard";
 

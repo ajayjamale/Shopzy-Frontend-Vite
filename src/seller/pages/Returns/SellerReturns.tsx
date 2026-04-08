@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { clearReturnError, fetchReturnRequests, updateReturnStatus } from "../../../Redux Toolkit/Customer/ReturnSlice";
-import { fetchSellerOrders } from "../../../Redux Toolkit/Seller/sellerOrderSlice";
-import { fetchSellerReport } from "../../../Redux Toolkit/Seller/sellerSlice";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { clearReturnError, fetchReturnRequests, updateReturnStatus } from "../../../store/customer/ReturnSlice";
+import { fetchSellerOrders } from "../../../store/seller/sellerOrderSlice";
+import { fetchSellerReport } from "../../../store/seller/sellerSlice";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import type { ReturnStatus } from "../../../types/orderTypes";
-import { getSellerToken } from "../../../util/authToken";
+import { getSellerToken } from "../../../utils/authToken";
 
 const ALL_STATUSES: ReturnStatus[] = [
   "REQUESTED",

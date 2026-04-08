@@ -11,9 +11,9 @@ import {
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import LocalOfferIcon from "@mui/icons-material/LocalOffer";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
-import { createDailyDiscount, getAllDailyDiscounts } from "../../../Redux Toolkit/Admin/DealSlice";
-import { fetchHomePageData } from "../../../Redux Toolkit/Customer/Customer/AsyncThunk";
+import { useAppDispatch, useAppSelector } from "../../../store";
+import { createDailyDiscount, getAllDailyDiscounts } from "../../../store/admin/DealSlice";
+import { fetchHomePageData } from "../../../store/customer/home/AsyncThunk";
 
 const modernTextField = {
   "& label.Mui-focused": { color: "#1E293B" },

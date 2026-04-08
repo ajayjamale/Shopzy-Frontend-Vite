@@ -16,8 +16,8 @@ import { furnitureLevelThree } from '../../../data/category/level three/furnitur
 import { electronicsLevelThree } from '../../../data/category/level three/electronicsLevelThree'
 import { furnitureLevelTwo } from '../../../data/category/level two/furnitureLevleTwo'
 import { electronicsLevelTwo } from '../../../data/category/level two/electronicsLavelTwo'
-import { useAppDispatch } from '../../../Redux Toolkit/Store'
-import { updateHomeCategory } from '../../../Redux Toolkit/Admin/AdminSlice'
+import { useAppDispatch } from '../../../store'
+import { updateHomeCategory } from '../../../store/admin/AdminSlice'
 import type { HomeCategory } from '../../../types/homeDataTypes'
 
 const modernTextField = {

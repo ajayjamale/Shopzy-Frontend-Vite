@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { useAppDispatch, useAppSelector } from '../../../Redux Toolkit/Store';
-import { createReview } from '../../../Redux Toolkit/Customer/ReviewSlice';
-import { uploadToCloudinary } from '../../../util/uploadToCloudnary';
+import { useAppDispatch, useAppSelector } from '../../../store';
+import { createReview } from '../../../store/customer/ReviewSlice';
+import { uploadToCloudinary } from '../../../utils/uploadToCloudnary';
 import { useNavigate, useParams } from 'react-router-dom';
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";

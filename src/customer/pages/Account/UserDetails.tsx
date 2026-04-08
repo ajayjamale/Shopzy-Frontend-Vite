@@ -1,5 +1,5 @@
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
-import { useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppSelector } from "../../../store";
 import "./Profile.css";
 
 const UserDetails = () => {

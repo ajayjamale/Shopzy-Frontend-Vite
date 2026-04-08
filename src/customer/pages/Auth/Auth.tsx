@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Alert, Snackbar } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppSelector } from "../../../store";
 import { ShopzyLogo } from "../../../components/ShopzyLogo";
 import LoginForm from "./LoginForm";
 import SignupForm from "./SignupForm";

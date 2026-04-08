@@ -5,7 +5,7 @@ import SecurityRoundedIcon from "@mui/icons-material/SecurityRounded";
 import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import ChatBot from "../ChatBot/ChatBot";
 import MainCarousel from "./Main Carousel/MainCarousel";
 import HeroSpotlights from "./HeroSpotlights/HeroSpotlights";
@@ -14,7 +14,7 @@ import TechFeatureRail from "./Sections/TechFeatureRail";
 import BrandShowcasePanel from "./Sections/BrandShowcasePanel";
 import DailyDiscountSection from "./Sections/DailyDiscountSection";
 import type { HomePageContent } from "../../../types/homeContentTypes";
-import { fetchHomePageData } from "../../../Redux Toolkit/Customer/Customer/AsyncThunk";
+import { fetchHomePageData } from "../../../store/customer/home/AsyncThunk";
 
 const Home = () => {
   const dispatch = useAppDispatch();

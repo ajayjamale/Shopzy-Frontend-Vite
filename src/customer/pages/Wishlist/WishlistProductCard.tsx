@@ -1,9 +1,9 @@
 import { useState, type MouseEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import type { Product } from "../../../types/productTypes";
-import { useAppDispatch } from "../../../Redux Toolkit/Store";
-import { addProductToWishlist } from "../../../Redux Toolkit/Customer/WishlistSlice";
-import { addItemToCart } from "../../../Redux Toolkit/Customer/CartSlice";
+import { useAppDispatch } from "../../../store";
+import { addProductToWishlist } from "../../../store/customer/WishlistSlice";
+import { addItemToCart } from "../../../store/customer/CartSlice";
 
 interface WishlistProductCardProps {
   item: Product;

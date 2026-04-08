@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../../../Redux Toolkit/Store";
+import { useAppDispatch, useAppSelector } from "../../../store";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchProductById } from "../../../Redux Toolkit/Customer/ProductSlice";
+import { fetchProductById } from "../../../store/customer/ProductSlice";
 import ReviewForm from "./ReviewForm";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import "./Reviews.css";
