@@ -1,118 +1,145 @@
-import React, { useEffect } from "react";
+import { useEffect, useMemo } from "react";
+import {
+  Box,
+  LinearProgress,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from "@mui/material";
+import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { fetchTransactionsBySeller } from "../../../store/seller/transactionSlice";
 import type { Transaction } from "../../../types/Transaction";
-import { redableDateTime } from "../../../utils/redableDateTime";
 import { getSellerToken } from "../../../utils/authToken";
+import {
+  SellerEmptyState,
+  SellerMetricCard,
+  SellerPageIntro,
+  SellerSection,
+  formatSellerCurrency,
+  formatSellerDateTime,
+  sellerTableCellSx,
+  sellerTableHeadCellSx,
+} from "../../theme/sellerUi";
 
-const C = {
-  navy:   "#1E293B",
-  white:  "#FFFFFF",
-  bg:     "#F3F3F3",
-  border: "#DCE5E8",
-  soft:   "#EAEDEE",
-  text:   "#0F172A",
-  mid:    "#64748B",
-  dim:    "#8D9095",
-  link:   "#0E7490",
-  green:  "#067D62",
+type TransactionTableProps = {
+  embedded?: boolean;
 };
 
-const TH_STYLE: React.CSSProperties = {
-  padding: "11px 16px",
-  fontSize: 12, fontWeight: 700,
-  color: C.white,
-  textTransform: "uppercase",
-  letterSpacing: "0.04em",
-  whiteSpace: "nowrap",
-  borderRight: "1px solid rgba(255,255,255,0.08)",
-};
-
-export default function TransactionTable() {
-  const dispatch                    = useAppDispatch();
-  const { transaction }             = useAppSelector((s) => s);
+const TransactionTable = ({ embedded = false }: TransactionTableProps) => {
+  const dispatch = useAppDispatch();
+  const { transaction } = useAppSelector((state) => state);
 
   useEffect(() => {
-    dispatch(fetchTransactionsBySeller(getSellerToken()));
+    const jwt = getSellerToken();
+    if (!jwt) return;
+    dispatch(fetchTransactionsBySeller(jwt));
   }, [dispatch]);
 
   const rows: Transaction[] = transaction.transactions ?? [];
+  const totalAmount = useMemo(
+    () => rows.reduce((sum, item) => sum + Number(item.order?.totalSellingPrice ?? 0), 0),
+    [rows]
+  );
+
+  const tableBlock = (
+    <>
+      {transaction.loading ? <LinearProgress /> : null}
+
+      {!rows.length && !transaction.loading ? (
+        <Box sx={{ p: embedded ? 0 : 2.4 }}>
+          <SellerEmptyState
+            title={transaction.error ? "Unable to load transactions" : "No transactions yet"}
+            description={transaction.error || "New payment activity will appear here once customers complete purchases."}
+          />
+        </Box>
+      ) : (
+        <TableContainer>
+          <Table sx={{ minWidth: 760 }}>
+            <TableHead>
+              <TableRow>
+                <TableCell sx={sellerTableHeadCellSx}>Date</TableCell>
+                <TableCell sx={sellerTableHeadCellSx}>Customer</TableCell>
+                <TableCell sx={sellerTableHeadCellSx}>Order</TableCell>
+                <TableCell sx={sellerTableHeadCellSx} align="right">
+                  Amount
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {rows.map((item) => (
+                <TableRow key={item.id} hover>
+                  <TableCell sx={sellerTableCellSx}>
+                    <Typography sx={{ fontWeight: 800 }}>{formatSellerDateTime(item.date)}</Typography>
+                  </TableCell>
+                  <TableCell sx={sellerTableCellSx}>
+                    <Typography sx={{ fontWeight: 800 }}>{item.customer.fullName}</Typography>
+                    <Typography sx={{ fontSize: ".8rem", color: "#64748B", mt: 0.3 }}>
+                      {item.customer.email}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={sellerTableCellSx}>
+                    <Typography sx={{ fontWeight: 800 }}>Order #{item.order.id}</Typography>
+                    <Typography sx={{ fontSize: ".8rem", color: "#64748B", mt: 0.3 }}>
+                      {item.order.totalItem} item{item.order.totalItem > 1 ? "s" : ""}
+                    </Typography>
+                  </TableCell>
+                  <TableCell sx={sellerTableCellSx} align="right">
+                    <Typography sx={{ fontWeight: 900, color: "#0F766E" }}>
+                      {formatSellerCurrency(item.order.totalSellingPrice)}
+                    </Typography>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+    </>
+  );
+
+  if (embedded) {
+    return <Box>{tableBlock}</Box>;
+  }
 
   return (
-    <div style={{
-      border: `1px solid ${C.border}`,
-      borderRadius: 4,
-      overflow: "hidden",
-      background: C.white,
-    }}>
-      <div style={{ overflowX: "auto" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 640 }}>
-          <thead>
-            <tr style={{ background: C.navy }}>
-              <th style={{ ...TH_STYLE, textAlign: "left"  }}>Date</th>
-              <th style={{ ...TH_STYLE, textAlign: "left"  }}>Customer</th>
-              <th style={{ ...TH_STYLE, textAlign: "left"  }}>Order</th>
-              <th style={{ ...TH_STYLE, textAlign: "right", borderRight: "none" }}>Amount</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.length === 0 ? (
-              <tr>
-                <td colSpan={4} style={{
-                  padding: "40px 0", textAlign: "center",
-                  fontSize: 14, color: C.dim,
-                }}>
-                  No transactions found.
-                </td>
-              </tr>
-            ) : rows.map((item, i) => {
-              const parts = redableDateTime(item.date).split("at");
-              return (
-                <tr key={item.id} style={{ background: i % 2 === 0 ? C.white : "#FAFAFA", verticalAlign: "top" }}>
+    <Box>
+      <SellerPageIntro
+        eyebrow="Finance"
+        title="Transactions"
+        description="Review customer payments and the order amounts they map to."
+      />
 
-                  {/* date */}
-                  <td style={{ padding: "13px 16px", borderBottom: `1px solid ${C.soft}`, whiteSpace: "nowrap" as const }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{parts[0]?.trim()}</div>
-                    {parts[1] && (
-                      <div style={{ fontSize: 11, color: C.mid, marginTop: 2 }}>{parts[1].trim()}</div>
-                    )}
-                  </td>
+      <Box sx={{ display: "grid", gap: 2, gridTemplateColumns: { xs: "1fr", md: "repeat(2, minmax(0, 1fr))" }, mb: 2 }}>
+        <SellerMetricCard
+          label="Transactions"
+          value={rows.length.toLocaleString("en-IN")}
+          helper="Seller-side transaction records"
+          tone="info"
+          icon={<ReceiptLongRoundedIcon />}
+        />
+        <SellerMetricCard
+          label="Processed value"
+          value={formatSellerCurrency(totalAmount)}
+          helper="Sum of captured order amounts"
+          tone="accent"
+          icon={<ReceiptLongRoundedIcon />}
+        />
+      </Box>
 
-                  {/* customer */}
-                  <td style={{ padding: "13px 16px", borderBottom: `1px solid ${C.soft}` }}>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: C.text }}>{item.customer.fullName}</div>
-                    <div style={{ fontSize: 12, color: C.link, marginTop: 2 }}>{item.customer.email}</div>
-                    <div style={{ fontSize: 12, color: C.mid, marginTop: 1 }}>{item.customer.mobile}</div>
-                  </td>
-
-                  {/* order */}
-                  <td style={{ padding: "13px 16px", borderBottom: `1px solid ${C.soft}`, fontSize: 13, color: C.text }}>
-                    Order <span style={{ fontWeight: 700, color: C.link }}>#{item.order.id}</span>
-                  </td>
-
-                  {/* amount */}
-                  <td style={{
-                    padding: "13px 16px", borderBottom: `1px solid ${C.soft}`,
-                    textAlign: "right", fontSize: 14, fontWeight: 700, color: C.green,
-                    whiteSpace: "nowrap" as const,
-                  }}>
-                    ₹{item.order.totalSellingPrice.toLocaleString("en-IN")}
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-
-      {rows.length > 0 && (
-        <div style={{
-          padding: "9px 16px", borderTop: `1px solid ${C.soft}`,
-          background: C.bg, fontSize: 12, color: C.mid, textAlign: "right" as const,
-        }}>
-          {rows.length} transaction{rows.length !== 1 ? "s" : ""}
-        </div>
-      )}
-    </div>
+      <SellerSection
+        title="Transaction history"
+        description="Recent buyer payments and related order records."
+        padded={false}
+      >
+        {tableBlock}
+      </SellerSection>
+    </Box>
   );
-}
+};
+
+export default TransactionTable;

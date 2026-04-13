@@ -58,6 +58,7 @@ const categoryLevelThree: { [key: string]: any[] } = {
 const schema = Yup.object({
   title: Yup.string().min(5, "Title should have at least 5 characters").required("Title is required"),
   description: Yup.string().min(10, "Description should have at least 10 characters").required("Description is required"),
+  brand: Yup.string().min(2, "Brand should have at least 2 characters").required("Brand is required"),
   mrpPrice: Yup.number().typeError("MRP is required").positive("MRP must be positive").required("MRP is required"),
   sellingPrice: Yup.number()
     .typeError("Selling price is required")
@@ -79,6 +80,7 @@ const ProductForm = () => {
     initialValues: {
       title: "",
       description: "",
+      brand: "",
       mrpPrice: "",
       sellingPrice: "",
       quantity: "",
@@ -214,6 +216,16 @@ const ProductForm = () => {
                 minRows={4}
                 fullWidth
               />
+              <TextField
+                label="Brand"
+                name="brand"
+                value={formik.values.brand}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.brand && formik.errors.brand)}
+                helperText={formik.touched.brand && formik.errors.brand}
+                fullWidth
+              />
             </Stack>
           </Paper>
 
@@ -261,7 +273,7 @@ const ProductForm = () => {
                 sx={{
                   px: 1.5,
                   py: 1.2,
-                  borderRadius: 2,
+                  borderRadius: "12px",
                   borderColor: discountPreview > 0 ? "success.main" : "divider",
                   bgcolor: discountPreview > 0 ? "rgba(21,128,61,0.08)" : "rgba(15,118,110,0.04)",
                 }}
@@ -411,7 +423,7 @@ const ProductForm = () => {
 
             <Box sx={{ mt: 1.5, display: "grid", gap: 1, gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
               {formik.values.images.map((image, index) => (
-                <Box key={`${image}-${index}`} sx={{ position: "relative", borderRadius: 1.5, overflow: "hidden", border: "1px solid #dbe7ea", aspectRatio: "1 / 1" }}>
+                <Box key={`${image}-${index}`} sx={{ position: "relative", borderRadius: "10px", overflow: "hidden", border: "1px solid #dbe7ea", aspectRatio: "1 / 1" }}>
                   <img src={image} alt={`product-${index}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                   <Button
                     size="small"
@@ -434,7 +446,7 @@ const ProductForm = () => {
                 </Box>
               ))}
               {!formik.values.images.length && (
-                <Box sx={{ gridColumn: "1 / -1", p: 1.2, borderRadius: 1.5, border: "1px dashed #cadce0", bgcolor: "rgba(15,118,110,0.03)" }}>
+                <Box sx={{ gridColumn: "1 / -1", p: 1.2, borderRadius: "10px", border: "1px dashed #cadce0", bgcolor: "rgba(15,118,110,0.03)" }}>
                   <Typography sx={{ fontSize: ".78rem", color: "text.secondary" }}>
                     Upload at least one clear image for better conversion.
                   </Typography>
@@ -447,6 +459,7 @@ const ProductForm = () => {
             <Typography sx={{ fontWeight: 800, mb: 1.5 }}>Listing Summary</Typography>
             <Stack spacing={1}>
               <Row label="Title" value={formik.values.title || "-"} />
+              <Row label="Brand" value={formik.values.brand || "-"} />
               <Row label="Price" value={formik.values.sellingPrice ? `Rs. ${formik.values.sellingPrice}` : "-"} />
               <Row label="MRP" value={formik.values.mrpPrice ? `Rs. ${formik.values.mrpPrice}` : "-"} />
               <Row label="Discount" value={discountPreview > 0 ? `${discountPreview}%` : "0%"} />
@@ -488,4 +501,3 @@ const Row = ({ label, value }: { label: string; value: string }) => (
 );
 
 export default ProductForm;
-

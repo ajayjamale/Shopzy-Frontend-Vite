@@ -1,7 +1,7 @@
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { IconButton } from "@mui/material";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 interface Category {
   categoryId: string;
@@ -18,6 +18,12 @@ interface DrawerListProps {
 
 const DrawerList = ({ onNavigate, onClose, onSearch, categories, hasSeller }: DrawerListProps) => {
   const [query, setQuery] = useState("");
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const normalizedQuery = query.trim();
+    if (!normalizedQuery) return;
+    onSearch(normalizedQuery);
+  };
 
   const quickLinks = [
     { label: "Home", path: "/" },
@@ -37,18 +43,17 @@ const DrawerList = ({ onNavigate, onClose, onSearch, categories, hasSeller }: Dr
         </IconButton>
       </div>
 
-      <div className="nav-search" style={{ height: 42 }}>
+      <form className="nav-search" style={{ height: 42 }} onSubmit={handleSubmit}>
         <SearchRoundedIcon sx={{ color: "#64748B", fontSize: 20 }} />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && query.trim() && onSearch(query.trim())}
           placeholder="Search"
         />
-        <button onClick={() => query.trim() && onSearch(query.trim())}>
+        <button type="submit">
           <SearchRoundedIcon sx={{ fontSize: 19 }} />
         </button>
-      </div>
+      </form>
 
       <div>
         <p className="section-kicker" style={{ marginBottom: 8 }}>Quick Links</p>

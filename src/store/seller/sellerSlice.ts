@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { api } from "../../config/Api";
+import { adminApiPath, api } from "../../config/Api";
 import type { Seller, SellerReport } from "../../types/sellerTypes";
 import type { RootState } from "../index";
 import { getAdminToken, getSellerToken } from "../../utils/authToken";
@@ -30,6 +30,7 @@ const initialState: SellerState = {
 
 // Define the base URL for the API
 const API_URL = "/api/sellers";
+const ADMIN_API_URL = adminApiPath();
 
 // Create async thunks for API calls
 export const fetchSellerProfile = createAsyncThunk<Seller, any>(
@@ -200,7 +201,7 @@ export const updateSellerAccountStatus = createAsyncThunk<
     { rejectWithValue }
   ) => {
     try {
-      const response = await api.patch(`/admin/sellers/${id}/status/${status}`, null, {
+      const response = await api.patch(`${ADMIN_API_URL}/sellers/${id}/status/${status}`, null, {
         headers: {
           Authorization: `Bearer ${getAdminToken()}`,
         },

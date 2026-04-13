@@ -5,6 +5,24 @@ import { getSellerToken } from "../../utils/authToken";
 
 const API_URL = "/api/sellers/products";
 
+const getErrorMessage = (payload: unknown, fallback: string) => {
+  if (typeof payload === "string" && payload.trim()) {
+    return payload;
+  }
+
+  if (payload && typeof payload === "object") {
+    const record = payload as Record<string, unknown>;
+    if (typeof record.message === "string" && record.message.trim()) {
+      return record.message;
+    }
+    if (typeof record.error === "string" && record.error.trim()) {
+      return record.error;
+    }
+  }
+
+  return fallback;
+};
+
 export const fetchSellerProducts = createAsyncThunk<Product[], any>(
   "sellerProduct/fetchSellerProducts",
   async (jwt, { rejectWithValue }) => {
@@ -126,7 +144,7 @@ const sellerProductSlice = createSlice({
       )
       .addCase(fetchSellerProducts.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to fetch products";
+        state.error = getErrorMessage(action.payload, action.error.message || "Failed to fetch products");
       })
       .addCase(createProduct.pending, (state) => {
         state.loading = true;
@@ -143,7 +161,7 @@ const sellerProductSlice = createSlice({
       )
       .addCase(createProduct.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to create product";
+        state.error = getErrorMessage(action.payload, action.error.message || "Failed to create product");
         state.productCreated = false;
       })
       .addCase(updateProduct.pending, (state) => {
@@ -164,7 +182,7 @@ const sellerProductSlice = createSlice({
       )
       .addCase(updateProduct.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to update product";
+        state.error = getErrorMessage(action.payload, action.error.message || "Failed to update product");
       })
       .addCase(
         updateProductStock.fulfilled,
@@ -190,7 +208,7 @@ const sellerProductSlice = createSlice({
       })
       .addCase(deleteProduct.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message || "Failed to delete product";
+        state.error = getErrorMessage(action.payload, action.error.message || "Failed to delete product");
       });
   },
 });

@@ -77,8 +77,13 @@ export const searchProduct = createAsyncThunk<Product[], string>(
   "products/searchProduct",
   async (query, { rejectWithValue }) => {
     try {
+      const normalizedQuery = query.trim();
+      if (!normalizedQuery) {
+        return [];
+      }
+
       const response = await api.get<Product[]>(`${API_URL}/search`, {
-        params: { query },
+        params: { query: normalizedQuery },
       });
       return response.data;
     } catch (error: any) {
@@ -130,6 +135,7 @@ const productSlice = createSlice({
       .addCase(searchProduct.pending, (state) => {
         state.loading = true;
         state.error = null;
+        state.searchProduct = [];
       })
       .addCase(searchProduct.fulfilled, (state, action: PayloadAction<Product[]>) => {
         state.searchProduct = action.payload;

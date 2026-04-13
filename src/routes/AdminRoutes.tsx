@@ -2,6 +2,7 @@ import React from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import Coupon from "../admin/pages/Coupon/Coupon";
 import CouponForm from "../admin/pages/Coupon/CreateCouponForm";
+import AdminAnalyticsDashboard from "../admin/pages/Dashboard/AdminAnalyticsDashboard";
 import Deal from "../admin/pages/Home Page/Deal";
 import AdminSettlementList from "../admin/pages/Settlement/AdminSettlementList";
 import AdminSettlementDetail from "../admin/pages/Settlement/AdminSettlementDetail";
@@ -12,7 +13,7 @@ import AdminReturns from "../admin/pages/Returns/AdminReturns";
 const AdminRoutes = () => {
   return (
     <Routes>
-      <Route index element={<Navigate to="/admin/users?tab=sellers" replace />} />
+      <Route index element={<AdminAnalyticsDashboard />} />
       <Route path="coupon" element={<Coupon />} />
       <Route path="add-coupon" element={<CouponForm />} />
       <Route path="home-content" element={<HomeContentManager />} />

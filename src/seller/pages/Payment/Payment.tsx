@@ -1,99 +1,157 @@
 import { useEffect, useState } from "react";
+import { Box, Button, Stack, Typography } from "@mui/material";
+import AccountBalanceWalletRoundedIcon from "@mui/icons-material/AccountBalanceWalletRounded";
+import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { fetchSettlementSummary, fetchSettlements } from "../../../store/seller/settlementSlice";
 import { getSellerToken } from "../../../utils/authToken";
 import TransactionTable from "./TransactionTable";
+import {
+  SellerMetricCard,
+  SellerPageIntro,
+  SellerSection,
+  SellerStatusChip,
+  formatSellerCurrency,
+  formatSellerDate,
+  humanizeSellerValue,
+  sellerPrimaryButtonSx,
+  sellerSecondaryButtonSx,
+} from "../../theme/sellerUi";
 
 const tabs = ["Transactions", "Settlements"] as const;
 
-const Payment = () => {
+type PaymentProps = {
+  initialTab?: (typeof tabs)[number];
+};
+
+const Payment = ({ initialTab = "Transactions" }: PaymentProps) => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { sellers, settlement } = useAppSelector((store) => store);
-  const [tab, setTab] = useState<(typeof tabs)[number]>("Transactions");
+  const [tab, setTab] = useState<(typeof tabs)[number]>(initialTab);
 
   const jwt = getSellerToken();
 
   useEffect(() => {
     if (!jwt) return;
-
     dispatch(fetchSettlementSummary({ jwt, query: { size: 5 } }));
     dispatch(fetchSettlements({ jwt, query: { size: 5, sort: "settlementDate,desc" } }));
-  }, [jwt, dispatch]);
+  }, [dispatch, jwt]);
 
   return (
-    <div className="grid gap-4">
-      <div className="surface p-5" style={{ borderRadius: 16 }}>
-        <div className="flex items-start justify-between gap-4 flex-wrap">
-          <div>
-            <p className="section-kicker mb-2">Finance</p>
-            <h1 style={{ fontSize: "1.45rem" }}>Payments and settlements</h1>
-            <p className="text-sm text-slate-500 mt-1">Track transactions and payout status.</p>
-          </div>
-          <button className="btn-secondary" onClick={() => navigate("/seller/settlements")}>Open settlements dashboard</button>
-        </div>
+    <Box>
+      <SellerPageIntro
+        eyebrow="Finance"
+        title="Payments and settlements"
+        description="Track incoming transaction activity and stay on top of payout status from one cleaner finance view."
+        actions={
+          <>
+            <Button variant="outlined" onClick={() => navigate("/seller/transaction")} sx={sellerSecondaryButtonSx}>
+              Full transactions
+            </Button>
+            <Button variant="contained" onClick={() => navigate("/seller/settlements")} sx={sellerPrimaryButtonSx}>
+              Open settlements
+            </Button>
+          </>
+        }
+      />
 
-        <div className="grid sm:grid-cols-3 gap-3 mt-5">
-          <article className="surface-soft p-4" style={{ borderRadius: 12 }}>
-            <p className="text-xs text-slate-500 uppercase tracking-[0.12em] font-bold">Net earnings</p>
-            <p className="text-xl font-bold text-slate-900 mt-2">
-              Rs. {Number(settlement.summary?.totalNetAmount ?? sellers.report?.totalEarnings ?? 0).toLocaleString("en-IN")}
-            </p>
-          </article>
-          <article className="surface-soft p-4" style={{ borderRadius: 12 }}>
-            <p className="text-xs text-slate-500 uppercase tracking-[0.12em] font-bold">Pending settlements</p>
-            <p className="text-xl font-bold text-slate-900 mt-2">{settlement.summary?.pendingCount ?? 0}</p>
-          </article>
-          <article className="surface-soft p-4" style={{ borderRadius: 12 }}>
-            <p className="text-xs text-slate-500 uppercase tracking-[0.12em] font-bold">Completed settlements</p>
-            <p className="text-xl font-bold text-slate-900 mt-2">{settlement.summary?.completedCount ?? 0}</p>
-          </article>
-        </div>
-      </div>
+      <Box
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))", xl: "repeat(4, minmax(0, 1fr))" },
+        }}
+      >
+        <SellerMetricCard
+          label="Net earnings"
+          value={formatSellerCurrency(settlement.summary?.totalNetAmount ?? sellers.report?.totalEarnings ?? 0)}
+          helper="Best current estimate of payout value"
+          tone="accent"
+          icon={<AccountBalanceWalletRoundedIcon />}
+        />
+        <SellerMetricCard
+          label="Pending settlements"
+          value={String(settlement.summary?.pendingCount ?? 0)}
+          helper="Awaiting payout processing"
+          tone="warning"
+          icon={<AutorenewRoundedIcon />}
+        />
+        <SellerMetricCard
+          label="Completed settlements"
+          value={String(settlement.summary?.completedCount ?? 0)}
+          helper="Settlements already completed"
+          tone="success"
+          icon={<CheckCircleRoundedIcon />}
+        />
+        <SellerMetricCard
+          label="Gross volume"
+          value={formatSellerCurrency(settlement.summary?.totalGrossAmount ?? 0)}
+          helper={`${formatSellerCurrency(settlement.summary?.totalCommission ?? 0)} commission tracked`}
+          tone="info"
+          icon={<ReceiptLongRoundedIcon />}
+        />
+      </Box>
 
-      <div className="surface p-4" style={{ borderRadius: 16 }}>
-        <div className="flex gap-2 mb-4 flex-wrap">
-          {tabs.map((item) => (
-            <button
-              key={item}
-              onClick={() => setTab(item)}
-              className={item === tab ? "btn-primary" : "btn-secondary"}
-              style={{ height: 34 }}
-            >
-              {item}
-            </button>
-          ))}
-        </div>
-
-        {tab === "Transactions" ? (
-          <TransactionTable />
-        ) : (
-          <div className="grid gap-2">
-            {settlement.loading && <p className="text-sm text-slate-500">Loading settlements...</p>}
-            {!settlement.loading && !(settlement.items || []).length && (
-              <div className="empty-state">
-                <p style={{ color: "#64748B" }}>No settlement records yet.</p>
-              </div>
-            )}
-            {(settlement.items || []).map((item) => (
-              <article key={item.id} className="surface-soft p-3" style={{ borderRadius: 12 }}>
-                <div className="flex justify-between gap-3 flex-wrap">
-                  <div>
-                    <p className="text-sm font-semibold text-slate-900">Settlement #{item.id}</p>
-                    <p className="text-xs text-slate-500 mt-1">Order #{item.orderId}</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-slate-900">Rs. {item.netSettlementAmount.toLocaleString("en-IN")}</p>
-                    <p className="text-xs font-semibold text-emerald-700 mt-1">{item.settlementStatus}</p>
-                  </div>
-                </div>
-              </article>
+      <SellerSection
+        title="Finance workspace"
+        description="Switch between transaction activity and recent settlement payouts."
+        action={
+          <Stack direction="row" spacing={1}>
+            {tabs.map((item) => (
+              <Button
+                key={item}
+                variant={item === tab ? "contained" : "outlined"}
+                onClick={() => setTab(item)}
+                sx={item === tab ? sellerPrimaryButtonSx : sellerSecondaryButtonSx}
+              >
+                {item}
+              </Button>
             ))}
-          </div>
+          </Stack>
+        }
+      >
+        {tab === "Transactions" ? (
+          <TransactionTable embedded />
+        ) : (
+          <Stack spacing={1.4}>
+            {!settlement.loading && !(settlement.items || []).length ? (
+              <Typography sx={{ color: "#64748B" }}>No settlement records yet.</Typography>
+            ) : (
+              (settlement.items || []).map((item) => (
+                <Box
+                  key={item.id}
+                  sx={{
+                    p: 1.8,
+                    borderRadius: "12px",
+                    border: "1px solid #DCE8EC",
+                    bgcolor: "#F8FBFC",
+                  }}
+                >
+                  <Stack direction={{ xs: "column", sm: "row" }} justifyContent="space-between" spacing={1.4}>
+                    <Box>
+                      <Typography sx={{ fontWeight: 800, color: "#0F172A" }}>Settlement #{item.id}</Typography>
+                      <Typography sx={{ color: "#64748B", fontSize: ".82rem", mt: 0.4 }}>
+                        Order #{item.orderId} • {formatSellerDate(item.settlementDate || item.createdAt)}
+                      </Typography>
+                    </Box>
+                    <Stack spacing={0.8} alignItems={{ xs: "flex-start", sm: "flex-end" }}>
+                      <Typography sx={{ fontWeight: 900, color: "#0F172A" }}>
+                        {formatSellerCurrency(item.netSettlementAmount)}
+                      </Typography>
+                      <SellerStatusChip label={humanizeSellerValue(item.settlementStatus)} tone={item.settlementStatus === "COMPLETED" ? "success" : item.settlementStatus === "FAILED" || item.settlementStatus === "CANCELLED" ? "danger" : item.settlementStatus === "PENDING" ? "warning" : "info"} small />
+                    </Stack>
+                  </Stack>
+                </Box>
+              ))
+            )}
+          </Stack>
         )}
-      </div>
-    </div>
+      </SellerSection>
+    </Box>
   );
 };
 

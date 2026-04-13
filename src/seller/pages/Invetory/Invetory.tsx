@@ -1,9 +1,7 @@
-import React from 'react'
+import ProductTable from "../Products/ProductTable";
 
 const Invetory = () => {
-  return (
-    <div>Invetory</div>
-  )
-}
+  return <ProductTable variant="inventory" />;
+};
 
-export default Invetory
+export default Invetory;

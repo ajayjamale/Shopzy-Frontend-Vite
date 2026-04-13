@@ -1,70 +1,77 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import StorefrontRoundedIcon from "@mui/icons-material/StorefrontRounded";
-import GroupRoundedIcon from "@mui/icons-material/GroupRounded";
-import ConfirmationNumberRoundedIcon from "@mui/icons-material/ConfirmationNumberRounded";
-import DashboardCustomizeRoundedIcon from "@mui/icons-material/DashboardCustomizeRounded";
-import HomeRepairServiceRoundedIcon from "@mui/icons-material/HomeRepairServiceRounded";
-import LocalOfferRoundedIcon from "@mui/icons-material/LocalOfferRounded";
-import AccountBalanceWalletRoundedIcon from "@mui/icons-material/AccountBalanceWalletRounded";
-import AssignmentReturnRoundedIcon from "@mui/icons-material/AssignmentReturnRounded";
-import type { ReactNode } from "react";
+import { adminMenuGroups, isAdminNavItemActive } from "../adminNavigation";
 
-type NavItem = { label: string; path: string; icon: ReactNode };
-type NavGroup = { title: string; items: NavItem[] };
+type AdminDrawerListProps = {
+  pendingSellersCount?: number;
+};
 
-const menuGroups: NavGroup[] = [
-  {
-    title: "Commerce",
-    items: [
-      { label: "Users & Sellers", path: "/admin/users?tab=sellers", icon: <StorefrontRoundedIcon sx={{ fontSize: 16 }} /> },
-      { label: "Customers", path: "/admin/users?tab=customers", icon: <GroupRoundedIcon sx={{ fontSize: 16 }} /> },
-      { label: "Coupons", path: "/admin/coupon", icon: <ConfirmationNumberRoundedIcon sx={{ fontSize: 16 }} /> },
-      { label: "Create Coupon", path: "/admin/add-coupon", icon: <DashboardCustomizeRoundedIcon sx={{ fontSize: 16 }} /> },
-    ],
-  },
-  {
-    title: "Homepage",
-    items: [
-      { label: "Home Content Studio", path: "/admin/home-content", icon: <HomeRepairServiceRoundedIcon sx={{ fontSize: 16 }} /> },
-      { label: "Daily Discounts", path: "/admin/daily-discounts", icon: <LocalOfferRoundedIcon sx={{ fontSize: 16 }} /> },
-    ],
-  },
-  {
-    title: "Operations",
-    items: [
-      { label: "Settlements", path: "/admin/settlements", icon: <AccountBalanceWalletRoundedIcon sx={{ fontSize: 16 }} /> },
-      { label: "Returns", path: "/admin/returns", icon: <AssignmentReturnRoundedIcon sx={{ fontSize: 16 }} /> },
-    ],
-  },
-];
-
-const AdminDrawerList = () => {
+const AdminDrawerList = ({ pendingSellersCount = 0 }: AdminDrawerListProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
     <aside
       style={{
-        width: 260,
+        width: 258,
         minHeight: "100%",
-        background: "#ffffff",
+        background: "#FFFFFF",
         borderRight: "1px solid #DCE8EC",
         display: "grid",
         gridTemplateRows: "auto 1fr auto",
       }}
     >
-      <div style={{ padding: "18px 16px", borderBottom: "1px solid #E7EFF2" }}>
-        <p style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#64748B", fontWeight: 700 }}>Admin Console</p>
-        <h2 style={{ fontSize: "1.3rem", marginTop: 4 }}>Shopzy Control</h2>
-        <p style={{ marginTop: 6, fontSize: 12, color: "#64748B" }}>Unified operations and minimal home-content controls</p>
+      <div style={{ padding: "18px 16px", borderBottom: "1px solid #E7EFF2", display: "grid", gap: 10 }}>
+        <div>
+          <p style={{ fontSize: 11, letterSpacing: "0.12em", textTransform: "uppercase", color: "#64748B", fontWeight: 700 }}>
+            Admin Console
+          </p>
+          <h2 style={{ fontSize: "1.25rem", marginTop: 4, color: "#0F172A" }}>Shopzy Admin</h2>
+        </div>
+
+        {pendingSellersCount > 0 && (
+          <button
+            onClick={() => navigate("/admin/users?tab=sellers&status=PENDING_VERIFICATION")}
+            style={{
+              border: "1px solid #F6D38D",
+              borderRadius: 14,
+              background: "#FFF8E8",
+              padding: "10px 12px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              gap: 12,
+              cursor: "pointer",
+            }}
+          >
+            <span style={{ fontSize: 12, fontWeight: 800, color: "#92400E" }}>Pending sellers</span>
+            <span
+              style={{
+                minWidth: 28,
+                height: 28,
+                padding: "0 8px",
+                borderRadius: 999,
+                background: "#FFFFFF",
+                border: "1px solid #F2D08A",
+                color: "#B45309",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: 12,
+                fontWeight: 900,
+              }}
+            >
+              {pendingSellersCount > 99 ? "99+" : pendingSellersCount}
+            </span>
+          </button>
+        )}
       </div>
 
-      <nav style={{ padding: 10, display: "grid", gap: 12, alignContent: "start", overflowY: "auto" }}>
-        {menuGroups.map((group) => (
-          <div key={group.title} style={{ display: "grid", gap: 5 }}>
+      <nav style={{ padding: 12, display: "grid", gap: 12, alignContent: "start", overflowY: "auto" }}>
+        {adminMenuGroups.map((group) => (
+          <div key={group.title} style={{ display: "grid", gap: 6 }}>
             <p
               style={{
-                margin: "2px 8px 1px",
+                margin: "2px 6px 0",
                 fontSize: 10,
                 letterSpacing: "0.12em",
                 textTransform: "uppercase",
@@ -75,47 +82,34 @@ const AdminDrawerList = () => {
               {group.title}
             </p>
 
-            {group.items.map(({ label, path, icon }) => {
-              const [cleanPath] = path.split("?");
-              const queryString = path.includes("?") ? path.split("?")[1] : "";
-              const expectedParams = new URLSearchParams(queryString);
-              const currentParams = new URLSearchParams(location.search);
-              const isRoot = cleanPath === "/admin";
-              const queryMatches =
-                !queryString ||
-                Array.from(expectedParams.entries()).every(
-                  ([key, value]) => currentParams.get(key) === value
-                );
-              const active = isRoot
-                ? location.pathname === "/admin" || location.pathname === "/admin/"
-                : (location.pathname === cleanPath || location.pathname.startsWith(`${cleanPath}/`)) &&
-                  queryMatches;
+            {group.items.map((item) => {
+              const active = isAdminNavItemActive(location, item);
+              const badgeValue = item.badgeKey === "pendingSellers" ? pendingSellersCount : 0;
 
               return (
                 <button
-                  key={path}
-                  onClick={() => navigate(path)}
+                  key={item.path}
+                  onClick={() => navigate(item.path)}
                   style={{
                     border: "1px solid",
-                    borderColor: active ? "#6FB7B0" : "transparent",
-                    background: active ? "#EAF7F5" : "transparent",
+                    borderColor: active ? "#6FB7B0" : "#E7EFF2",
+                    background: active ? "#EAF7F5" : "#FFFFFF",
                     color: active ? "#0F766E" : "#334155",
-                    borderRadius: 11,
+                    borderRadius: 14,
                     textAlign: "left",
-                    padding: "9px 10px",
-                    fontSize: "0.84rem",
-                    fontWeight: 700,
+                    padding: "10px 12px",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
-                    gap: 8,
+                    gap: 10,
+                    boxShadow: active ? "0 8px 24px rgba(15, 118, 110, 0.08)" : "none",
                   }}
                 >
                   <span
                     style={{
-                      width: 26,
-                      height: 26,
-                      borderRadius: 7,
+                      width: 30,
+                      height: 30,
+                      borderRadius: 9,
                       display: "inline-flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -124,9 +118,36 @@ const AdminDrawerList = () => {
                       flexShrink: 0,
                     }}
                   >
-                    {icon}
+                    {item.icon}
                   </span>
-                  {label}
+
+                  <span style={{ display: "grid", gap: 2, minWidth: 0, flex: 1 }}>
+                    <span style={{ fontSize: "0.87rem", fontWeight: 800, color: active ? "#0F766E" : "#0F172A" }}>
+                      {item.label}
+                    </span>
+                  </span>
+
+                  {badgeValue > 0 && (
+                    <span
+                      style={{
+                        minWidth: 24,
+                        height: 24,
+                        padding: "0 7px",
+                        borderRadius: 999,
+                        background: "#FFF4D6",
+                        color: "#B45309",
+                        border: "1px solid #F6D38D",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: 11,
+                        fontWeight: 900,
+                        flexShrink: 0,
+                      }}
+                    >
+                      {badgeValue > 99 ? "99+" : badgeValue}
+                    </span>
+                  )}
                 </button>
               );
             })}

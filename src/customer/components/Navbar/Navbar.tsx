@@ -5,8 +5,8 @@ import FavoriteBorderRoundedIcon from "@mui/icons-material/FavoriteBorderRounded
 import ShoppingBagOutlinedIcon from "@mui/icons-material/ShoppingBagOutlined";
 import PersonOutlineRoundedIcon from "@mui/icons-material/PersonOutlineRounded";
 import SellRoundedIcon from "@mui/icons-material/SellRounded";
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { mainCategory } from "../../../data/category/mainCategory";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { searchProduct } from "../../../store/customer/ProductSlice";
@@ -18,6 +18,7 @@ const Navbar = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useAppDispatch();
   const { cart, user, sellers } = useAppSelector((store) => store);
 
@@ -30,12 +31,24 @@ const Navbar = () => {
     [user.user?.fullName]
   );
 
+  useEffect(() => {
+    if (location.pathname !== "/search-products") return;
+    const params = new URLSearchParams(location.search);
+    const queryFromUrl = params.get("query") ?? "";
+    setSearchQuery(queryFromUrl);
+  }, [location.pathname, location.search]);
+
   const handleSearch = () => {
     const query = searchQuery.trim();
     if (!query) return;
     dispatch(searchProduct(query));
     navigate(`/search-products?query=${encodeURIComponent(query)}`);
     setShowMobileSearch(false);
+  };
+
+  const handleSearchSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    handleSearch();
   };
 
   const cartCount = cart.cart?.cartItems?.length || 0;
@@ -66,18 +79,17 @@ const Navbar = () => {
         </button>
 
         {!isMobile && (
-          <div className="nav-search">
+          <form className="nav-search" onSubmit={handleSearchSubmit}>
             <SearchRoundedIcon sx={{ color: "#64748B", fontSize: 20 }} />
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Search products, brands, categories"
             />
-            <button onClick={handleSearch} aria-label="search">
+            <button type="submit" aria-label="search">
               <SearchRoundedIcon sx={{ fontSize: 20 }} />
             </button>
-          </div>
+          </form>
         )}
 
         <div className="nav-actions">
@@ -111,18 +123,17 @@ const Navbar = () => {
 
       {isMobile && showMobileSearch && (
         <div className="nav-mobile-search">
-          <div className="nav-search">
+          <form className="nav-search" onSubmit={handleSearchSubmit}>
             <SearchRoundedIcon sx={{ color: "#64748B", fontSize: 20 }} />
             <input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Search products"
             />
-            <button onClick={handleSearch} aria-label="search mobile submit">
+            <button type="submit" aria-label="search mobile submit">
               <SearchRoundedIcon sx={{ fontSize: 20 }} />
             </button>
-          </div>
+          </form>
         </div>
       )}
 

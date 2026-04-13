@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Box, LinearProgress, MenuItem, TextField } from "@mui/material";
+import AccountBalanceWalletRoundedIcon from "@mui/icons-material/AccountBalanceWalletRounded";
+import ReceiptLongRoundedIcon from "@mui/icons-material/ReceiptLongRounded";
+import AutorenewRoundedIcon from "@mui/icons-material/AutorenewRounded";
+import ErrorOutlineRoundedIcon from "@mui/icons-material/ErrorOutlineRounded";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import {
   fetchSettlementSummary,
@@ -9,16 +13,13 @@ import {
 import type { SettlementStatus } from "../../../types/settlementTypes";
 import SettlementTable from "./SettlementTable";
 import { getSellerToken } from "../../../utils/authToken";
-
-const C = {
-  text: "#0F1111",
-  mid: "#4B5563",
-  dim: "#6B7280",
-  border: "#E5E7EB",
-  card: "#FFFFFF",
-  bg: "#F5F6F8",
-  accent: "#F59E0B",
-};
+import {
+  SellerMetricCard,
+  SellerPageIntro,
+  SellerSection,
+  formatSellerCurrency,
+  sellerInputSx,
+} from "../../theme/sellerUi";
 
 const statusOptions: (SettlementStatus | "ALL")[] = [
   "ALL",
@@ -31,54 +32,23 @@ const statusOptions: (SettlementStatus | "ALL")[] = [
   "CANCELLED",
 ];
 
-const SummaryCard = ({
-  label,
-  value,
-  hint,
-  tone = "default",
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  tone?: "default" | "success" | "danger" | "muted";
-}) => {
-  const toneColor =
-    tone === "success" ? "#0F9D58" : tone === "danger" ? "#CC0C39" : tone === "muted" ? "#6B7280" : C.text;
-  return (
-    <div
-      style={{
-        background: C.card,
-        border: `1px solid ${C.border}`,
-        borderRadius: 14,
-        padding: "16px 18px",
-        boxShadow: "0 8px 24px rgba(0,0,0,0.04)",
-        minHeight: 120,
-      }}
-    >
-      <div style={{ fontSize: 12, fontWeight: 700, color: C.dim, letterSpacing: "0.06em" }}>{label}</div>
-      <div style={{ fontSize: 26, fontWeight: 800, color: toneColor, marginTop: 6 }}>{value}</div>
-      {hint && <div style={{ fontSize: 12, color: C.mid, marginTop: 6 }}>{hint}</div>}
-    </div>
-  );
-};
-
 const SettlementPage: React.FC = () => {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const { settlement } = useAppSelector((s) => s);
+  const { settlement } = useAppSelector((state) => state);
   const jwt = useMemo(() => getSellerToken(), []);
-
   const [status, setStatus] = useState<SettlementStatus | "ALL">("ALL");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
 
   const refresh = () => {
     if (!jwt) return;
+
     const query = {
       status: status === "ALL" ? undefined : status,
       fromDate: fromDate || undefined,
       toDate: toDate || undefined,
     };
+
     dispatch(setSettlementFilters(query));
     dispatch(fetchSettlements({ jwt, query }));
     dispatch(fetchSettlementSummary({ jwt, query }));
@@ -90,160 +60,109 @@ const SettlementPage: React.FC = () => {
   }, [status, fromDate, toDate]);
 
   const summary = settlement.summary;
-  const formatCurrency = (v?: number) =>
-    `₹${(v ?? 0).toLocaleString("en-IN", { minimumFractionDigits: 2 })}`;
 
   return (
-    <div style={{ padding: 16, background: C.bg, minHeight: "100vh" }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: C.text }}>Settlements</h1>
-          <p style={{ margin: "4px 0 0", color: C.mid }}>
-            Track payouts, fees, and statuses for your completed orders.
-          </p>
-        </div>
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-          <button
-            onClick={() => navigate("/seller/payment")}
-            style={{
-              border: `1px solid ${C.border}`,
-              background: C.card,
-              borderRadius: 10,
-              padding: "9px 14px",
-              cursor: "pointer",
-              fontWeight: 600,
-              color: C.text,
-            }}
-          >
-            Back to Payments
-          </button>
-          <button
-            onClick={refresh}
-            style={{
-              border: "none",
-              background: C.accent,
-              color: "#111",
-              borderRadius: 10,
-              padding: "9px 16px",
-              fontWeight: 700,
-              cursor: "pointer",
-            }}
-          >
-            Refresh
-          </button>
-        </div>
-      </div>
+    <Box>
+      <SellerPageIntro
+        eyebrow="Finance"
+        title="Settlement ledger"
+        description="Review payout batches, deductions, and status changes with cleaner filters and a simpler payout table."
+      />
 
-      {/* Filters */}
-      <div
-        style={{
-          marginTop: 18,
-          padding: 14,
-          borderRadius: 12,
-          background: C.card,
-          border: `1px solid ${C.border}`,
+      <Box
+        sx={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: 12,
-          alignItems: "end",
+          gap: 2,
+          gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))", xl: "repeat(4, minmax(0, 1fr))" },
         }}
       >
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim, letterSpacing: "0.04em" }}>Status</label>
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value as SettlementStatus | "ALL")}
-            style={{
-              padding: "9px 10px",
-              borderRadius: 10,
-              border: `1px solid ${C.border}`,
-              fontSize: 14,
-            }}
-          >
-            {statusOptions.map((s) => (
-              <option key={s} value={s}>
-                {s === "ALL" ? "All statuses" : s.toLowerCase()}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim, letterSpacing: "0.04em" }}>From</label>
-          <input
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-            style={{
-              padding: "9px 10px",
-              borderRadius: 10,
-              border: `1px solid ${C.border}`,
-              fontSize: 14,
-            }}
-          />
-        </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim, letterSpacing: "0.04em" }}>To</label>
-          <input
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-            min={fromDate || undefined}
-            style={{
-              padding: "9px 10px",
-              borderRadius: 10,
-              border: `1px solid ${C.border}`,
-              fontSize: 14,
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Summary */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-          gap: 14,
-          marginTop: 16,
-        }}
-      >
-        <SummaryCard
-          label="Net Payable"
-          value={formatCurrency(summary?.totalNetAmount)}
-          hint="After commissions, platform fees, and taxes"
-          tone="success"
+        <SellerMetricCard
+          label="Net payable"
+          value={formatSellerCurrency(summary?.totalNetAmount)}
+          helper="After platform deductions and tax"
+          tone="accent"
+          icon={<AccountBalanceWalletRoundedIcon />}
         />
-        <SummaryCard
-          label="Gross Volume"
-          value={formatCurrency(summary?.totalGrossAmount)}
-          hint={formatCurrency(summary?.totalCommission) + " commission, " + formatCurrency(summary?.totalPlatformFee) + " platform"}
+        <SellerMetricCard
+          label="Gross volume"
+          value={formatSellerCurrency(summary?.totalGrossAmount)}
+          helper={`${formatSellerCurrency(summary?.totalCommission)} commission`}
+          tone="info"
+          icon={<ReceiptLongRoundedIcon />}
         />
-        <SummaryCard
-          label="Pending Settlements"
-          value={`${summary?.pendingCount ?? 0}`}
-          hint="Awaiting processing"
-          tone="muted"
+        <SellerMetricCard
+          label="Pending"
+          value={String(summary?.pendingCount ?? 0)}
+          helper="Settlements waiting for processing"
+          tone="warning"
+          icon={<AutorenewRoundedIcon />}
         />
-        <SummaryCard
-          label="Failed / Cancelled"
-          value={`${(summary?.failedCount ?? 0) + (summary?.cancelledCount ?? 0)}`}
-          hint="Requires follow-up"
+        <SellerMetricCard
+          label="Failed / cancelled"
+          value={String((summary?.failedCount ?? 0) + (summary?.cancelledCount ?? 0))}
+          helper="Records that may need follow-up"
           tone="danger"
+          icon={<ErrorOutlineRoundedIcon />}
         />
-      </div>
+      </Box>
 
-      {/* Table */}
-      <div style={{ marginTop: 18 }}>
-        <SettlementTable
-          items={settlement.items}
-          loading={settlement.loading}
-          error={settlement.error}
-          onRetry={refresh}
-        />
-      </div>
-    </div>
+      <Box sx={{ mt: 2 }}>
+        <SellerSection
+          title="Settlement filters"
+          description="Narrow the ledger by status and settlement date."
+        >
+          {settlement.loading ? <LinearProgress sx={{ mb: 2 }} /> : null}
+
+          <Box
+            sx={{
+              display: "grid",
+              gap: 1.5,
+              gridTemplateColumns: { xs: "1fr", sm: "repeat(3, minmax(0, 1fr))" },
+            }}
+          >
+            <TextField
+              select
+              size="small"
+              label="Status"
+              value={status}
+              onChange={(event) => setStatus(event.target.value as SettlementStatus | "ALL")}
+              sx={sellerInputSx}
+            >
+              {statusOptions.map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option === "ALL" ? "All statuses" : option}
+                </MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              size="small"
+              type="date"
+              label="From"
+              value={fromDate}
+              onChange={(event) => setFromDate(event.target.value)}
+              InputLabelProps={{ shrink: true }}
+              sx={sellerInputSx}
+            />
+            <TextField
+              size="small"
+              type="date"
+              label="To"
+              value={toDate}
+              onChange={(event) => setToDate(event.target.value)}
+              InputLabelProps={{ shrink: true }}
+              inputProps={{ min: fromDate || undefined }}
+              sx={sellerInputSx}
+            />
+          </Box>
+        </SellerSection>
+      </Box>
+
+      <Box sx={{ mt: 2 }}>
+        <SellerSection title="Payout records" description="Recent settlements with gross, deduction, and net payout visibility.">
+          <SettlementTable items={settlement.items} loading={settlement.loading} error={settlement.error} onRetry={refresh} />
+        </SellerSection>
+      </Box>
+    </Box>
   );
 };
 

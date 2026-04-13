@@ -1,25 +1,26 @@
-import React from "react";
+import { Box, Typography } from "@mui/material";
 
 interface ProfileFieldCardProps {
-  keys:   string;
+  keys: string;
   value?: string;
 }
 
 const ProfileFieldCard = ({ keys, value }: ProfileFieldCardProps) => (
-  <div style={{
-    display:      "grid",
-    gridTemplateColumns: "180px 1fr",
-    alignItems:   "center",
-    padding:      "13px 18px",
-    borderBottom: "1px solid #EAEDEE",
-    background:   "#FFFFFF",
-    gap:          12,
-  }}>
-    <span style={{ fontSize: 13, color: "#6B7280", fontWeight: 600 }}>{keys}</span>
-    <span style={{ fontSize: 14, color: "#0F1111", fontWeight: 500 }}>
-      {value ?? <span style={{ color: "#B0B7BF", fontStyle: "italic" }}>Not provided</span>}
-    </span>
-  </div>
+  <Box
+    sx={{
+      display: "grid",
+      gridTemplateColumns: { xs: "1fr", sm: "180px 1fr" },
+      alignItems: "center",
+      gap: 1.5,
+      py: 1.4,
+      borderBottom: "1px solid #E8EFF2",
+    }}
+  >
+    <Typography sx={{ fontSize: ".84rem", color: "#64748B", fontWeight: 700 }}>{keys}</Typography>
+    <Typography sx={{ fontSize: ".95rem", color: "#0F172A", fontWeight: 700 }}>
+      {value || <span style={{ color: "#94A3B8", fontStyle: "italic" }}>Not provided</span>}
+    </Typography>
+  </Box>
 );
 
 export default ProfileFieldCard;

@@ -1,10 +1,41 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  Box,
+  LinearProgress,
+  MenuItem,
+  Select,
+  Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
+} from "@mui/material";
+import ReplayRoundedIcon from "@mui/icons-material/ReplayRounded";
+import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
+import PendingActionsRoundedIcon from "@mui/icons-material/PendingActionsRounded";
+import PaymentsRoundedIcon from "@mui/icons-material/PaymentsRounded";
 import { clearReturnError, fetchReturnRequests, updateReturnStatus } from "../../../store/customer/ReturnSlice";
 import { fetchSellerOrders } from "../../../store/seller/sellerOrderSlice";
 import { fetchSellerReport } from "../../../store/seller/sellerSlice";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import type { ReturnStatus } from "../../../types/orderTypes";
 import { getSellerToken } from "../../../utils/authToken";
+import {
+  SellerEmptyState,
+  SellerMetricCard,
+  SellerPageIntro,
+  SellerSection,
+  SellerStatusChip,
+  formatSellerDateTime,
+  humanizeSellerValue,
+  sellerInputSx,
+  sellerTableCellSx,
+  sellerTableHeadCellSx,
+} from "../../theme/sellerUi";
 
 const ALL_STATUSES: ReturnStatus[] = [
   "REQUESTED",
@@ -16,22 +47,17 @@ const ALL_STATUSES: ReturnStatus[] = [
   "REFUNDED",
 ];
 
-const formatDateTime = (value?: string) => {
-  if (!value) return "N/A";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+const toneForStatus = (status?: string) => {
+  if (status === "REFUNDED") return "success" as const;
+  if (status === "REJECTED") return "danger" as const;
+  if (status === "REQUESTED" || status === "PICKUP_SCHEDULED") return "warning" as const;
+  if (status === "APPROVED" || status === "RECEIVED" || status === "REFUND_INITIATED") return "info" as const;
+  return "default" as const;
 };
 
 const SellerReturns: React.FC = () => {
   const dispatch = useAppDispatch();
-  const { returns } = useAppSelector((s) => s);
+  const { returns } = useAppSelector((state) => state);
   const jwt = useMemo(() => getSellerToken(), []);
   const [statusFilter, setStatusFilter] = useState<ReturnStatus | "ALL">("ALL");
   const [query, setQuery] = useState("");
@@ -47,8 +73,9 @@ const SellerReturns: React.FC = () => {
     if (!jwt) return;
     syncSellerData();
     const refreshOnFocus = () => syncSellerData();
-    window.addEventListener("focus", refreshOnFocus);
     const intervalId = window.setInterval(syncSellerData, 30000);
+    window.addEventListener("focus", refreshOnFocus);
+
     return () => {
       window.clearInterval(intervalId);
       window.removeEventListener("focus", refreshOnFocus);
@@ -60,166 +87,180 @@ const SellerReturns: React.FC = () => {
     return returns.requests.filter((item) => {
       if (statusFilter !== "ALL" && item.status !== statusFilter) return false;
       if (!query.trim()) return true;
+
       const q = query.toLowerCase();
       return [item.id, item.orderId, item.orderItemId, item.reason, item.description, item.status]
-        .map((v) => String(v ?? "").toLowerCase())
-        .some((v) => v.includes(q));
+        .map((value) => String(value ?? "").toLowerCase())
+        .some((value) => value.includes(q));
     });
-  }, [returns.requests, statusFilter, query]);
+  }, [query, returns.requests, statusFilter]);
 
-  const handleStatusUpdate = async (id: number | undefined, current: ReturnStatus | undefined, next: ReturnStatus) => {
-    if (!id || !jwt || !next || current === next) return;
+  const handleStatusUpdate = async (
+    id: number | undefined,
+    current: ReturnStatus | undefined,
+    next: ReturnStatus
+  ) => {
+    if (!id || !jwt || current === next) return;
+
     try {
       await dispatch(updateReturnStatus({ jwt, id, status: next })).unwrap();
       syncSellerData();
     } catch {
-      // Handled by return slice error state.
+      // Error is handled in slice state.
     }
   };
 
+  const requested = returns.requests.filter((item) => item.status === "REQUESTED").length;
+  const approved = returns.requests.filter((item) => item.status === "APPROVED" || item.status === "PICKUP_SCHEDULED").length;
+  const refunded = returns.requests.filter((item) => item.status === "REFUNDED").length;
+  const refundInProgress = returns.requests.filter((item) => item.status === "RECEIVED" || item.status === "REFUND_INITIATED").length;
+
   if (!jwt) {
-    return <div style={{ padding: 20 }}>Seller token not found. Please login again.</div>;
+    return (
+      <SellerEmptyState title="Seller session missing" description="Please log in again to review and manage return requests." />
+    );
   }
 
   return (
-    <div style={{ padding: 8 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-        <div>
-          <h2 style={{ margin: 0, fontSize: 24, color: "#111827" }}>Returns</h2>
-          <p style={{ margin: "6px 0 0", color: "#4B5563", fontSize: 13 }}>
-            Track buyer requests and update return progress.
-          </p>
-        </div>
-        <button
-          onClick={syncSellerData}
-          style={{
-            border: "none",
-            background: "#0F766E",
-            color: "#111827",
-            borderRadius: 10,
-            padding: "10px 14px",
-            fontWeight: 700,
-            cursor: "pointer",
-          }}
-        >
-          Refresh
-        </button>
-      </div>
+    <Box>
+      <SellerPageIntro
+        eyebrow="After-sales"
+        title="Returns queue"
+        description="Track buyer return requests, decide next status changes, and keep refund progress visible without digging through raw records."
+      />
 
-      <div
-        style={{
-          marginTop: 14,
-          border: "1px solid #E5E7EB",
-          borderRadius: 12,
-          background: "#fff",
-          padding: 12,
+      <Box
+        sx={{
           display: "grid",
-          gridTemplateColumns: "220px 1fr",
-          gap: 12,
+          gap: 2,
+          gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))", xl: "repeat(4, minmax(0, 1fr))" },
         }}
       >
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as ReturnStatus | "ALL")}
-          style={{ border: "1px solid #D1D5DB", borderRadius: 10, padding: "10px 12px" }}
-        >
-          <option value="ALL">All statuses</option>
-          {ALL_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              {status}
-            </option>
-          ))}
-        </select>
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by return/order/reason/status"
-          style={{ border: "1px solid #D1D5DB", borderRadius: 10, padding: "10px 12px" }}
-        />
-      </div>
+        <SellerMetricCard label="All requests" value={returns.requests.length.toLocaleString("en-IN")} helper="Return records in the seller workspace" tone="accent" icon={<ReplayRoundedIcon />} />
+        <SellerMetricCard label="Awaiting review" value={requested.toLocaleString("en-IN")} helper="New requests still in requested state" tone="warning" icon={<PendingActionsRoundedIcon />} />
+        <SellerMetricCard label="Approved / pickup" value={approved.toLocaleString("en-IN")} helper="Items already accepted into the return flow" tone="info" icon={<CheckCircleRoundedIcon />} />
+        <SellerMetricCard label="Refund progress" value={`${refundInProgress} / ${refunded}`} helper="In progress versus fully refunded" tone="success" icon={<PaymentsRoundedIcon />} />
+      </Box>
 
-      {returns.error && (
-        <div
-          style={{
-            marginTop: 12,
-            background: "#FEF2F2",
-            border: "1px solid #FECACA",
-            color: "#991B1B",
-            borderRadius: 10,
-            padding: "10px 12px",
-            fontSize: 13,
-            fontWeight: 600,
-          }}
-        >
-          {returns.error}
-        </div>
-      )}
+      <Box sx={{ mt: 2 }}>
+        <SellerSection title="Return request table" description="Filter by status and search by return id, order id, reason, or notes." padded={false}>
+          {returns.loading ? <LinearProgress /> : null}
 
-      <div style={{ marginTop: 14, border: "1px solid #E5E7EB", borderRadius: 12, overflow: "hidden", background: "#fff" }}>
-        <div style={{ overflowX: "auto" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 1080 }}>
-            <thead>
-              <tr style={{ background: "#111827", color: "#fff" }}>
-                {["Return", "Order", "Reason", "Qty", "Status", "Created", "Update"].map((h) => (
-                  <th key={h} style={{ textAlign: "left", padding: "11px 12px", fontSize: 12, letterSpacing: "0.03em" }}>
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {returns.loading ? (
-                <tr>
-                  <td colSpan={7} style={{ textAlign: "center", padding: "26px 0", color: "#6B7280" }}>
-                    Loading returns...
-                  </td>
-                </tr>
-              ) : rows.length === 0 ? (
-                <tr>
-                  <td colSpan={7} style={{ textAlign: "center", padding: "26px 0", color: "#6B7280" }}>
-                    No return requests found.
-                  </td>
-                </tr>
-              ) : (
-                rows.map((item) => (
-                  <tr key={item.id}>
-                    <td style={{ padding: "10px 12px", borderBottom: "1px solid #E5E7EB", fontSize: 13 }}>#{item.id}</td>
-                    <td style={{ padding: "10px 12px", borderBottom: "1px solid #E5E7EB", fontSize: 13 }}>
-                      <div>Order #{item.orderId}</div>
-                      <div style={{ color: "#6B7280", marginTop: 4 }}>Item #{item.orderItemId}</div>
-                    </td>
-                    <td style={{ padding: "10px 12px", borderBottom: "1px solid #E5E7EB", fontSize: 13 }}>
-                      <div style={{ fontWeight: 700 }}>{item.reason}</div>
-                      {item.description && <div style={{ color: "#6B7280", marginTop: 4 }}>{item.description}</div>}
-                    </td>
-                    <td style={{ padding: "10px 12px", borderBottom: "1px solid #E5E7EB", fontSize: 13 }}>{item.quantity}</td>
-                    <td style={{ padding: "10px 12px", borderBottom: "1px solid #E5E7EB", fontSize: 13 }}>
-                      {item.status ?? "N/A"}
-                    </td>
-                    <td style={{ padding: "10px 12px", borderBottom: "1px solid #E5E7EB", fontSize: 13 }}>
-                      {formatDateTime(item.createdAt)}
-                    </td>
-                    <td style={{ padding: "10px 12px", borderBottom: "1px solid #E5E7EB", fontSize: 13 }}>
-                      <select
-                        value={item.status ?? "REQUESTED"}
-                        onChange={(e) => handleStatusUpdate(item.id, item.status, e.target.value as ReturnStatus)}
-                        style={{ border: "1px solid #D1D5DB", borderRadius: 8, padding: "8px 10px", minWidth: 170 }}
-                      >
-                        {ALL_STATUSES.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+          <Stack direction={{ xs: "column", lg: "row" }} spacing={1.5} sx={{ px: 2.4, py: 2, borderBottom: "1px solid #DCE8EC" }}>
+            <TextField
+              select
+              size="small"
+              value={statusFilter}
+              onChange={(event) => setStatusFilter(event.target.value as ReturnStatus | "ALL")}
+              sx={{ ...sellerInputSx, minWidth: 190 }}
+            >
+              <MenuItem value="ALL">All statuses</MenuItem>
+              {ALL_STATUSES.map((status) => (
+                <MenuItem key={status} value={status}>
+                  {humanizeSellerValue(status)}
+                </MenuItem>
+              ))}
+            </TextField>
+
+            <TextField
+              size="small"
+              placeholder="Search returns, orders, reasons, or status"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              sx={{ ...sellerInputSx, flex: 1, minWidth: 240 }}
+            />
+          </Stack>
+
+          {returns.error ? (
+            <Box sx={{ px: 2.4, pt: 2 }}>
+              <Typography
+                sx={{
+                  borderRadius: "10px",
+                  border: "1px solid rgba(190, 24, 93, 0.18)",
+                  bgcolor: "rgba(190, 24, 93, 0.08)",
+                  color: "#BE123C",
+                  px: 1.5,
+                  py: 1.1,
+                  fontWeight: 700,
+                }}
+              >
+                {returns.error}
+              </Typography>
+            </Box>
+          ) : null}
+
+          {!rows.length && !returns.loading ? (
+            <Box sx={{ p: 2.4 }}>
+              <SellerEmptyState
+                title="No return requests in this view"
+                description="Broaden the filters or wait for new return activity to sync."
+              />
+            </Box>
+          ) : (
+            <TableContainer>
+              <Table sx={{ minWidth: 1040 }}>
+                <TableHead>
+                  <TableRow>
+                    <TableCell sx={sellerTableHeadCellSx}>Return</TableCell>
+                    <TableCell sx={sellerTableHeadCellSx}>Order</TableCell>
+                    <TableCell sx={sellerTableHeadCellSx}>Reason</TableCell>
+                    <TableCell sx={sellerTableHeadCellSx}>Status</TableCell>
+                    <TableCell sx={sellerTableHeadCellSx}>Created</TableCell>
+                    <TableCell sx={sellerTableHeadCellSx}>Update</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((item) => (
+                    <TableRow key={item.id} hover>
+                      <TableCell sx={sellerTableCellSx}>
+                        <Typography sx={{ fontWeight: 800 }}>#{item.id}</Typography>
+                        <Typography sx={{ fontSize: ".8rem", color: "#64748B", mt: 0.4 }}>
+                          Qty {item.quantity}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={sellerTableCellSx}>
+                        <Typography sx={{ fontWeight: 800 }}>Order #{item.orderId}</Typography>
+                        <Typography sx={{ fontSize: ".8rem", color: "#64748B", mt: 0.4 }}>
+                          Item #{item.orderItemId}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={sellerTableCellSx}>
+                        <Typography sx={{ fontWeight: 800 }}>{item.reason}</Typography>
+                        {item.description ? (
+                          <Typography sx={{ fontSize: ".8rem", color: "#64748B", mt: 0.4 }}>{item.description}</Typography>
+                        ) : null}
+                      </TableCell>
+                      <TableCell sx={sellerTableCellSx}>
+                        <SellerStatusChip label={humanizeSellerValue(item.status)} tone={toneForStatus(item.status)} small />
+                      </TableCell>
+                      <TableCell sx={sellerTableCellSx}>
+                        <Typography sx={{ fontWeight: 700 }}>{formatSellerDateTime(item.createdAt)}</Typography>
+                      </TableCell>
+                      <TableCell sx={sellerTableCellSx}>
+                        <Select
+                          size="small"
+                          value={item.status ?? "REQUESTED"}
+                          onChange={(event) =>
+                            handleStatusUpdate(item.id, item.status, event.target.value as ReturnStatus)
+                          }
+                          sx={{ ...sellerInputSx, minWidth: 180 }}
+                        >
+                          {ALL_STATUSES.map((status) => (
+                            <MenuItem key={status} value={status}>
+                              {humanizeSellerValue(status)}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
+        </SellerSection>
+      </Box>
+    </Box>
   );
 };
 

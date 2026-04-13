@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box, Paper, Tab, Tabs, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Typography, InputBase
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import { api } from "../../../config/Api";
+import { adminApiPath, api } from "../../../config/Api";
 import type { User } from "../../../types/userTypes";
 import { getAdminToken } from "../../../utils/authToken";
 import { useSearchParams } from "react-router-dom";
@@ -21,14 +21,19 @@ const UserManagement: React.FC = () => {
   const [query, setQuery] = useState("");
 
   const fetchCustomers = async () => {
-    const res = await api.get<User[]>("/admin/users", {
-      headers: { Authorization: `Bearer ${getAdminToken()}` },
-    });
-    setCustomers(res.data);
+    try {
+      const res = await api.get<User[]>(adminApiPath("/users"), {
+        headers: { Authorization: `Bearer ${getAdminToken()}` },
+      });
+      setCustomers(Array.isArray(res.data) ? res.data : []);
+    } catch (error) {
+      console.error("Failed to fetch customers", error);
+      setCustomers([]);
+    }
   };
 
   useEffect(() => {
-    fetchCustomers();
+    void fetchCustomers();
   }, []);
 
   useEffect(() => {
@@ -43,9 +48,18 @@ const UserManagement: React.FC = () => {
     setSearchParams(nextParams, { replace: true });
   }, [searchParams, setSearchParams]);
 
-  const filteredCustomers = customers.filter((u) =>
-    [u.fullName, u.email, u.mobile].some((f) => f?.toLowerCase().includes(query.toLowerCase()))
-  );
+  const filteredCustomers = useMemo(() => {
+    const normalizedQuery = query.trim().toLowerCase();
+    if (!normalizedQuery) {
+      return customers;
+    }
+
+    return customers.filter((u) =>
+      [u.fullName, u.email, u.mobile]
+        .filter((field): field is string => Boolean(field))
+        .some((field) => field.toLowerCase().includes(normalizedQuery))
+    );
+  }, [customers, query]);
 
   return (
     <Box sx={{ p: 2, display: "grid", gap: 2 }}>
@@ -94,7 +108,7 @@ const UserManagement: React.FC = () => {
             </TableHead>
             <TableBody>
               {filteredCustomers.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.id ?? item.email}>
                   <TableCell>{item.fullName}</TableCell>
                   <TableCell>{item.email}</TableCell>
                   <TableCell>{item.mobile}</TableCell>

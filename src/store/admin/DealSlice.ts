@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, type PayloadAction } from "@reduxjs/toolkit";
-import { api } from "../../config/Api";
+import { adminApiPath, api } from "../../config/Api";
 import { getAdminToken } from "../../utils/authToken";
 import type { ApiResponse, DailyDiscount, DailyDiscountState } from "../../types/dealTypes";
 
@@ -11,6 +11,8 @@ const initialState: DailyDiscountState = {
   discountUpdated: false,
 };
 
+const API_URL = adminApiPath("/daily-discounts");
+
 const authHeaders = () => ({
   "Content-Type": "application/json",
   Authorization: `Bearer ${getAdminToken()}`,
@@ -20,7 +22,7 @@ export const createDailyDiscount = createAsyncThunk(
   "dailyDiscount/create",
   async (payload: Partial<DailyDiscount>, { rejectWithValue }) => {
     try {
-      const response = await api.post("/admin/daily-discounts", payload, {
+      const response = await api.post(API_URL, payload, {
         headers: authHeaders(),
       });
       return response.data as DailyDiscount;
@@ -34,7 +36,7 @@ export const getAllDailyDiscounts = createAsyncThunk(
   "dailyDiscount/getAll",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.get("/admin/daily-discounts", {
+      const response = await api.get(API_URL, {
         headers: authHeaders(),
       });
       return response.data as DailyDiscount[];
@@ -51,7 +53,7 @@ export const updateDailyDiscount = createAsyncThunk<
   "dailyDiscount/update",
   async ({ id, payload }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/admin/daily-discounts/${id}`, payload, {
+      const response = await api.patch(`${API_URL}/${id}`, payload, {
         headers: authHeaders(),
       });
       return response.data as DailyDiscount;
@@ -68,7 +70,7 @@ export const updateDailyDiscountStatus = createAsyncThunk<
   "dailyDiscount/updateStatus",
   async ({ id, active }, { rejectWithValue }) => {
     try {
-      const response = await api.patch(`/admin/daily-discounts/${id}/status`, null, {
+      const response = await api.patch(`${API_URL}/${id}/status`, null, {
         params: { active },
         headers: authHeaders(),
       });
@@ -83,7 +85,7 @@ export const deleteDailyDiscount = createAsyncThunk<ApiResponse, number>(
   "dailyDiscount/delete",
   async (id, { rejectWithValue }) => {
     try {
-      const response = await api.delete(`/admin/daily-discounts/${id}`, {
+      const response = await api.delete(`${API_URL}/${id}`, {
         headers: authHeaders(),
       });
       return response.data as ApiResponse;

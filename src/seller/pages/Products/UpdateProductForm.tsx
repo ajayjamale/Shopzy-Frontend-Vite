@@ -1,74 +1,47 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import {
-  TextField, Button, MenuItem, Select, InputLabel,
-  FormControl, FormHelperText, Grid, CircularProgress,
-  IconButton, Snackbar, Alert, Typography, Box, Paper, Divider,
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  MenuItem,
+  Snackbar,
+  Stack,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import AddPhotoAlternateOutlinedIcon from "@mui/icons-material/AddPhotoAlternateOutlined";
-import CloseIcon from "@mui/icons-material/Close";
-import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
-import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import { menLevelTwo } from "../../../data/category/level two/menLevelTwo";
-import { womenLevelTwo } from "../../../data/category/level two/womenLevelTwo";
-import { menLevelThree } from "../../../data/category/level three/menLevelThree";
-import { womenLevelThree } from "../../../data/category/level three/womenLevelThree";
+import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
+import SaveRoundedIcon from "@mui/icons-material/SaveRounded";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
+import SellRoundedIcon from "@mui/icons-material/SellRounded";
+import Inventory2RoundedIcon from "@mui/icons-material/Inventory2Rounded";
 import { colors } from "../../../data/Filter/color";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { updateProduct } from "../../../store/seller/sellerProductSlice";
 import { uploadToCloudinary } from "../../../utils/uploadToCloudnary";
-import { electronicsLevelThree } from "../../../data/category/level three/electronicsLevelThree";
-import { electronicsLevelTwo } from "../../../data/category/level two/electronicsLavelTwo";
-import { furnitureLevelTwo } from "../../../data/category/level two/furnitureLevleTwo";
-import { furnitureLevelThree } from "../../../data/category/level three/furnitureLevelThree";
 import { useParams, useNavigate } from "react-router-dom";
 import { fetchProductById } from "../../../store/customer/ProductSlice";
 import type { Seller } from "../../../types/sellerTypes";
-
-// ─── Design Tokens ────────────────────────────────────────────────────────────
-const UI = {
-  navy: '#0F172A', navyLight: '#232f3e', orange: '#0f766e',
-  blue: '#0E7490', green: '#067d62', red: '#cc0c39',
-  bg: '#F3F7F8', white: '#ffffff', border: '#DCE5E8',
-  borderDark: '#B7C8CE', text: '#0f1111', textMuted: '#64748B',
-  headerBg: '#F4FAFB', linkBlue: '#0E7490',
-};
-
-// ─── Category Maps ────────────────────────────────────────────────────────────
-const categoryTwo: { [key: string]: any[] } = {
-  men: menLevelTwo, women: womenLevelTwo, kids: [],
-  home_furniture: furnitureLevelTwo, beauty: [], electronics: electronicsLevelTwo,
-};
-const categoryThree: { [key: string]: any[] } = {
-  men: menLevelThree, women: womenLevelThree, kids: [],
-  home_furniture: furnitureLevelThree, beauty: [], electronics: electronicsLevelThree,
-};
-
-const validationSchema = Yup.object({
-  title: Yup.string().min(5).required("Title is required"),
-  description: Yup.string().min(10).required("Description is required"),
-  price: Yup.number().positive().required(),
-  discountedPrice: Yup.number().positive().required(),
-  discountPercent: Yup.number().positive().required(),
-  quantity: Yup.number().positive().required(),
-  color: Yup.string().required(),
-  category: Yup.string().required(),
-  sizes: Yup.string().required(),
-});
+import {
+  SellerMetricCard,
+  SellerPageIntro,
+  SellerSection,
+  SellerStatusChip,
+  formatSellerCurrency,
+  sellerInputSx,
+  sellerPrimaryButtonSx,
+  sellerSecondaryButtonSx,
+} from "../../theme/sellerUi";
 
 interface FormValues {
   title: string;
   description: string;
+  brand: string;
   mrpPrice: number;
   sellingPrice: number;
-  // FIX 1: discountPercent was missing from FormValues.
-  // TypeScript infers the formik values type from initialValues.
-  // Without this field declared AND in initialValues, the spread
-  // { ...values, discountPercent } in onSubmit was adding it as an
-  // EXTRA property outside the typed shape — Axios may silently strip
-  // extra keys depending on serialization. Now it is part of the shape.
   discountPercent: number;
   quantity: number;
   color: string;
@@ -81,137 +54,47 @@ interface FormValues {
   in_stock: boolean;
 }
 
-// ─── Styled Components ────────────────────────────────────────────────────────
-
-const PageWrap = styled('div')({
-  background: UI.bg, minHeight: '100vh',
-  fontFamily: "'Helvetica Neue', Arial, sans-serif",
+const validationSchema = Yup.object({
+  title: Yup.string().min(5, "Title should have at least 5 characters").required("Title is required"),
+  description: Yup.string().min(10, "Description should have at least 10 characters").required("Description is required"),
+  brand: Yup.string().min(2, "Brand should have at least 2 characters").required("Brand is required"),
+  mrpPrice: Yup.number().typeError("MRP is required").positive("MRP must be positive").required("MRP is required"),
+  sellingPrice: Yup.number()
+    .typeError("Selling price is required")
+    .positive("Selling price must be positive")
+    .required("Selling price is required"),
+  quantity: Yup.number().typeError("Quantity is required").integer("Quantity must be a whole number").min(1, "Quantity must be at least 1").required("Quantity is required"),
+  color: Yup.string().required("Color is required"),
+  sizes: Yup.string().required("Size is required"),
 });
-
-const TopBar = styled('div')({
-  background: UI.navy, padding: '8px 24px',
-  display: 'flex', alignItems: 'center', gap: 16,
-});
-
-const ContentWrap = styled('div')({
-  maxWidth: '1100px', margin: '0 auto', padding: '20px 24px',
-});
-
-const SectionCard = styled(Paper)({
-  borderRadius: '4px', border: `1px solid ${UI.border}`,
-  boxShadow: '0 1px 2px rgba(0,0,0,0.05)', background: UI.white,
-  marginBottom: '16px', overflow: 'hidden',
-});
-
-const SectionHeader = styled('div')({
-  background: UI.headerBg, padding: '10px 18px',
-  borderBottom: `1px solid ${UI.border}`,
-  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-});
-
-const SectionBody = styled('div')({ padding: '20px 18px' });
-
-const FieldLabel = styled(Typography)({
-  fontSize: '13px', fontWeight: 700, color: UI.text,
-  fontFamily: "'Helvetica Neue', Arial, sans-serif", marginBottom: '4px',
-});
-
-const RequiredStar = styled('span')({ color: UI.red });
-
-const PremiumField = styled(TextField)({
-  '& .MuiOutlinedInput-root': {
-    borderRadius: '3px', fontSize: '13px',
-    fontFamily: "'Helvetica Neue', Arial, sans-serif", background: '#fff',
-    '& fieldset': { borderColor: UI.borderDark },
-    '&:hover fieldset': { borderColor: '#0E7490' },
-    '&.Mui-focused fieldset': { borderColor: '#e77600', borderWidth: '2px', boxShadow: '0 0 0 3px rgba(228,121,17,0.15)' },
-  },
-  '& .MuiInputBase-input': { padding: '8px 10px', fontSize: '13px' },
-  '& .MuiInputLabel-root': { display: 'none' },
-  '& .MuiFormHelperText-root': { fontSize: '12px', color: UI.red, margin: '4px 0 0 0' },
-});
-
-const PremiumSelect = styled(FormControl)({
-  '& .MuiOutlinedInput-root': {
-    borderRadius: '3px', fontSize: '13px',
-    fontFamily: "'Helvetica Neue', Arial, sans-serif", background: '#fff',
-    '& fieldset': { borderColor: UI.borderDark },
-    '&:hover fieldset': { borderColor: '#0E7490' },
-    '&.Mui-focused fieldset': { borderColor: '#e77600', borderWidth: '2px', boxShadow: '0 0 0 3px rgba(228,121,17,0.15)' },
-  },
-  '& .MuiSelect-select': { padding: '8px 10px', fontSize: '13px' },
-  '& .MuiInputLabel-root': { display: 'none' },
-  '& .MuiFormHelperText-root': { fontSize: '12px', color: UI.red, margin: '4px 0 0 0' },
-});
-
-const UploadBox = styled('label')({
-  width: 96, height: 96, borderRadius: '3px',
-  border: `2px dashed ${UI.borderDark}`, background: UI.headerBg,
-  display: 'flex', flexDirection: 'column', alignItems: 'center',
-  justifyContent: 'center', cursor: 'pointer', transition: 'all 0.15s',
-  color: UI.textMuted, flexShrink: 0, gap: 4,
-  '&:hover': { borderColor: '#e77600', background: '#fffbf2', color: '#e77600' },
-});
-
-const ThumbWrap = styled('div')({
-  position: 'relative', width: 96, height: 96, borderRadius: '3px',
-  border: `1px solid ${UI.border}`, overflow: 'hidden',
-  '& img': { width: '100%', height: '100%', objectFit: 'cover' },
-  '& .rmv': {
-    position: 'absolute', top: 2, right: 2, opacity: 0, transition: 'opacity 0.15s',
-    background: 'rgba(0,0,0,0.65)', borderRadius: '50%',
-  },
-  '&:hover .rmv': { opacity: 1 },
-});
-
-const SaveBtn = styled(Button)({
-  borderRadius: '3px', padding: '9px 22px',
-  fontFamily: "'Helvetica Neue', Arial, sans-serif",
-  fontWeight: 400, fontSize: '14px', textTransform: 'none',
-  background: 'linear-gradient(to bottom, #f7dfa5, #f0c14b)',
-  color: '#111', border: '1px solid #a88734', boxShadow: 'none',
-  '&:hover': { background: 'linear-gradient(to bottom, #f5d78e, #eeb933)', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' },
-  '&:disabled': { background: '#e9ecef', color: '#888', border: '1px solid #ccc' },
-});
-
-const GrayBtn = styled(Button)({
-  borderRadius: '3px', padding: '9px 18px',
-  fontFamily: "'Helvetica Neue', Arial, sans-serif",
-  fontWeight: 400, fontSize: '13px', textTransform: 'none',
-  background: 'linear-gradient(to bottom, #f7f8fa, #e7e9ec)',
-  color: '#111', border: '1px solid #adb1b8', boxShadow: 'none',
-  '&:hover': { background: 'linear-gradient(to bottom, #e7eaf0, #d9dce3)', boxShadow: 'none' },
-});
-
-const FieldRow = ({ label, required, children }: any) => (
-  <Box mb={2.5}>
-    <FieldLabel>{label} {required && <RequiredStar>*</RequiredStar>}</FieldLabel>
-    {children}
-  </Box>
-);
-
-// ─── Component ────────────────────────────────────────────────────────────────
 
 const UpdateProductForm = () => {
-  const [uploadImage, setUploadingImage] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
   const dispatch = useAppDispatch();
-  const { sellers, sellerProduct, products } = useAppSelector(store => store);
+  const { sellerProduct, products } = useAppSelector((store) => store);
   const { productId } = useParams();
   const navigate = useNavigate();
-  const [snackbarOpen, setOpenSnackbar] = useState(false);
 
   const formik = useFormik<FormValues>({
     initialValues: {
-      title: "", description: "", mrpPrice: 0, sellingPrice: 0,
-      // FIX 2: Added discountPercent to initialValues.
-      // Without this, formik never tracked the field and { ...values }
-      // in onSubmit was spreading an object where discountPercent wasn't
-      // part of the typed shape — causing it to be absent in the request body.
+      title: "",
+      description: "",
+      brand: "",
+      mrpPrice: 0,
+      sellingPrice: 0,
       discountPercent: 0,
-      quantity: 0, color: "", images: [], category: null,
-      sizes: "", seller: undefined, createdAt: null, numRatings: 0, in_stock: true,
+      quantity: 0,
+      color: "",
+      images: [],
+      category: null,
+      sizes: "",
+      seller: undefined,
+      createdAt: null,
+      numRatings: 0,
+      in_stock: true,
     },
-    // validationSchema,
+    validationSchema,
     onSubmit: (values) => {
       const mrp = Number(values.mrpPrice);
       const selling = Number(values.sellingPrice);
@@ -219,301 +102,400 @@ const UpdateProductForm = () => {
         mrp > 0 && selling >= 0 && mrp > selling
           ? Math.round(((mrp - selling) / mrp) * 100)
           : 0;
-      const payload = { ...values, discountPercent };
-      dispatch(updateProduct({ productId: Number(productId), product: payload }));
-      console.log(payload);
+
+      dispatch(
+        updateProduct({
+          productId: Number(productId),
+          product: {
+            ...values,
+            discountPercent,
+          },
+        })
+      );
     },
   });
 
-  const handleImageChange = async (event: any) => {
-    const file = event.target.files[0];
-    setUploadingImage(true);
-    const image = await uploadToCloudinary(file);
-    formik.setFieldValue("images", [...formik.values.images, image]);
-    setUploadingImage(false);
-  };
-
-  const handleRemoveImage = (index: number) => {
-    const updated = [...formik.values.images];
-    updated.splice(index, 1);
-    formik.setFieldValue("images", updated);
-  };
-
-  const childCategory = (category: any, parentCategoryId: any) =>
-    category.filter((c: any) => c.parentCategoryId == parentCategoryId);
-
-  useEffect(() => { dispatch(fetchProductById(Number(productId))); }, [productId]);
+  useEffect(() => {
+    if (productId) {
+      dispatch(fetchProductById(Number(productId)));
+    }
+  }, [dispatch, productId]);
 
   useEffect(() => {
-    if (sellerProduct.productCreated || sellerProduct.error) setOpenSnackbar(true);
-  }, [sellerProduct.productCreated, sellerProduct.error]);
+    const product = products.product;
+    if (!product) return;
 
-  useEffect(() => {
-    const mrp = products.product?.mrpPrice || 0;
-    const selling = products.product?.sellingPrice || 0;
-    // FIX 3: Populate discountPercent when loading the existing product.
-    // Previously this was always 0 because the field wasn't in setValues.
-    // Now we use the stored value from the backend, or recompute it as a
-    // fallback in case it was saved as 0 for products created before the fix.
-    const storedDiscount = products.product?.discountPercent || 0;
-    const computedDiscount = mrp > 0 && selling > 0 && mrp > selling
-      ? Math.round(((mrp - selling) / mrp) * 100)
-      : 0;
+    const mrp = product.mrpPrice || 0;
+    const selling = product.sellingPrice || 0;
+    const storedDiscount = product.discountPercent || 0;
+    const computedDiscount = mrp > 0 && mrp > selling ? Math.round(((mrp - selling) / mrp) * 100) : 0;
 
     formik.setValues({
-      title: products.product?.title || "",
-      description: products.product?.description || "",
+      title: product.title || "",
+      description: product.description || "",
+      brand: product.brand || "",
       mrpPrice: mrp,
       sellingPrice: selling,
       discountPercent: storedDiscount > 0 ? storedDiscount : computedDiscount,
-      quantity: products.product?.quantity || 0,
-      color: products.product?.color || "",
-      images: products.product?.images || [],
-      category: products.product?.category,
-      sizes: products.product?.sizes || "",
-      seller: products.product?.seller,
-      createdAt: products.product?.createdAt || "",
-      numRatings: products.product?.numRatings || 0,
-      in_stock: products.product?.in_stock ?? true,
+      quantity: product.quantity || 0,
+      color: product.color || "",
+      images: product.images || [],
+      category: product.category,
+      sizes: product.sizes || "",
+      seller: product.seller,
+      createdAt: product.createdAt || null,
+      numRatings: product.numRatings || 0,
+      in_stock: product.in_stock ?? true,
     });
   }, [products.product]);
 
+  useEffect(() => {
+    if (sellerProduct.productCreated || sellerProduct.error) {
+      setSnackbarOpen(true);
+    }
+  }, [sellerProduct.error, sellerProduct.productCreated]);
+
+  const discountPreview = useMemo(() => {
+    const mrp = Number(formik.values.mrpPrice);
+    const selling = Number(formik.values.sellingPrice);
+    if (!(mrp > 0) || !(selling >= 0) || mrp <= selling) return 0;
+    return Math.round(((mrp - selling) / mrp) * 100);
+  }, [formik.values.mrpPrice, formik.values.sellingPrice]);
+
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const imageUrl = await uploadToCloudinary(file);
+      formik.setFieldValue("images", [...formik.values.images, imageUrl]);
+    } finally {
+      setUploading(false);
+      event.target.value = "";
+    }
+  };
+
+  const removeImage = (index: number) => {
+    const next = [...formik.values.images];
+    next.splice(index, 1);
+    formik.setFieldValue("images", next);
+  };
+
   return (
-    <PageWrap>
-      {/* Top Bar */}
-      <TopBar>
-        <Typography sx={{ color: UI.orange, fontWeight: 700, fontSize: '20px', fontFamily: "'Helvetica Neue', Arial" }}>
-          seller<span style={{ color: '#fff' }}>central</span>
-        </Typography>
-        <Divider orientation="vertical" flexItem sx={{ borderColor: 'rgba(255,255,255,0.2)' }} />
-        <Typography sx={{ color: 'rgba(255,255,255,0.85)', fontSize: '13px' }}>Edit Product Listing</Typography>
-      </TopBar>
+    <Box>
+      <SellerPageIntro
+        eyebrow="Catalog"
+        title="Edit product listing"
+        description="Update listing details, pricing, stock, and media without leaving the seller workspace."
+        actions={
+          <>
+            <Button variant="outlined" startIcon={<ArrowBackRoundedIcon />} onClick={() => navigate("/seller/products")} sx={sellerSecondaryButtonSx}>
+              Back to products
+            </Button>
+            <SellerStatusChip label={formik.values.in_stock ? "Live listing" : "Inactive listing"} tone={formik.values.in_stock ? "success" : "danger"} />
+          </>
+        }
+      />
 
-      <ContentWrap>
-        {/* Breadcrumb & Title */}
-        <Box mb={1.5} mt={0.5}>
-          <Typography sx={{ fontSize: '12px', color: UI.linkBlue, fontFamily: "'Helvetica Neue', Arial", cursor: 'pointer' }}
-            onClick={() => navigate('/seller/products')}>
-            ‹ Back to Manage Inventory
-          </Typography>
-        </Box>
+      <Box
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: { xs: "1fr", md: "repeat(3, minmax(0, 1fr))" },
+          mb: 2,
+        }}
+      >
+        <SellerMetricCard
+          label="Current price"
+          value={formatSellerCurrency(formik.values.sellingPrice)}
+          helper={`MRP ${formatSellerCurrency(formik.values.mrpPrice)}`}
+          tone="accent"
+          icon={<SellRoundedIcon />}
+        />
+        <SellerMetricCard
+          label="Stock quantity"
+          value={String(formik.values.quantity || 0)}
+          helper={formik.values.quantity <= 5 ? "Low stock" : "Healthy stock"}
+          tone={formik.values.quantity <= 5 ? "warning" : "info"}
+          icon={<Inventory2RoundedIcon />}
+        />
+        <SellerMetricCard
+          label="Discount preview"
+          value={`${discountPreview}%`}
+          helper={`${formik.values.images.length} image${formik.values.images.length !== 1 ? "s" : ""} attached`}
+          tone={discountPreview > 0 ? "success" : "default"}
+          icon={<SellRoundedIcon />}
+        />
+      </Box>
 
-        <Box display="flex" alignItems="flex-start" justifyContent="space-between" mb={2.5} flexWrap="wrap" gap={1}>
-          <Box>
-            <Typography sx={{ fontSize: '20px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
-              Edit Product Listing
-            </Typography>
-            <Typography sx={{ fontSize: '12px', color: UI.textMuted, mt: 0.3, fontFamily: "'Helvetica Neue', Arial" }}>
-              ASIN: #{String(productId).padStart(10, '0')} &nbsp;·&nbsp; {formik.values.title && `"${formik.values.title.slice(0, 50)}..."`}
-            </Typography>
-          </Box>
+      <Box
+        component="form"
+        onSubmit={formik.handleSubmit}
+        sx={{
+          display: "grid",
+          gap: 2,
+          gridTemplateColumns: { xs: "1fr", lg: "1.45fr 0.95fr" },
+          alignItems: "start",
+        }}
+      >
+        <Stack spacing={2}>
+          <SellerSection title="Basic details" description="Update the customer-facing listing title and description.">
+            <Stack spacing={1.6}>
+              <TextField
+                label="Product title"
+                name="title"
+                value={formik.values.title}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.title && formik.errors.title)}
+                helperText={formik.touched.title && formik.errors.title}
+                fullWidth
+                sx={sellerInputSx}
+              />
+              <TextField
+                label="Product description"
+                name="description"
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.description && formik.errors.description)}
+                helperText={formik.touched.description && formik.errors.description}
+                multiline
+                minRows={5}
+                fullWidth
+                sx={sellerInputSx}
+              />
+              <TextField
+                label="Brand"
+                name="brand"
+                value={formik.values.brand}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.brand && formik.errors.brand)}
+                helperText={formik.touched.brand && formik.errors.brand}
+                fullWidth
+                sx={sellerInputSx}
+              />
+            </Stack>
+          </SellerSection>
 
-          {/* Quick status badge */}
-          <Box sx={{
-            background: formik.values.in_stock ? '#e6f4ea' : '#fce8e6',
-            border: `1px solid ${formik.values.in_stock ? '#a8d5b5' : '#f5c6c2'}`,
-            color: formik.values.in_stock ? '#1e7e34' : '#c62828',
-            borderRadius: '3px', px: 1.5, py: 0.6, fontSize: '12px', fontWeight: 700,
-            fontFamily: "'Helvetica Neue', Arial",
-          }}>
-            {formik.values.in_stock ? '● Active' : '○ Inactive'}
-          </Box>
-        </Box>
-
-        <form onSubmit={formik.handleSubmit}>
-
-          {/* ── Images ── */}
-          <SectionCard elevation={0}>
-            <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
-                Product Images
-              </Typography>
-              <Typography sx={{ fontSize: '12px', color: UI.textMuted, fontFamily: "'Helvetica Neue', Arial" }}>
-                {formik.values.images.length} image(s) uploaded
-              </Typography>
-            </SectionHeader>
-            <SectionBody>
-              <Typography sx={{ fontSize: '12px', color: UI.textMuted, mb: 2, fontFamily: "'Helvetica Neue', Arial" }}>
-                First image is the main listing image. Minimum 500px on longest side.
-              </Typography>
-              <Box display="flex" flexWrap="wrap" gap={1.5}>
-                <input type="file" accept="image/*" id="fileInput" style={{ display: 'none' }} onChange={handleImageChange} />
-                <UploadBox htmlFor="fileInput">
-                  {uploadImage
-                    ? <CircularProgress size={20} sx={{ color: '#e77600' }} />
-                    : <>
-                        <AddPhotoAlternateOutlinedIcon sx={{ fontSize: 24 }} />
-                        <Typography sx={{ fontSize: '10px', fontWeight: 700, letterSpacing: '0.3px', fontFamily: "'Helvetica Neue', Arial" }}>ADD IMAGE</Typography>
-                      </>}
-                </UploadBox>
-                {formik.values.images.map((image, index) => (
-                  <ThumbWrap key={index}>
-                    <img src={image} alt={`img-${index}`} />
-                    <IconButton className="rmv" size="small" onClick={() => handleRemoveImage(index)}
-                      sx={{ color: '#fff', width: 22, height: 22, padding: 0 }}>
-                      <CloseIcon sx={{ fontSize: 13 }} />
-                    </IconButton>
-                    {index === 0 && (
-                      <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, background: 'rgba(0,0,0,0.55)', textAlign: 'center', py: 0.3 }}>
-                        <Typography sx={{ fontSize: '9px', color: '#fff', fontWeight: 700, fontFamily: "'Helvetica Neue', Arial", letterSpacing: '0.5px' }}>MAIN</Typography>
-                      </Box>
-                    )}
-                  </ThumbWrap>
-                ))}
+          <SellerSection title="Pricing and inventory" description="Keep pricing accurate and stock levels aligned with the actual catalog.">
+            <Box sx={{ display: "grid", gap: 1.6, gridTemplateColumns: { xs: "1fr", sm: "repeat(2, minmax(0, 1fr))" } }}>
+              <TextField
+                label="MRP price"
+                name="mrpPrice"
+                type="number"
+                value={formik.values.mrpPrice}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.mrpPrice && formik.errors.mrpPrice)}
+                helperText={formik.touched.mrpPrice && formik.errors.mrpPrice}
+                fullWidth
+                sx={sellerInputSx}
+              />
+              <TextField
+                label="Selling price"
+                name="sellingPrice"
+                type="number"
+                value={formik.values.sellingPrice}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.sellingPrice && formik.errors.sellingPrice)}
+                helperText={formik.touched.sellingPrice && formik.errors.sellingPrice}
+                fullWidth
+                sx={sellerInputSx}
+              />
+              <TextField
+                label="Quantity"
+                name="quantity"
+                type="number"
+                value={formik.values.quantity}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.quantity && formik.errors.quantity)}
+                helperText={formik.touched.quantity && formik.errors.quantity}
+                fullWidth
+                sx={sellerInputSx}
+              />
+              <Box
+                sx={{
+                  p: 1.6,
+                  borderRadius: "12px",
+                  border: "1px solid #DCE8EC",
+                  bgcolor: discountPreview > 0 ? "rgba(21, 128, 61, 0.08)" : "rgba(14, 116, 144, 0.05)",
+                }}
+              >
+                <Typography sx={{ fontSize: ".74rem", fontWeight: 800, color: "#64748B", letterSpacing: ".08em", textTransform: "uppercase" }}>
+                  Live discount
+                </Typography>
+                <Typography sx={{ fontWeight: 900, fontSize: "1.35rem", color: discountPreview > 0 ? "#15803D" : "#0F172A", mt: 0.8 }}>
+                  {discountPreview > 0 ? `-${discountPreview}%` : "0%"}
+                </Typography>
+                <Typography sx={{ fontSize: ".8rem", color: "#64748B", mt: 0.4 }}>
+                  Auto-calculated from MRP and selling price
+                </Typography>
               </Box>
-            </SectionBody>
-          </SectionCard>
+            </Box>
+          </SellerSection>
+        </Stack>
 
-          {/* ── Vital Info ── */}
-          <SectionCard elevation={0}>
-            <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
-                Vital Info
-              </Typography>
-            </SectionHeader>
-            <SectionBody>
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12 }}>
-                  <FieldRow label="Product name" required>
-                    <PremiumField fullWidth id="title" name="title"
-                      placeholder="Product name"
-                      value={formik.values.title} onChange={formik.handleChange}
-                      error={formik.touched.title && Boolean(formik.errors.title)}
-                      helperText={formik.touched.title && formik.errors.title}
-                    />
-                  </FieldRow>
-                </Grid>
-                <Grid size={{ xs: 12 }}>
-                  <FieldRow label="Product description" required>
-                    <PremiumField fullWidth multiline rows={5} id="description" name="description"
-                      placeholder="Detailed product description"
-                      value={formik.values.description} onChange={formik.handleChange}
-                      error={formik.touched.description && Boolean(formik.errors.description)}
-                      helperText={formik.touched.description && formik.errors.description}
-                    />
-                  </FieldRow>
-                </Grid>
-              </Grid>
-            </SectionBody>
-          </SectionCard>
+        <Stack spacing={2} sx={{ position: { lg: "sticky" }, top: { lg: 90 } }}>
+          <SellerSection title="Attributes" description="Quick listing values used in the storefront.">
+            <Stack spacing={1.6}>
+              <TextField
+                select
+                label="Color"
+                name="color"
+                value={formik.values.color}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.color && formik.errors.color)}
+                helperText={formik.touched.color && formik.errors.color}
+                fullWidth
+                sx={sellerInputSx}
+              >
+                {colors.map((color) => (
+                  <MenuItem key={color.name} value={color.name}>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Box sx={{ width: 14, height: 14, borderRadius: "50%", bgcolor: color.hex, border: "1px solid #d1d5db" }} />
+                      <span>{color.name}</span>
+                    </Stack>
+                  </MenuItem>
+                ))}
+              </TextField>
+              <TextField
+                select
+                label="Size"
+                name="sizes"
+                value={formik.values.sizes}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                error={Boolean(formik.touched.sizes && formik.errors.sizes)}
+                helperText={formik.touched.sizes && formik.errors.sizes}
+                fullWidth
+                sx={sellerInputSx}
+              >
+                {["FREE", "S", "M", "L", "XL"].map((size) => (
+                  <MenuItem key={size} value={size}>
+                    {size}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Stack>
+          </SellerSection>
 
-          {/* ── Pricing ── */}
-          <SectionCard elevation={0}>
-            <SectionHeader>
-              <Typography sx={{ fontSize: '14px', fontWeight: 700, color: UI.text, fontFamily: "'Helvetica Neue', Arial" }}>
-                Offer & Pricing
-              </Typography>
-            </SectionHeader>
-            <SectionBody>
-              <Grid container spacing={3}>
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <FieldRow label="MRP (₹)" required>
-                    <PremiumField fullWidth id="mrp_price" name="mrpPrice" type="number"
-                      value={formik.values.mrpPrice} onChange={formik.handleChange}
-                      error={formik.touched.mrpPrice && Boolean(formik.errors.mrpPrice)}
-                      helperText={formik.touched.mrpPrice && formik.errors.mrpPrice}
-                    />
-                  </FieldRow>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <FieldRow label="Your selling price (₹)" required>
-                    <PremiumField fullWidth id="sellingPrice" name="sellingPrice" type="number"
-                      value={formik.values.sellingPrice} onChange={formik.handleChange}
-                      error={formik.touched.sellingPrice && Boolean(formik.errors.sellingPrice)}
-                      helperText={formik.touched.sellingPrice && formik.errors.sellingPrice}
-                    />
-                  </FieldRow>
-                </Grid>
+          <SellerSection title="Media" description="Refresh product photography or rearrange the listing gallery.">
+            <Button
+              component="label"
+              variant="outlined"
+              fullWidth
+              startIcon={uploading ? <CircularProgress size={14} /> : <AddPhotoAlternateOutlinedIcon />}
+              disabled={uploading}
+              sx={{ ...sellerSecondaryButtonSx, borderStyle: "dashed" }}
+            >
+              {uploading ? "Uploading..." : "Add product image"}
+              <input hidden type="file" accept="image/*" onChange={handleImageUpload} />
+            </Button>
 
-                {/* ── Live Discount Preview ── */}
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <Box mb={2.5}>
-                    <FieldLabel>Discount % <span style={{ color: UI.textMuted, fontWeight: 400 }}>(auto-calculated)</span></FieldLabel>
-                    {(() => {
-                      const mrp = Number(formik.values.mrpPrice);
-                      const sell = Number(formik.values.sellingPrice);
-                      const pct = mrp > 0 && sell >= 0 && mrp > sell ? Math.round(((mrp - sell) / mrp) * 100) : 0;
-                      return (
-                        <Box sx={{
-                          height: '37px', borderRadius: '3px',
-                          border: `1px solid ${pct > 0 ? '#a8d5b5' : UI.border}`,
-                          background: pct > 0 ? '#e6f4ea' : UI.headerBg,
-                          display: 'flex', alignItems: 'center', px: 1.5, gap: 1,
-                        }}>
-                          <Typography sx={{
-                            fontSize: '18px', fontWeight: 700,
-                            color: pct > 0 ? '#1e7e34' : UI.textMuted,
-                            fontFamily: "'Helvetica Neue', Arial",
-                          }}>
-                            {pct > 0 ? `-${pct}%` : '—'}
-                          </Typography>
-                          {pct > 0 && (
-                            <Typography sx={{ fontSize: '11px', color: '#1e7e34', fontFamily: "'Helvetica Neue', Arial" }}>
-                              saves ₹{(mrp - sell).toFixed(0)}
-                            </Typography>
-                          )}
-                        </Box>
-                      );
-                    })()}
-                    <Typography sx={{ fontSize: '11px', color: UI.textMuted, mt: 0.5, fontFamily: "'Helvetica Neue', Arial" }}>
-                      Sent to customer site automatically
-                    </Typography>
-                  </Box>
-                </Grid>
+            <Box sx={{ mt: 1.6, display: "grid", gap: 1, gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+              {formik.values.images.map((image, index) => (
+                <Box
+                  key={`${image}-${index}`}
+                  sx={{
+                    position: "relative",
+                    borderRadius: "10px",
+                    overflow: "hidden",
+                    border: "1px solid #DCE8EC",
+                    aspectRatio: "1 / 1",
+                    bgcolor: "#F8FBFC",
+                  }}
+                >
+                  <img src={image} alt={`product-${index}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => removeImage(index)}
+                    sx={{
+                      minWidth: 0,
+                      width: 26,
+                      height: 26,
+                      p: 0,
+                      borderRadius: "50%",
+                      position: "absolute",
+                      top: 6,
+                      right: 6,
+                      bgcolor: "rgba(255,255,255,0.92)",
+                    }}
+                  >
+                    <DeleteOutlineRoundedIcon sx={{ fontSize: 14 }} />
+                  </Button>
+                </Box>
+              ))}
+              {!formik.values.images.length ? (
+                <Box
+                  sx={{
+                    gridColumn: "1 / -1",
+                    p: 1.6,
+                    borderRadius: "10px",
+                    border: "1px dashed #C7D8DD",
+                    bgcolor: "rgba(14, 116, 144, 0.04)",
+                  }}
+                >
+                  <Typography sx={{ fontSize: ".82rem", color: "#64748B" }}>
+                    No product images yet. Upload at least one image to keep the listing presentable.
+                  </Typography>
+                </Box>
+              ) : null}
+            </Box>
+          </SellerSection>
 
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <FieldRow label="Color" required>
-                    <PremiumSelect fullWidth error={formik.touched.color && Boolean(formik.errors.color)}>
-                      <Select name="color" value={formik.values.color} onChange={formik.handleChange} displayEmpty>
-                        <MenuItem value=""><em style={{ color: '#999', fontStyle: 'normal' }}>Select color</em></MenuItem>
-                        {colors.map(c => (
-                          <MenuItem key={c.name} value={c.name}>
-                            <Box display="flex" alignItems="center" gap={1.5}>
-                              <span style={{ width: 14, height: 14, borderRadius: '50%', background: c.hex, border: c.name === 'White' ? '1px solid #ccc' : 'none', display: 'inline-block', flexShrink: 0 }} />
-                              <span style={{ fontSize: '13px', fontFamily: "'Helvetica Neue', Arial" }}>{c.name}</span>
-                            </Box>
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {formik.touched.color && formik.errors.color && <FormHelperText>{formik.errors.color}</FormHelperText>}
-                    </PremiumSelect>
-                  </FieldRow>
-                </Grid>
-                <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
-                  <FieldRow label="Size" required>
-                    <PremiumSelect fullWidth error={formik.touched.sizes && Boolean(formik.errors.sizes)}>
-                      <Select name="sizes" value={formik.values.sizes} onChange={formik.handleChange} displayEmpty>
-                        <MenuItem value=""><em style={{ color: '#999', fontStyle: 'normal' }}>Select size</em></MenuItem>
-                        {['FREE', 'S', 'M', 'L', 'XL'].map(s => (
-                          <MenuItem key={s} value={s} sx={{ fontSize: '13px', fontFamily: "'Helvetica Neue', Arial" }}>{s}</MenuItem>
-                        ))}
-                      </Select>
-                      {formik.touched.sizes && formik.errors.sizes && <FormHelperText>{formik.errors.sizes}</FormHelperText>}
-                    </PremiumSelect>
-                  </FieldRow>
-                </Grid>
-              </Grid>
-            </SectionBody>
-          </SectionCard>
+          <SellerSection title="Save changes" description="Review the listing details and publish your updates when ready.">
+            <Stack spacing={1}>
+              <SummaryRow label="Category" value={products.product?.category?.name || "Unassigned"} />
+              <SummaryRow label="Brand" value={formik.values.brand || "-"} />
+              <SummaryRow label="Ratings" value={String(formik.values.numRatings || 0)} />
+              <SummaryRow label="Images" value={String(formik.values.images.length)} />
+            </Stack>
 
-          {/* ── Actions ── */}
-          <Box sx={{ background: UI.white, border: `1px solid ${UI.border}`, borderRadius: '4px', p: '14px 18px', display: 'flex', gap: 1.5, alignItems: 'center', justifyContent: 'flex-end', mb: 4 }}>
-            <GrayBtn onClick={() => navigate('/seller/products')}>Cancel</GrayBtn>
-            <SaveBtn type="submit" disabled={sellerProduct.loading} startIcon={!sellerProduct.loading && <SaveOutlinedIcon sx={{ fontSize: 16 }} />}>
-              {sellerProduct.loading ? <CircularProgress size={18} sx={{ color: '#333' }} /> : 'Save and finish'}
-            </SaveBtn>
-          </Box>
-        </form>
-      </ContentWrap>
+            <Stack direction={{ xs: "column", sm: "row" }} spacing={1.2} sx={{ mt: 2 }}>
+              <Button fullWidth variant="outlined" onClick={() => navigate("/seller/products")} sx={sellerSecondaryButtonSx}>
+                Cancel
+              </Button>
+              <Button
+                fullWidth
+                type="submit"
+                variant="contained"
+                disabled={sellerProduct.loading || uploading}
+                startIcon={sellerProduct.loading ? undefined : <SaveRoundedIcon />}
+                sx={sellerPrimaryButtonSx}
+              >
+                {sellerProduct.loading ? <CircularProgress size={18} sx={{ color: "#fff" }} /> : "Save updates"}
+              </Button>
+            </Stack>
+          </SellerSection>
+        </Stack>
+      </Box>
 
-      <Snackbar anchorOrigin={{ vertical: 'top', horizontal: 'right' }} open={snackbarOpen} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)}>
-        <Alert onClose={() => setOpenSnackbar(false)} severity={sellerProduct.error ? 'error' : 'success'} variant="filled"
-          sx={{ width: '100%', fontFamily: "'Helvetica Neue', Arial", borderRadius: '3px' }}>
-          {sellerProduct.error ? sellerProduct.error : 'Product updated successfully'}
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        open={snackbarOpen}
+        autoHideDuration={5000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity={sellerProduct.error ? "error" : "success"} variant="filled">
+          {sellerProduct.error || "Product updated successfully"}
         </Alert>
       </Snackbar>
-    </PageWrap>
+    </Box>
   );
 };
+
+const SummaryRow = ({ label, value }: { label: string; value: string }) => (
+  <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ py: 0.8, borderBottom: "1px solid #E8EFF2" }}>
+    <Typography sx={{ color: "#64748B", fontSize: ".82rem" }}>{label}</Typography>
+    <Typography sx={{ fontWeight: 800, fontSize: ".86rem", color: "#0F172A" }}>{value}</Typography>
+  </Stack>
+);
 
 export default UpdateProductForm;

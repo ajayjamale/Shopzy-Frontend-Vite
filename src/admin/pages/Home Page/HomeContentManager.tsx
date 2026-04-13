@@ -27,7 +27,7 @@ import DeleteOutlineRoundedIcon from "@mui/icons-material/DeleteOutlineRounded";
 import ArrowUpwardRoundedIcon from "@mui/icons-material/ArrowUpwardRounded";
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import RefreshRoundedIcon from "@mui/icons-material/RefreshRounded";
-import { api } from "../../../config/Api";
+import { adminApiPath, api } from "../../../config/Api";
 import type {
   HomeContentItem,
   HomeSectionConfig,
@@ -57,6 +57,9 @@ const emptyItem: Partial<HomeContentItem> = {
   active: true,
 };
 
+const HOME_CONTENT_ITEMS_PATH = adminApiPath("/home-content/items");
+const HOME_CONTENT_SECTIONS_PATH = adminApiPath("/home-content/sections");
+
 const HomeContentManager = () => {
   const [items, setItems] = useState<HomeContentItem[]>([]);
   const [sections, setSections] = useState<HomeSectionConfig[]>([]);
@@ -78,10 +81,10 @@ const HomeContentManager = () => {
     setLoading(true);
     try {
       const [itemsRes, sectionRes] = await Promise.all([
-        api.get<HomeContentItem[]>("/admin/home-content/items", {
+        api.get<HomeContentItem[]>(HOME_CONTENT_ITEMS_PATH, {
           headers: authHeader,
         }),
-        api.get<HomeSectionConfig[]>("/admin/home-content/sections", {
+        api.get<HomeSectionConfig[]>(HOME_CONTENT_SECTIONS_PATH, {
           headers: authHeader,
         }),
       ]);
@@ -187,11 +190,11 @@ const HomeContentManager = () => {
       };
 
       if (editing.id) {
-        await api.put(`/admin/home-content/items/${editing.id}`, payload, {
+        await api.put(`${HOME_CONTENT_ITEMS_PATH}/${editing.id}`, payload, {
           headers: authHeader,
         });
       } else {
-        await api.post("/admin/home-content/items", payload, {
+        await api.post(HOME_CONTENT_ITEMS_PATH, payload, {
           headers: authHeader,
         });
       }
@@ -211,7 +214,7 @@ const HomeContentManager = () => {
     if (!confirmed) return;
 
     try {
-      await api.delete(`/admin/home-content/items/${id}`, { headers: authHeader });
+      await api.delete(`${HOME_CONTENT_ITEMS_PATH}/${id}`, { headers: authHeader });
       setNotice({ open: true, text: "Item deleted", severity: "success" });
       fetchData();
     } catch {
@@ -221,7 +224,7 @@ const HomeContentManager = () => {
 
   const toggleItemActive = async (item: HomeContentItem) => {
     try {
-      await api.patch(`/admin/home-content/items/${item.id}/status`, null, {
+      await api.patch(`${HOME_CONTENT_ITEMS_PATH}/${item.id}/status`, null, {
         params: { active: !item.active },
         headers: authHeader,
       });
@@ -235,7 +238,7 @@ const HomeContentManager = () => {
     const nextOrder = direction === "up" ? Math.max(0, (item.displayOrder ?? 0) - 1) : (item.displayOrder ?? 0) + 1;
 
     try {
-      await api.patch(`/admin/home-content/items/${item.id}/order`, null, {
+      await api.patch(`${HOME_CONTENT_ITEMS_PATH}/${item.id}/order`, null, {
         params: { displayOrder: nextOrder },
         headers: authHeader,
       });
@@ -248,7 +251,7 @@ const HomeContentManager = () => {
   const saveSectionConfig = async () => {
     if (!sectionDraft) return;
     try {
-      await api.put(`/admin/home-content/sections/${sectionDraft.sectionKey}`, sectionDraft, {
+      await api.put(`${HOME_CONTENT_SECTIONS_PATH}/${sectionDraft.sectionKey}`, sectionDraft, {
         headers: authHeader,
       });
       setNotice({ open: true, text: "Section settings updated", severity: "success" });

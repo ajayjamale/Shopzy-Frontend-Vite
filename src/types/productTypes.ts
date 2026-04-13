@@ -16,6 +16,7 @@ export interface Product {
     id?: number;
     title: string;
     description: string;
+    brand?: string;
     mrpPrice: number;
     sellingPrice: number;
 
@@ -61,6 +62,7 @@ export interface Product {
 export interface CreateProductRequest {
     title: string;
     description: string;
+    brand: string;
     mrpPrice: number;
     sellingPrice: number;
 

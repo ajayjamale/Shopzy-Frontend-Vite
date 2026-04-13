@@ -9,22 +9,10 @@ import AdminDrawerList from "../../components/DrawerList";
 import { api } from "../../../config/Api";
 import { getAdminToken } from "../../../utils/authToken";
 import type { Seller } from "../../../types/sellerTypes";
+import { getAdminPageMeta } from "../../adminNavigation";
 
 const PENDING_SELLER_STATUS = "PENDING_VERIFICATION";
 const PENDING_SELLER_POLL_INTERVAL_MS = 30000;
-
-const sectionTitleByPath: Record<string, string> = {
-  "": "Users & Sellers",
-  users: "User Management",
-  coupon: "Coupons",
-  "add-coupon": "Create Coupon",
-  "home-content": "Home Content Studio",
-  deals: "Daily Discounts",
-  "daily-deals": "Daily Discounts",
-  "daily-discounts": "Daily Discounts",
-  settlements: "Settlements",
-  returns: "Returns",
-};
 
 const AdminDashboard = () => {
   const theme = useTheme();
@@ -35,22 +23,10 @@ const AdminDashboard = () => {
   const [pendingSellers, setPendingSellers] = useState<Seller[]>([]);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
 
-  const currentSection = useMemo(() => {
-    const adminPath = location.pathname.startsWith("/admin")
-      ? location.pathname.replace("/admin", "").replace(/^\/+/, "")
-      : location.pathname.replace(/^\/+/, "");
-    const key = adminPath.split("/")[0];
-
-    if (sectionTitleByPath[key] !== undefined) {
-      return sectionTitleByPath[key];
-    }
-
-    return key
-      .split("-")
-      .filter(Boolean)
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  }, [location.pathname]);
+  const pageMeta = useMemo(
+    () => getAdminPageMeta(location),
+    [location.pathname, location.search]
+  );
 
   const loadPendingSellers = useCallback(async () => {
     const token = getAdminToken();
@@ -99,77 +75,112 @@ const AdminDashboard = () => {
   const latestPendingSellers = pendingSellers.slice(0, 5);
 
   return (
-    <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: isDesktop ? "260px 1fr" : "1fr" }}>
+    <div style={{ minHeight: "100vh", display: "grid", gridTemplateColumns: isDesktop ? "258px 1fr" : "1fr" }}>
       {isDesktop ? (
-        <AdminDrawerList />
+        <AdminDrawerList pendingSellersCount={notificationCount} />
       ) : (
         <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-          <AdminDrawerList />
+          <AdminDrawerList pendingSellersCount={notificationCount} />
         </Drawer>
       )}
 
       <div style={{ minWidth: 0 }}>
         <header
           style={{
-            height: 68,
             borderBottom: "1px solid #DCE8EC",
             background: "rgba(248,251,252,0.92)",
             backdropFilter: "blur(10px)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "0 16px",
+            padding: "14px 16px",
             position: "sticky",
             top: 0,
             zIndex: 20,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            {!isDesktop && (
-              <IconButton onClick={() => setDrawerOpen(true)}>
-                <MenuRoundedIcon />
-              </IconButton>
-            )}
-            <DashboardRoundedIcon sx={{ color: "#0F766E" }} />
-            <span style={{ fontWeight: 700, color: "#0F172A" }}>Admin Panel</span>
-          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 16, flexWrap: "wrap" }}>
+            <div style={{ display: "grid", gap: 8, maxWidth: 760 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                {!isDesktop && (
+                  <IconButton onClick={() => setDrawerOpen(true)}>
+                    <MenuRoundedIcon />
+                  </IconButton>
+                )}
+                <DashboardRoundedIcon sx={{ color: "#0F766E" }} />
+                <span style={{ fontWeight: 800, color: "#0F172A" }}>Admin Panel</span>
+                <span
+                  style={{
+                    border: "1px solid #CBE4E2",
+                    background: "#ECF8F6",
+                    color: "#0F766E",
+                    borderRadius: 999,
+                    padding: "5px 10px",
+                    fontSize: 11,
+                    fontWeight: 800,
+                    letterSpacing: "0.07em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {pageMeta.groupTitle}
+                </span>
+              </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
-            <IconButton
-              onClick={openNotifications}
-              size="small"
-              sx={{
-                border: "1px solid #DCE8EC",
-                backgroundColor: "#FFFFFF",
-                borderRadius: "11px",
-              }}
-            >
-              <Badge
-                color="error"
-                badgeContent={notificationCount > 99 ? "99+" : notificationCount}
-                invisible={notificationCount === 0}
+              <div style={{ fontSize: 26, fontWeight: 900, color: "#0F172A", lineHeight: 1.08 }}>{pageMeta.title}</div>
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+              {notificationCount > 0 && (
+                <button
+                  onClick={() => navigate(`/admin/users?tab=sellers&status=${PENDING_SELLER_STATUS}`)}
+                  style={{
+                    border: "1px solid #F6D38D",
+                    background: "#FFF8E8",
+                    color: "#92400E",
+                    borderRadius: 999,
+                    padding: "9px 13px",
+                    fontSize: 12,
+                    fontWeight: 800,
+                    cursor: "pointer",
+                  }}
+                >
+                  {notificationCount} pending seller{notificationCount > 1 ? "s" : ""}
+                </button>
+              )}
+
+              <button
+                onClick={() => navigate("/admin")}
+                style={{
+                  border: "1px solid #DCE8EC",
+                  background: "#FFFFFF",
+                  color: "#0F172A",
+                  borderRadius: 999,
+                  padding: "9px 13px",
+                  fontSize: 12,
+                  fontWeight: 800,
+                  cursor: "pointer",
+                }}
               >
-                <NotificationsRoundedIcon sx={{ color: "#0F172A" }} />
-              </Badge>
-            </IconButton>
-            <span style={{ fontSize: 11, color: "#64748B", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              Current Section
-            </span>
-            <span
-              style={{
-                border: "1px solid #CBE4E2",
-                background: "#ECF8F6",
-                color: "#0F766E",
-                borderRadius: 999,
-                padding: "5px 10px",
-                fontSize: 11,
-                fontWeight: 800,
-                letterSpacing: "0.07em",
-                textTransform: "uppercase",
-              }}
-            >
-              {currentSection || "Dashboard"}
-            </span>
+                Overview
+              </button>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap", justifyContent: "flex-end" }}>
+                <IconButton
+                  onClick={openNotifications}
+                  size="small"
+                  sx={{
+                    border: "1px solid #DCE8EC",
+                    backgroundColor: "#FFFFFF",
+                    borderRadius: "11px",
+                  }}
+                >
+                  <Badge
+                    color="error"
+                    badgeContent={notificationCount > 99 ? "99+" : notificationCount}
+                    invisible={notificationCount === 0}
+                  >
+                    <NotificationsRoundedIcon sx={{ color: "#0F172A" }} />
+                  </Badge>
+                </IconButton>
+              </div>
+            </div>
           </div>
         </header>
 
@@ -221,7 +232,9 @@ const AdminDashboard = () => {
         </Menu>
 
         <main style={{ padding: 18, background: "#F3F7F8", minHeight: "calc(100vh - 68px)" }}>
-          <AdminRoutes />
+          <div style={{ maxWidth: 1460, margin: "0 auto", width: "100%", display: "grid", gap: 18 }}>
+            <AdminRoutes />
+          </div>
         </main>
       </div>
 
