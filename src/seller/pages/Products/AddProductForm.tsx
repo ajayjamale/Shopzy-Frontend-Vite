@@ -68,6 +68,9 @@ const schema = Yup.object({
   color: Yup.string().required("Color is required"),
   sizes: Yup.string().required("Size is required"),
   category: Yup.string().required("Main category is required"),
+  category2: Yup.string().required("Second category is required"),
+  category3: Yup.string().required("Third category is required"),
+  images: Yup.array().of(Yup.string().required()).min(1, "At least one product image is required"),
 });
 
 const ProductForm = () => {
@@ -358,7 +361,7 @@ const ProductForm = () => {
                 <FormHelperText>{formik.touched.category && formik.errors.category}</FormHelperText>
               </FormControl>
 
-              <FormControl>
+              <FormControl error={Boolean((formik.touched.category2 || formik.submitCount > 0) && formik.errors.category2)}>
                 <InputLabel id="cat2-label">Second category</InputLabel>
                 <Select
                   labelId="cat2-label"
@@ -368,6 +371,7 @@ const ProductForm = () => {
                   onChange={(event) => {
                     formik.setFieldValue("category2", event.target.value);
                     formik.setFieldValue("category3", "");
+                    formik.setFieldTouched("category2", true, false);
                   }}
                   disabled={!formik.values.category}
                 >
@@ -380,16 +384,25 @@ const ProductForm = () => {
                     </MenuItem>
                   ))}
                 </Select>
+                <FormHelperText>
+                  {(formik.touched.category2 || formik.submitCount > 0) && formik.errors.category2}
+                </FormHelperText>
               </FormControl>
 
-              <FormControl sx={{ gridColumn: { xs: "1 / -1", sm: "1 / -1" } }}>
+              <FormControl
+                sx={{ gridColumn: { xs: "1 / -1", sm: "1 / -1" } }}
+                error={Boolean((formik.touched.category3 || formik.submitCount > 0) && formik.errors.category3)}
+              >
                 <InputLabel id="cat3-label">Third category</InputLabel>
                 <Select
                   labelId="cat3-label"
                   label="Third category"
                   name="category3"
                   value={formik.values.category3}
-                  onChange={formik.handleChange}
+                  onChange={(event) => {
+                    formik.handleChange(event);
+                    formik.setFieldTouched("category3", true, false);
+                  }}
                   disabled={!formik.values.category2}
                 >
                   <MenuItem value="">
@@ -401,6 +414,9 @@ const ProductForm = () => {
                     </MenuItem>
                   ))}
                 </Select>
+                <FormHelperText>
+                  {(formik.touched.category3 || formik.submitCount > 0) && formik.errors.category3}
+                </FormHelperText>
               </FormControl>
             </Box>
           </Paper>
@@ -420,6 +436,13 @@ const ProductForm = () => {
               {uploading ? "Uploading..." : "Add product image"}
               <input hidden type="file" accept="image/*" onChange={handleImageUpload} />
             </Button>
+            {(formik.touched.images || formik.submitCount > 0) && formik.errors.images && (
+              <FormHelperText error sx={{ mt: 1 }}>
+                {typeof formik.errors.images === "string"
+                  ? formik.errors.images
+                  : "At least one product image is required"}
+              </FormHelperText>
+            )}
 
             <Box sx={{ mt: 1.5, display: "grid", gap: 1, gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
               {formik.values.images.map((image, index) => (

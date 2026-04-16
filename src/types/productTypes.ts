@@ -79,5 +79,5 @@ export interface CreateProductRequest {
     // e.g. category: "men", category2: "mens_clothing", category3: "t_shirts"
     category: string;
     category2: string;
-    category3?: string; // Optional — not all categories have a third level
+    category3: string;
 }
