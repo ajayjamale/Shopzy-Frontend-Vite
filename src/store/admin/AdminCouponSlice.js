@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createSlice, createAsyncThunk } from '../../context/miniToolkit.js'
 import { api } from '../../config/Api'
 const API_URL = '/api/admin/coupons'

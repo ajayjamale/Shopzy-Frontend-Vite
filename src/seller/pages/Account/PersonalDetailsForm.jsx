@@ -4,9 +4,15 @@ import * as Yup from 'yup'
 import { Field, SaveButton } from './FormPrimitives'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { updateSeller } from '../../../store/seller/sellerSlice'
+import FormFeedbackToast, {
+  getAsyncActionError,
+  useFormFeedback,
+} from '../../../components/forms/FormFeedbackToast'
+
 const PersonalDetailsForm = ({ onClose }) => {
   const { sellers } = useAppSelector((s) => s)
   const dispatch = useAppDispatch()
+  const { feedback, showError, closeFeedback } = useFormFeedback()
   const formik = useFormik({
     initialValues: {
       sellerName: '',
@@ -18,9 +24,14 @@ const PersonalDetailsForm = ({ onClose }) => {
       email: Yup.string().email('Invalid email').required('Email is required'),
       mobile: Yup.string().required('Mobile is required'),
     }),
-    onSubmit: (values) => {
-      dispatch(updateSeller(values))
-      onClose()
+    onSubmit: async (values) => {
+      const action = await dispatch(updateSeller(values))
+      if (updateSeller.fulfilled.match(action)) {
+        onClose?.()
+        return
+      }
+
+      showError(getAsyncActionError(action, 'Failed to update personal details.'))
     },
   })
   useEffect(() => {
@@ -33,47 +44,51 @@ const PersonalDetailsForm = ({ onClose }) => {
     }
   }, [sellers.profile])
   return (
-    <form
-      onSubmit={formik.handleSubmit}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 14,
-      }}
-    >
-      <Field
-        id="sellerName"
-        name="sellerName"
-        label="Seller Name"
-        value={formik.values.sellerName}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.sellerName && Boolean(formik.errors.sellerName)}
-        helperText={formik.touched.sellerName && formik.errors.sellerName}
-      />
-      <Field
-        id="email"
-        name="email"
-        label="Email"
-        type="email"
-        value={formik.values.email}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.email && Boolean(formik.errors.email)}
-        helperText={formik.touched.email && formik.errors.email}
-      />
-      <Field
-        id="mobile"
-        name="mobile"
-        label="Mobile"
-        value={formik.values.mobile}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.mobile && Boolean(formik.errors.mobile)}
-        helperText={formik.touched.mobile && formik.errors.mobile}
-      />
-      <SaveButton />
-    </form>
+    <>
+      <form
+        onSubmit={formik.handleSubmit}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14,
+        }}
+      >
+        <Field
+          id="sellerName"
+          name="sellerName"
+          label="Seller Name"
+          value={formik.values.sellerName}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.sellerName && Boolean(formik.errors.sellerName)}
+          helperText={formik.touched.sellerName && formik.errors.sellerName}
+        />
+        <Field
+          id="email"
+          name="email"
+          label="Email"
+          type="email"
+          value={formik.values.email}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.email && Boolean(formik.errors.email)}
+          helperText={formik.touched.email && formik.errors.email}
+        />
+        <Field
+          id="mobile"
+          name="mobile"
+          label="Mobile"
+          value={formik.values.mobile}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.mobile && Boolean(formik.errors.mobile)}
+          helperText={formik.touched.mobile && formik.errors.mobile}
+        />
+        <SaveButton />
+      </form>
+
+      <FormFeedbackToast feedback={feedback} onClose={closeFeedback} />
+    </>
   )
 }
 export default PersonalDetailsForm

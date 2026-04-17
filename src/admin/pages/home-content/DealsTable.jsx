@@ -364,6 +364,13 @@ const DealsTable = () => {
                   severity: 'success',
                 })
               }}
+              onError={(message) => {
+                setSnackbar({
+                  open: true,
+                  message,
+                  severity: 'error',
+                })
+              }}
             />
           </Box>
         </Modal>

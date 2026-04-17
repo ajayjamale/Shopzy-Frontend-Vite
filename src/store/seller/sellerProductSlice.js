@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '../../context/miniToolkit.js'
 import { api } from '../../config/Api'
 import { getSellerToken } from '../../utils/authToken'
+import { decrementProductQuantitiesAfterPurchase } from '../customer/ProductSlice'
 const API_URL = '/api/sellers/products'
 const getErrorMessage = (payload, fallback) => {
   if (typeof payload === 'string' && payload.trim()) {
@@ -16,6 +17,17 @@ const getErrorMessage = (payload, fallback) => {
     }
   }
   return fallback
+}
+
+const normalizeProductId = (value) => {
+  if (value === null || value === undefined) return ''
+  return String(value).trim()
+}
+
+const normalizeQuantity = (value) => {
+  const quantity = Number(value)
+  if (!Number.isFinite(quantity)) return 0
+  return quantity > 0 ? quantity : 0
 }
 export const fetchSellerProducts = createAsyncThunk(
   'sellerProduct/fetchSellerProducts',
@@ -163,6 +175,39 @@ const sellerProductSlice = createSlice({
           state.products[index] = action.payload
         }
         state.loading = false
+      })
+      .addCase(decrementProductQuantitiesAfterPurchase, (state, action) => {
+        if (!Array.isArray(action.payload) || !action.payload.length) return
+
+        const purchasedMap = action.payload.reduce((acc, item) => {
+          const productId = normalizeProductId(
+            item?.productId ?? item?.product?.id ?? item?.product?.productId,
+          )
+          const quantity = normalizeQuantity(item?.quantity ?? item?.qty)
+
+          if (!productId || quantity <= 0) return acc
+
+          acc[productId] = (acc[productId] ?? 0) + quantity
+          return acc
+        }, {})
+
+        if (!Object.keys(purchasedMap).length) return
+
+        state.products = state.products.map((product) => {
+          const productId = normalizeProductId(product?.id ?? product?.productId)
+          if (!productId || !purchasedMap[productId]) return product
+
+          const nextQuantity = Math.max(
+            0,
+            normalizeQuantity(product?.quantity) - purchasedMap[productId],
+          )
+
+          return {
+            ...product,
+            quantity: nextQuantity,
+            in_stock: nextQuantity > 0,
+          }
+        })
       })
       .addCase(deleteProduct.pending, (state) => {
         state.loading = true

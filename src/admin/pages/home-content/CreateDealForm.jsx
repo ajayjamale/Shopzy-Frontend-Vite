@@ -13,6 +13,11 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { createDailyDiscount, getAllDailyDiscounts } from '../../../store/admin/DealSlice'
 import { fetchHomePageData } from '../../../store/customer/home/AsyncThunk'
+import FormFeedbackToast, {
+  getAsyncActionError,
+  useFormFeedback,
+} from '../../../components/forms/FormFeedbackToast'
+
 const modernTextField = {
   '& label.Mui-focused': {
     color: '#1E293B',
@@ -37,9 +42,12 @@ const modernTextField = {
     fontSize: 11,
   },
 }
+
 const CreateDealForm = ({ onSuccess }) => {
   const { deal } = useAppSelector((store) => store)
   const dispatch = useAppDispatch()
+  const { feedback, closeFeedback, showError, showSuccess } = useFormFeedback()
+
   const formik = useFormik({
     initialValues: {
       title: '',
@@ -78,277 +86,288 @@ const CreateDealForm = ({ onSuccess }) => {
         redirectLink: values.redirectLink.trim(),
         discountLabel: values.discountLabel.trim() || `${values.discountPercent}% OFF`,
       }
+
       const result = await dispatch(createDailyDiscount(payload))
       if (createDailyDiscount.fulfilled.match(result)) {
         dispatch(getAllDailyDiscounts())
         dispatch(fetchHomePageData())
         resetForm()
+        showSuccess('Daily discount created successfully.')
         onSuccess?.()
+        return
       }
+
+      showError(getAsyncActionError(result, 'Failed to create daily discount.'))
     },
   })
+
   return (
-    <Box
-      sx={{
-        width: 560,
-        maxWidth: '94vw',
-        backgroundColor: '#fff',
-        border: '1px solid #ddd',
-        borderRadius: '6px',
-        overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-      }}
-    >
+    <>
       <Box
         sx={{
-          backgroundColor: '#1E293B',
-          px: 3,
-          py: 2,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
-          borderBottom: '3px solid #0F766E',
+          width: 560,
+          maxWidth: '94vw',
+          backgroundColor: '#fff',
+          border: '1px solid #ddd',
+          borderRadius: '6px',
+          overflow: 'hidden',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
         }}
       >
-        <LocalOfferIcon
-          sx={{
-            color: '#0F766E',
-            fontSize: 20,
-          }}
-        />
-        <Typography
-          sx={{
-            color: '#fff',
-            fontFamily: '"Manrope", Arial, sans-serif',
-            fontWeight: 700,
-            fontSize: 15,
-          }}
-        >
-          Create Daily Discount
-        </Typography>
-      </Box>
-
-      <Box
-        component="form"
-        onSubmit={formik.handleSubmit}
-        sx={{
-          p: 3,
-          display: 'grid',
-          gap: 2,
-        }}
-      >
-        <TextField
-          fullWidth
-          id="title"
-          name="title"
-          label="Title"
-          value={formik.values.title}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.title && Boolean(formik.errors.title)}
-          helperText={formik.touched.title && formik.errors.title}
-          sx={modernTextField}
-        />
-
-        <TextField
-          fullWidth
-          id="subtitle"
-          name="subtitle"
-          label="Subtitle"
-          value={formik.values.subtitle}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          sx={modernTextField}
-        />
-
-        <TextField
-          fullWidth
-          id="imageUrl"
-          name="imageUrl"
-          label="Image URL"
-          value={formik.values.imageUrl}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.imageUrl && Boolean(formik.errors.imageUrl)}
-          helperText={formik.touched.imageUrl && formik.errors.imageUrl}
-          sx={modernTextField}
-        />
-
-        <TextField
-          fullWidth
-          id="redirectLink"
-          name="redirectLink"
-          label="Redirect Link"
-          value={formik.values.redirectLink}
-          onChange={formik.handleChange}
-          onBlur={formik.handleBlur}
-          error={formik.touched.redirectLink && Boolean(formik.errors.redirectLink)}
-          helperText={formik.touched.redirectLink && formik.errors.redirectLink}
-          sx={modernTextField}
-        />
-
         <Box
           sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              md: '1fr 1fr',
-            },
-            gap: 1.5,
-          }}
-        >
-          <TextField
-            fullWidth
-            id="discountPercent"
-            name="discountPercent"
-            label="Discount %"
-            type="number"
-            value={formik.values.discountPercent}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.discountPercent && Boolean(formik.errors.discountPercent)}
-            helperText={formik.touched.discountPercent && formik.errors.discountPercent}
-            inputProps={{
-              min: 1,
-              max: 95,
-            }}
-            sx={modernTextField}
-          />
-          <TextField
-            fullWidth
-            id="discountLabel"
-            name="discountLabel"
-            label="Discount Label (optional)"
-            value={formik.values.discountLabel}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            placeholder="e.g. 30% OFF"
-            sx={modernTextField}
-          />
-        </Box>
-
-        <Box
-          sx={{
-            display: 'grid',
-            gridTemplateColumns: {
-              xs: '1fr',
-              md: '1fr 1fr 1fr',
-            },
-            gap: 1.5,
-          }}
-        >
-          <TextField
-            fullWidth
-            id="startDate"
-            name="startDate"
-            label="Start Date"
-            type="date"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={formik.values.startDate}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.startDate && Boolean(formik.errors.startDate)}
-            helperText={formik.touched.startDate && formik.errors.startDate}
-            sx={modernTextField}
-          />
-          <TextField
-            fullWidth
-            id="endDate"
-            name="endDate"
-            label="End Date"
-            type="date"
-            InputLabelProps={{
-              shrink: true,
-            }}
-            value={formik.values.endDate}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            error={formik.touched.endDate && Boolean(formik.errors.endDate)}
-            helperText={formik.touched.endDate && formik.errors.endDate}
-            sx={modernTextField}
-          />
-          <TextField
-            fullWidth
-            id="displayOrder"
-            name="displayOrder"
-            label="Display Order"
-            type="number"
-            value={formik.values.displayOrder}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            inputProps={{
-              min: 0,
-            }}
-            sx={modernTextField}
-          />
-        </Box>
-
-        <Box
-          sx={{
+            backgroundColor: '#1E293B',
+            px: 3,
+            py: 2,
             display: 'flex',
-            gap: 2,
-            flexWrap: 'wrap',
+            alignItems: 'center',
+            gap: 1.5,
+            borderBottom: '3px solid #0F766E',
           }}
         >
-          <FormControlLabel
-            control={
-              <Switch
-                checked={formik.values.highlighted}
-                onChange={(e) => formik.setFieldValue('highlighted', e.target.checked)}
-              />
-            }
-            label="Highlighted"
+          <LocalOfferIcon
+            sx={{
+              color: '#0F766E',
+              fontSize: 20,
+            }}
           />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={formik.values.active}
-                onChange={(e) => formik.setFieldValue('active', e.target.checked)}
-              />
-            }
-            label="Active"
-          />
+          <Typography
+            sx={{
+              color: '#fff',
+              fontFamily: '"Manrope", Arial, sans-serif',
+              fontWeight: 700,
+              fontSize: 15,
+            }}
+          >
+            Create Daily Discount
+          </Typography>
         </Box>
 
-        <Button
-          variant="contained"
-          type="submit"
-          fullWidth
-          disabled={deal.loading}
+        <Box
+          component="form"
+          onSubmit={formik.handleSubmit}
           sx={{
-            backgroundColor: '#0F766E',
-            color: '#0F172A',
-            fontFamily: '"Manrope", Arial, sans-serif',
-            fontWeight: 700,
-            fontSize: 14,
-            textTransform: 'none',
-            borderRadius: '20px',
-            py: 1.2,
-            border: '1px solid #0b5f59',
-            '&:hover': {
-              backgroundColor: '#0b5f59',
-            },
-            '&.Mui-disabled': {
-              backgroundColor: '#d1e4e2',
-              color: '#64748B',
-            },
+            p: 3,
+            display: 'grid',
+            gap: 2,
           }}
         >
-          {deal.loading ? (
-            <CircularProgress
-              size={22}
-              sx={{
-                color: '#0F172A',
+          <TextField
+            fullWidth
+            id="title"
+            name="title"
+            label="Title"
+            value={formik.values.title}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.title && Boolean(formik.errors.title)}
+            helperText={formik.touched.title && formik.errors.title}
+            sx={modernTextField}
+          />
+
+          <TextField
+            fullWidth
+            id="subtitle"
+            name="subtitle"
+            label="Subtitle"
+            value={formik.values.subtitle}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            sx={modernTextField}
+          />
+
+          <TextField
+            fullWidth
+            id="imageUrl"
+            name="imageUrl"
+            label="Image URL"
+            value={formik.values.imageUrl}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.imageUrl && Boolean(formik.errors.imageUrl)}
+            helperText={formik.touched.imageUrl && formik.errors.imageUrl}
+            sx={modernTextField}
+          />
+
+          <TextField
+            fullWidth
+            id="redirectLink"
+            name="redirectLink"
+            label="Redirect Link"
+            value={formik.values.redirectLink}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={formik.touched.redirectLink && Boolean(formik.errors.redirectLink)}
+            helperText={formik.touched.redirectLink && formik.errors.redirectLink}
+            sx={modernTextField}
+          />
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                md: '1fr 1fr',
+              },
+              gap: 1.5,
+            }}
+          >
+            <TextField
+              fullWidth
+              id="discountPercent"
+              name="discountPercent"
+              label="Discount %"
+              type="number"
+              value={formik.values.discountPercent}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.discountPercent && Boolean(formik.errors.discountPercent)}
+              helperText={formik.touched.discountPercent && formik.errors.discountPercent}
+              inputProps={{
+                min: 1,
+                max: 95,
               }}
+              sx={modernTextField}
             />
-          ) : (
-            'Create Daily Discount'
-          )}
-        </Button>
+            <TextField
+              fullWidth
+              id="discountLabel"
+              name="discountLabel"
+              label="Discount Label (optional)"
+              value={formik.values.discountLabel}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              placeholder="e.g. 30% OFF"
+              sx={modernTextField}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: {
+                xs: '1fr',
+                md: '1fr 1fr 1fr',
+              },
+              gap: 1.5,
+            }}
+          >
+            <TextField
+              fullWidth
+              id="startDate"
+              name="startDate"
+              label="Start Date"
+              type="date"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={formik.values.startDate}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.startDate && Boolean(formik.errors.startDate)}
+              helperText={formik.touched.startDate && formik.errors.startDate}
+              sx={modernTextField}
+            />
+            <TextField
+              fullWidth
+              id="endDate"
+              name="endDate"
+              label="End Date"
+              type="date"
+              InputLabelProps={{
+                shrink: true,
+              }}
+              value={formik.values.endDate}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.endDate && Boolean(formik.errors.endDate)}
+              helperText={formik.touched.endDate && formik.errors.endDate}
+              sx={modernTextField}
+            />
+            <TextField
+              fullWidth
+              id="displayOrder"
+              name="displayOrder"
+              label="Display Order"
+              type="number"
+              value={formik.values.displayOrder}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              inputProps={{
+                min: 0,
+              }}
+              sx={modernTextField}
+            />
+          </Box>
+
+          <Box
+            sx={{
+              display: 'flex',
+              gap: 2,
+              flexWrap: 'wrap',
+            }}
+          >
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formik.values.highlighted}
+                  onChange={(e) => formik.setFieldValue('highlighted', e.target.checked)}
+                />
+              }
+              label="Highlighted"
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={formik.values.active}
+                  onChange={(e) => formik.setFieldValue('active', e.target.checked)}
+                />
+              }
+              label="Active"
+            />
+          </Box>
+
+          <Button
+            variant="contained"
+            type="submit"
+            fullWidth
+            disabled={deal.loading}
+            sx={{
+              backgroundColor: '#0F766E',
+              color: '#0F172A',
+              fontFamily: '"Manrope", Arial, sans-serif',
+              fontWeight: 700,
+              fontSize: 14,
+              textTransform: 'none',
+              borderRadius: '20px',
+              py: 1.2,
+              border: '1px solid #0b5f59',
+              '&:hover': {
+                backgroundColor: '#0b5f59',
+              },
+              '&.Mui-disabled': {
+                backgroundColor: '#d1e4e2',
+                color: '#64748B',
+              },
+            }}
+          >
+            {deal.loading ? (
+              <CircularProgress
+                size={22}
+                sx={{
+                  color: '#0F172A',
+                }}
+              />
+            ) : (
+              'Create Daily Discount'
+            )}
+          </Button>
+        </Box>
       </Box>
-    </Box>
+
+      <FormFeedbackToast feedback={feedback} onClose={closeFeedback} />
+    </>
   )
 }
+
 export default CreateDealForm

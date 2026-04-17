@@ -1,7 +1,19 @@
 import { createSlice, createAsyncThunk } from '../../context/miniToolkit.js'
 import { api } from '../../config/Api'
+
 const API_URL = '/products'
-// ─── Initial State ────────────────────────────────────────────────────────────
+
+const normalizeProductId = (value) => {
+  if (value === null || value === undefined) return ''
+  return String(value).trim()
+}
+
+const normalizeQuantity = (value) => {
+  const quantity = Number(value)
+  if (!Number.isFinite(quantity)) return 0
+  return quantity > 0 ? quantity : 0
+}
+
 const initialState = {
   product: null,
   products: [],
@@ -11,7 +23,7 @@ const initialState = {
   error: null,
   searchProduct: [],
 }
-// ─── Thunks ───────────────────────────────────────────────────────────────────
+
 export const fetchProductById = createAsyncThunk(
   'products/fetchProductById',
   async (productId, { rejectWithValue }) => {
@@ -23,6 +35,7 @@ export const fetchProductById = createAsyncThunk(
     }
   },
 )
+
 export const searchProduct = createAsyncThunk(
   'products/searchProduct',
   async (query, { rejectWithValue }) => {
@@ -31,15 +44,18 @@ export const searchProduct = createAsyncThunk(
       if (!normalizedQuery) {
         return []
       }
+
       const response = await api.get(`${API_URL}/search`, {
         params: { query: normalizedQuery },
       })
+
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data ?? 'Failed to search products')
     }
   },
 )
+
 export const getAllProducts = createAsyncThunk(
   'products/getAllProducts',
   async (params, { rejectWithValue }) => {
@@ -50,42 +66,58 @@ export const getAllProducts = createAsyncThunk(
           pageNumber: params.pageNumber ?? 0,
         },
       })
+
       return response.data
     } catch (error) {
       return rejectWithValue(error.response?.data ?? 'Failed to fetch products')
     }
   },
 )
-// ─── Slice ────────────────────────────────────────────────────────────────────
+
 const productSlice = createSlice({
   name: 'products',
   initialState,
   reducers: {
     decrementProductQuantitiesAfterPurchase: (state, action) => {
-      if (!action.payload.length) return
+      if (!Array.isArray(action.payload) || !action.payload.length) return
+
       const purchasedMap = action.payload.reduce((acc, item) => {
-        const productId = Number(item.productId)
-        const quantity = Number(item.quantity)
-        if (!Number.isFinite(productId) || productId <= 0) return acc
-        if (!Number.isFinite(quantity) || quantity <= 0) return acc
+        const productId = normalizeProductId(
+          item?.productId ?? item?.product?.id ?? item?.product?.productId,
+        )
+        const quantity = normalizeQuantity(item?.quantity ?? item?.qty)
+
+        if (!productId || quantity <= 0) return acc
+
         acc[productId] = (acc[productId] ?? 0) + quantity
         return acc
       }, {})
+
+      if (!Object.keys(purchasedMap).length) return
+
       const updateProductQuantity = (product) => {
-        const productId = Number(product?.id)
+        const productId = normalizeProductId(product?.id ?? product?.productId)
         if (!productId || !purchasedMap[productId]) return product
-        const nextQuantity = Math.max(0, Number(product.quantity ?? 0) - purchasedMap[productId])
+
+        const nextQuantity = Math.max(
+          0,
+          normalizeQuantity(product?.quantity) - purchasedMap[productId],
+        )
+
         return {
           ...product,
           quantity: nextQuantity,
           in_stock: nextQuantity > 0,
         }
       }
+
       if (state.product) {
         state.product = updateProductQuantity(state.product)
       }
+
       state.products = state.products.map(updateProductQuantity)
       state.searchProduct = state.searchProduct.map(updateProductQuantity)
+
       if (state.paginatedProducts) {
         state.paginatedProducts.content = state.paginatedProducts.content.map(updateProductQuantity)
       }
@@ -93,7 +125,6 @@ const productSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // fetchProductById
       .addCase(fetchProductById.pending, (state) => {
         state.loading = true
         state.error = null
@@ -106,7 +137,6 @@ const productSlice = createSlice({
         state.loading = false
         state.error = action.error.message ?? 'Failed to fetch product'
       })
-      // searchProduct
       .addCase(searchProduct.pending, (state) => {
         state.loading = true
         state.error = null
@@ -120,7 +150,6 @@ const productSlice = createSlice({
         state.loading = false
         state.error = action.error.message ?? 'Failed to search products'
       })
-      // getAllProducts
       .addCase(getAllProducts.pending, (state) => {
         state.loading = true
         state.error = null
@@ -137,9 +166,10 @@ const productSlice = createSlice({
       })
   },
 })
+
 export default productSlice.reducer
 export const { decrementProductQuantitiesAfterPurchase } = productSlice.actions
-// ─── Selectors ────────────────────────────────────────────────────────────────
+
 export const selectProduct = (state) => state.products.product
 export const selectProducts = (state) => state.products.products
 export const selectPaginatedProducts = (state) => state.products.paginatedProducts

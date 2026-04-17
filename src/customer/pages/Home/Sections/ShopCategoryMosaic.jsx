@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toCatalogPath } from '../../../../utils/catalogRoute'
+
 const fallback = [
   {
     id: 'women',
@@ -38,152 +39,80 @@ const fallback = [
     target: 'men_sports_active_wear',
   },
 ]
+
 const resolveTarget = (target) => toCatalogPath(target)
+
 const ShopCategoryMosaic = ({ data }) => {
   const navigate = useNavigate()
+
   const cards = useMemo(() => {
     const incoming = data?.shopByCategories || []
     if (!incoming.length) return fallback
+
     return incoming.map((item, index) => ({
       id: `${item.id || item.categoryId || index}`,
       name: (item.name || item.categoryId || 'Collection').split('_').join(' '),
-      subtitle: 'Handpicked for this week',
+      subtitle: item.subtitle || item.badgeText || 'Handpicked for this week',
       image: item.image || item.imageUrl || fallback[0].image,
       target: item.redirectLink || item.categoryId || 'products',
     }))
   }, [data?.shopByCategories])
-  if (!cards.length) return null
-  const hero = cards[0]
-  const miniCards = cards.slice(1, 7)
-  return (
-    <section className="app-container" style={{ marginTop: 34 }}>
-      <div className="surface" style={{ padding: 'clamp(18px,3vw,30px)' }}>
-        <p className="section-kicker" style={{ marginBottom: 8 }}>
-          Category Edit
-        </p>
-        <h2 className="section-title" style={{ fontSize: 'clamp(1.4rem,3vw,2rem)' }}>
-          Shop By Category
-        </h2>
-        <p style={{ marginTop: 6, color: '#64748B', fontSize: 13 }}>
-          Distinct category collections curated and managed from admin content.
-        </p>
 
-        <div
-          style={{
-            marginTop: 16,
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0,1.3fr) minmax(0,1fr)',
-            gap: 14,
-          }}
-          className="max-[920px]:grid-cols-1"
-        >
+  if (!cards.length) return null
+
+  const [hero, ...restCards] = cards
+  const miniCards = restCards.slice(0, 6)
+
+  return (
+    <section className="app-container shop-category-section">
+      <div className="surface shop-category-surface">
+        <header className="shop-category-header">
+          <div>
+            <p className="section-kicker">Category Highlights</p>
+            <h2 className="section-title shop-category-title">Shop By Category</h2>
+            <p className="shop-category-description">
+              Explore curated collections picked for every style and need.
+            </p>
+          </div>
           <button
-            onClick={() => navigate(resolveTarget(hero.target))}
-            style={{
-              borderRadius: 18,
-              overflow: 'hidden',
-              border: '1px solid #DBE7EB',
-              background: '#0F172A',
-              position: 'relative',
-              minHeight: 320,
-              textAlign: 'left',
-              padding: 0,
-              cursor: 'pointer',
-            }}
+            type="button"
+            className="btn-secondary shop-category-view-all"
+            onClick={() => navigate(toCatalogPath())}
           >
-            <img
-              src={hero.image}
-              alt={hero.name}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(120deg, rgba(15,23,42,.75), rgba(15,118,110,.34))',
-              }}
-            />
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 1,
-                padding: 22,
-                display: 'grid',
-                alignContent: 'end',
-                minHeight: 320,
-              }}
-            >
-              <p
-                style={{
-                  color: '#99F6E4',
-                  fontSize: 11,
-                  letterSpacing: '.1em',
-                  textTransform: 'uppercase',
-                  fontWeight: 800,
-                }}
-              >
-                Featured Category
-              </p>
-              <h3 style={{ color: '#fff', fontSize: 'clamp(1.3rem,2.2vw,1.9rem)', marginTop: 8 }}>
-                {hero.name}
-              </h3>
-              <p style={{ color: '#D6E9EC', marginTop: 6 }}>{hero.subtitle}</p>
+            View All Categories
+          </button>
+        </header>
+
+        <div className="shop-category-layout">
+          <button
+            type="button"
+            className="shop-category-featured"
+            onClick={() => navigate(resolveTarget(hero.target))}
+          >
+            <img src={hero.image} alt={hero.name} className="shop-category-featured-image" />
+            <span className="shop-category-featured-overlay" />
+
+            <div className="shop-category-featured-content">
+              <p className="shop-category-featured-tag">Featured Category</p>
+              <h3 className="shop-category-featured-title">{hero.name}</h3>
+              <p className="shop-category-featured-subtitle">{hero.subtitle}</p>
             </div>
           </button>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: 12 }}>
+          <div className="shop-category-grid">
             {miniCards.map((item) => (
               <button
                 key={item.id}
+                type="button"
+                className="shop-category-card"
                 onClick={() => navigate(resolveTarget(item.target))}
-                style={{
-                  borderRadius: 14,
-                  border: '1px solid #DBE7EB',
-                  background: '#fff',
-                  overflow: 'hidden',
-                  textAlign: 'left',
-                  padding: 0,
-                  cursor: 'pointer',
-                }}
               >
-                <div
-                  style={{
-                    aspectRatio: '4/3',
-                    overflow: 'hidden',
-                    background: 'linear-gradient(160deg,#F7FBFC 0%,#EEF4F6 100%)',
-                    padding: 8,
-                  }}
-                >
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
-                      borderRadius: 10,
-                      background: '#fff',
-                    }}
-                  />
+                <div className="shop-category-card-image-shell">
+                  <img src={item.image} alt={item.name} className="shop-category-card-image" />
                 </div>
-                <div style={{ padding: '10px 11px 12px' }}>
-                  <p
-                    style={{
-                      fontSize: 13,
-                      fontWeight: 800,
-                      color: '#0F172A',
-                      textTransform: 'capitalize',
-                    }}
-                  >
-                    {item.name}
-                  </p>
-                  <p style={{ marginTop: 2, fontSize: 11, color: '#64748B' }}>{item.subtitle}</p>
+                <div className="shop-category-card-content">
+                  <p className="shop-category-card-title">{item.name}</p>
+                  <p className="shop-category-card-subtitle">{item.subtitle}</p>
                 </div>
               </button>
             ))}
@@ -193,4 +122,5 @@ const ShopCategoryMosaic = ({ data }) => {
     </section>
   )
 }
+
 export default ShopCategoryMosaic

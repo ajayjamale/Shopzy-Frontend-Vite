@@ -1,7 +1,9 @@
-import { useMemo, useState } from 'react'
-import { useFormik } from 'formik'
+﻿import { getIn, setIn, useFormik } from 'formik'
+import * as Yup from 'yup'
+import { useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { createSeller } from '../../../store/seller/sellerAuthenticationSlice'
+
 const C = {
   text: '#0E1B2C',
   muted: '#65798A',
@@ -15,6 +17,7 @@ const C = {
   softBg: '#F6FAFC',
   divider: '#DDE9ED',
 }
+
 const STEPS = [
   {
     title: 'Contact and tax',
@@ -33,6 +36,72 @@ const STEPS = [
     subtitle: 'Store profile and credentials for Seller Central.',
   },
 ]
+
+const STEP_FIELD_PATHS = [
+  ['mobile', 'gstin'],
+  [
+    'pickupAddress.name',
+    'pickupAddress.mobile',
+    'pickupAddress.pincode',
+    'pickupAddress.address',
+    'pickupAddress.locality',
+    'pickupAddress.city',
+    'pickupAddress.state',
+  ],
+  [
+    'bankDetails.accountHolderName',
+    'bankDetails.accountNumber',
+    'bankDetails.confirmAccount',
+    'bankDetails.ifscCode',
+  ],
+  ['businessDetails.businessName', 'sellerName', 'email', 'password', 'confirmPassword'],
+]
+
+const validationSchema = Yup.object({
+  mobile: Yup.string()
+    .trim()
+    .matches(/^\d{10}$/, 'Enter a valid 10-digit mobile number.')
+    .required('Mobile number is required.'),
+  gstin: Yup.string()
+    .trim()
+    .matches(/^[0-9A-Z]{15}$/i, 'Enter a valid 15-character GSTIN.')
+    .required('GSTIN is required.'),
+  pickupAddress: Yup.object({
+    name: Yup.string().trim().required('Contact name is required.'),
+    mobile: Yup.string()
+      .trim()
+      .matches(/^\d{10}$/, 'Pickup mobile must be a valid 10-digit number.')
+      .required('Pickup mobile is required.'),
+    pincode: Yup.string().trim().matches(/^\d{6}$/, 'Pincode must be 6 digits.').required(),
+    address: Yup.string().trim().required('Address line is required.'),
+    locality: Yup.string().trim().required('Locality is required.'),
+    city: Yup.string().trim().required('City is required.'),
+    state: Yup.string().trim().required('State is required.'),
+  }),
+  bankDetails: Yup.object({
+    accountHolderName: Yup.string().trim().required('Account holder name is required.'),
+    accountNumber: Yup.string().trim().required('Account number is required.'),
+    confirmAccount: Yup.string()
+      .trim()
+      .required('Please confirm account number.')
+      .oneOf([Yup.ref('accountNumber')], 'Account numbers do not match.'),
+    ifscCode: Yup.string()
+      .trim()
+      .matches(/^[A-Z]{4}0[A-Z0-9]{6}$/i, 'Enter a valid IFSC code.')
+      .required('IFSC code is required.'),
+  }),
+  sellerName: Yup.string().trim().required('Seller display name is required.'),
+  email: Yup.string().trim().email('Enter a valid email address.').required('Email is required.'),
+  password: Yup.string().min(8, 'Password must be at least 8 characters.').required(),
+  confirmPassword: Yup.string()
+    .required('Please confirm password.')
+    .oneOf([Yup.ref('password')], 'Password and confirm password do not match.'),
+  businessDetails: Yup.object({
+    businessName: Yup.string().trim().required('Business name is required.'),
+  }),
+  otp: Yup.string().nullable(),
+})
+
 const inputBaseStyle = {
   width: '100%',
   minHeight: 44,
@@ -45,6 +114,7 @@ const inputBaseStyle = {
   padding: '0 12px',
   transition: 'border-color .16s, box-shadow .16s',
 }
+
 const Spinner = () => (
   <span
     style={{
@@ -58,17 +128,21 @@ const Spinner = () => (
     }}
   />
 )
+
 function Field({
   label,
   name,
   value,
   onChange,
+  onBlur,
   placeholder,
   required,
   type = 'text',
   error,
   helper,
 }) {
+  const hasError = Boolean(error)
+
   return (
     <div style={{ display: 'grid', gap: 5 }}>
       <label style={{ fontSize: 13, fontWeight: 700, color: C.text }}>
@@ -80,33 +154,36 @@ function Field({
         name={name}
         value={value}
         onChange={onChange}
+        onBlur={(event) => {
+          onBlur?.(event)
+          event.currentTarget.style.borderColor = hasError ? C.error : C.border
+          event.currentTarget.style.boxShadow = hasError ? '0 0 0 3px rgba(180,35,24,0.14)' : 'none'
+        }}
         placeholder={placeholder}
         style={{
           ...inputBaseStyle,
-          borderColor: error ? C.error : C.border,
-          boxShadow: error ? '0 0 0 3px rgba(180,35,24,0.14)' : 'none',
+          borderColor: hasError ? C.error : C.border,
+          boxShadow: hasError ? '0 0 0 3px rgba(180,35,24,0.14)' : 'none',
         }}
-        onFocus={(e) => {
-          if (!error) {
-            e.currentTarget.style.borderColor = C.borderFocus
-            e.currentTarget.style.boxShadow = `0 0 0 3px ${C.focusRing}`
+        onFocus={(event) => {
+          if (!hasError) {
+            event.currentTarget.style.borderColor = C.borderFocus
+            event.currentTarget.style.boxShadow = `0 0 0 3px ${C.focusRing}`
           }
         }}
-        onBlur={(e) => {
-          e.currentTarget.style.borderColor = error ? C.error : C.border
-          e.currentTarget.style.boxShadow = error ? '0 0 0 3px rgba(180,35,24,0.14)' : 'none'
-        }}
       />
-      {error ? <span style={{ color: C.error, fontSize: 12 }}>{error}</span> : null}
-      {!error && helper ? <span style={{ color: C.muted, fontSize: 12 }}>{helper}</span> : null}
+      {hasError ? <span style={{ color: C.error, fontSize: 12 }}>{error}</span> : null}
+      {!hasError && helper ? <span style={{ color: C.muted, fontSize: 12 }}>{helper}</span> : null}
     </div>
   )
 }
+
 const SellerAccountForm = () => {
   const dispatch = useAppDispatch()
   const sellerAuth = useAppSelector((state) => state.sellerAuth)
   const [activeStep, setActiveStep] = useState(0)
   const [stepError, setStepError] = useState('')
+
   const formik = useFormik({
     initialValues: {
       mobile: '',
@@ -135,7 +212,9 @@ const SellerAccountForm = () => {
       },
       otp: '',
     },
-    onSubmit: (values) => {
+    validationSchema,
+    validateOnChange: false,
+    onSubmit: async (values) => {
       const payload = {
         mobile: values.mobile.trim(),
         gstin: values.gstin.trim().toUpperCase(),
@@ -162,74 +241,57 @@ const SellerAccountForm = () => {
         accountStatus: 'PENDING_VERIFICATION',
         otp: values.otp || '',
       }
-      dispatch(createSeller(payload))
+
+      const action = await dispatch(createSeller(payload))
+      if (createSeller.rejected.match(action)) {
+        setStepError(action.payload || action.error?.message || 'Failed to create seller account.')
+      }
     },
   })
-  const passwordMismatch = useMemo(
-    () =>
-      Boolean(formik.values.confirmPassword) &&
-      formik.values.password !== formik.values.confirmPassword,
-    [formik.values.confirmPassword, formik.values.password],
-  )
-  const accountMismatch = useMemo(
-    () =>
-      Boolean(formik.values.bankDetails.confirmAccount) &&
-      formik.values.bankDetails.accountNumber !== formik.values.bankDetails.confirmAccount,
-    [formik.values.bankDetails.accountNumber, formik.values.bankDetails.confirmAccount],
-  )
-  const validateStep = (step) => {
-    const { values } = formik
-    if (step === 0) {
-      if (!/^\d{10}$/.test(values.mobile.trim())) return 'Enter a valid 10-digit mobile number.'
-      if (!/^[0-9A-Z]{15}$/i.test(values.gstin.trim())) return 'Enter a valid 15-character GSTIN.'
-      return ''
-    }
-    if (step === 1) {
-      const p = values.pickupAddress
-      if (
-        !p.name.trim() ||
-        !p.mobile.trim() ||
-        !p.pincode.trim() ||
-        !p.address.trim() ||
-        !p.locality.trim() ||
-        !p.city.trim() ||
-        !p.state.trim()
-      ) {
-        return 'Please complete all pickup address fields.'
+
+  const getFieldError = (path) => {
+    const touched = getIn(formik.touched, path)
+    const error = getIn(formik.errors, path)
+    return touched && typeof error === 'string' ? error : ''
+  }
+
+  const validateStep = async (step) => {
+    const fields = STEP_FIELD_PATHS[step] || []
+    const errors = await formik.validateForm()
+
+    let touchedState = formik.touched
+    fields.forEach((path) => {
+      touchedState = setIn(touchedState, path, true)
+    })
+    formik.setTouched(touchedState, false)
+
+    for (const path of fields) {
+      const message = getIn(errors, path)
+      if (typeof message === 'string' && message.trim()) {
+        return message
       }
-      if (!/^\d{10}$/.test(p.mobile.trim())) return 'Pickup mobile must be a valid 10-digit number.'
-      if (!/^\d{6}$/.test(p.pincode.trim())) return 'Pincode must be 6 digits.'
-      return ''
     }
-    if (step === 2) {
-      const b = values.bankDetails
-      if (!b.accountHolderName.trim() || !b.accountNumber.trim() || !b.ifscCode.trim()) {
-        return 'Please complete all bank details.'
-      }
-      if (accountMismatch) return 'Account number and confirmation do not match.'
-      if (!/^[A-Z]{4}0[A-Z0-9]{6}$/i.test(b.ifscCode.trim())) return 'Enter a valid IFSC code.'
-      return ''
-    }
-    if (step === 3) {
-      if (!values.businessDetails.businessName.trim()) return 'Business name is required.'
-      if (!values.sellerName.trim()) return 'Seller display name is required.'
-      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email.trim()))
-        return 'Enter a valid email address.'
-      if (values.password.length < 8) return 'Password must be at least 8 characters.'
-      if (passwordMismatch) return 'Password and confirm password do not match.'
-    }
+
     return ''
   }
-  const continueFlow = () => {
-    const err = validateStep(activeStep)
-    setStepError(err)
-    if (err) return
+
+  const continueFlow = async () => {
+    setStepError('')
+    const errorMessage = await validateStep(activeStep)
+
+    if (errorMessage) {
+      setStepError(errorMessage)
+      return
+    }
+
     if (activeStep < STEPS.length - 1) {
       setActiveStep((current) => current + 1)
       return
     }
-    formik.handleSubmit()
+
+    formik.submitForm()
   }
+
   const stepCardHeader = (
     <header
       style={{
@@ -247,6 +309,7 @@ const SellerAccountForm = () => {
       </p>
     </header>
   )
+
   return (
     <div style={{ display: 'grid', gap: 14 }}>
       <style>{`
@@ -315,7 +378,9 @@ const SellerAccountForm = () => {
             name="mobile"
             value={formik.values.mobile}
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             placeholder="10-digit mobile number"
+            error={getFieldError('mobile')}
             helper="This number is used for account notifications."
           />
           <Field
@@ -324,7 +389,9 @@ const SellerAccountForm = () => {
             name="gstin"
             value={formik.values.gstin}
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             placeholder="15-character GSTIN"
+            error={getFieldError('gstin')}
             helper="Example: 22AAAAA0000A1Z5"
           />
         </div>
@@ -342,6 +409,8 @@ const SellerAccountForm = () => {
               name="pickupAddress.name"
               value={formik.values.pickupAddress.name}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={getFieldError('pickupAddress.name')}
             />
             <Field
               label="Pickup mobile"
@@ -349,6 +418,8 @@ const SellerAccountForm = () => {
               name="pickupAddress.mobile"
               value={formik.values.pickupAddress.mobile}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={getFieldError('pickupAddress.mobile')}
             />
           </div>
           <Field
@@ -357,7 +428,9 @@ const SellerAccountForm = () => {
             name="pickupAddress.address"
             value={formik.values.pickupAddress.address}
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             placeholder="House no, building, street"
+            error={getFieldError('pickupAddress.address')}
           />
           <Field
             label="Locality"
@@ -365,6 +438,8 @@ const SellerAccountForm = () => {
             name="pickupAddress.locality"
             value={formik.values.pickupAddress.locality}
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={getFieldError('pickupAddress.locality')}
           />
           <div
             className="seller-reg-grid-3"
@@ -376,6 +451,8 @@ const SellerAccountForm = () => {
               name="pickupAddress.pincode"
               value={formik.values.pickupAddress.pincode}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={getFieldError('pickupAddress.pincode')}
             />
             <Field
               label="City"
@@ -383,6 +460,8 @@ const SellerAccountForm = () => {
               name="pickupAddress.city"
               value={formik.values.pickupAddress.city}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={getFieldError('pickupAddress.city')}
             />
             <Field
               label="State"
@@ -390,6 +469,8 @@ const SellerAccountForm = () => {
               name="pickupAddress.state"
               value={formik.values.pickupAddress.state}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={getFieldError('pickupAddress.state')}
             />
           </div>
         </div>
@@ -403,6 +484,8 @@ const SellerAccountForm = () => {
             name="bankDetails.accountHolderName"
             value={formik.values.bankDetails.accountHolderName}
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            error={getFieldError('bankDetails.accountHolderName')}
           />
           <div
             className="seller-reg-grid-2"
@@ -414,6 +497,8 @@ const SellerAccountForm = () => {
               name="bankDetails.accountNumber"
               value={formik.values.bankDetails.accountNumber}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={getFieldError('bankDetails.accountNumber')}
             />
             <Field
               label="Confirm account number"
@@ -421,7 +506,8 @@ const SellerAccountForm = () => {
               name="bankDetails.confirmAccount"
               value={formik.values.bankDetails.confirmAccount}
               onChange={formik.handleChange}
-              error={accountMismatch ? 'Account numbers do not match.' : ''}
+              onBlur={formik.handleBlur}
+              error={getFieldError('bankDetails.confirmAccount')}
             />
           </div>
           <Field
@@ -429,10 +515,12 @@ const SellerAccountForm = () => {
             required
             name="bankDetails.ifscCode"
             value={formik.values.bankDetails.ifscCode}
-            onChange={(e) =>
-              formik.setFieldValue('bankDetails.ifscCode', e.target.value.toUpperCase())
+            onChange={(event) =>
+              formik.setFieldValue('bankDetails.ifscCode', event.target.value.toUpperCase())
             }
+            onBlur={formik.handleBlur}
             placeholder="Example: HDFC0001234"
+            error={getFieldError('bankDetails.ifscCode')}
           />
         </div>
       )}
@@ -449,6 +537,8 @@ const SellerAccountForm = () => {
               name="businessDetails.businessName"
               value={formik.values.businessDetails.businessName}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={getFieldError('businessDetails.businessName')}
             />
             <Field
               label="Seller display name"
@@ -456,6 +546,8 @@ const SellerAccountForm = () => {
               name="sellerName"
               value={formik.values.sellerName}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={getFieldError('sellerName')}
             />
           </div>
 
@@ -466,7 +558,9 @@ const SellerAccountForm = () => {
             type="email"
             value={formik.values.email}
             onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
             placeholder="business@example.com"
+            error={getFieldError('email')}
           />
 
           <div
@@ -480,6 +574,8 @@ const SellerAccountForm = () => {
               type="password"
               value={formik.values.password}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={getFieldError('password')}
               helper="Minimum 8 characters."
             />
             <Field
@@ -489,7 +585,8 @@ const SellerAccountForm = () => {
               type="password"
               value={formik.values.confirmPassword}
               onChange={formik.handleChange}
-              error={passwordMismatch ? 'Passwords do not match.' : ''}
+              onBlur={formik.handleBlur}
+              error={getFieldError('confirmPassword')}
             />
           </div>
         </div>
@@ -578,4 +675,5 @@ const SellerAccountForm = () => {
     </div>
   )
 }
+
 export default SellerAccountForm

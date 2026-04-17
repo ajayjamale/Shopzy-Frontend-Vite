@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
+import FormFeedbackToast, { useFormFeedback } from '../../../components/forms/FormFeedbackToast'
 const schema = Yup.object().shape({
   name: Yup.string().min(2, 'Name is too short').required('Required'),
   mobile: Yup.string()
@@ -34,6 +35,7 @@ const Field = ({ label, name, formik, type = 'text' }) => {
 }
 const AddressForm = ({ handleClose, onAddressSaved }) => {
   const [saving, setSaving] = useState(false)
+  const { feedback, showError, showSuccess, closeFeedback } = useFormFeedback()
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -49,56 +51,73 @@ const AddressForm = ({ handleClose, onAddressSaved }) => {
       if (saving) return
       setSaving(true)
       try {
-        await onAddressSaved?.(values)
+        const result = await onAddressSaved?.(values)
+        if (result === false) {
+          showError('Unable to proceed with this address. Please try again.')
+          return
+        }
+
+        showSuccess('Address accepted. Continuing to payment...')
+        window.setTimeout(() => {
+          handleClose?.()
+        }, 250)
+      } catch (error) {
+        showError(
+          error instanceof Error ? error.message : 'Unable to proceed with this address.',
+        )
       } finally {
         setSaving(false)
       }
     },
   })
   return (
-    <div className="surface p-5" style={{ width: 'min(560px, 94vw)', borderRadius: 18 }}>
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <p className="section-kicker mb-1">Delivery Address</p>
-          <h3 style={{ fontSize: '1.25rem' }}>Add new address</h3>
+    <>
+      <div className="surface p-5" style={{ width: 'min(560px, 94vw)', borderRadius: 18 }}>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="section-kicker mb-1">Delivery Address</p>
+            <h3 style={{ fontSize: '1.25rem' }}>Add new address</h3>
+          </div>
+          <button className="btn-secondary" onClick={handleClose}>
+            Close
+          </button>
         </div>
-        <button className="btn-secondary" onClick={handleClose}>
-          Close
-        </button>
+
+        <form onSubmit={formik.handleSubmit} className="grid gap-3">
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field label="Full Name" name="name" formik={formik} />
+            <Field label="Mobile" name="mobile" formik={formik} type="tel" />
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field label="PIN Code" name="pinCode" formik={formik} />
+            <Field label="Locality" name="locality" formik={formik} />
+          </div>
+
+          <Field label="Address Line" name="address" formik={formik} />
+
+          <div className="grid sm:grid-cols-2 gap-3">
+            <Field label="City" name="city" formik={formik} />
+            <Field label="State" name="state" formik={formik} />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <button type="button" className="btn-secondary" onClick={handleClose}>
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="btn-primary"
+              disabled={!formik.isValid || formik.isSubmitting || saving}
+            >
+              {saving ? 'Saving...' : 'Save & Continue'}
+            </button>
+          </div>
+        </form>
       </div>
 
-      <form onSubmit={formik.handleSubmit} className="grid gap-3">
-        <div className="grid sm:grid-cols-2 gap-3">
-          <Field label="Full Name" name="name" formik={formik} />
-          <Field label="Mobile" name="mobile" formik={formik} type="tel" />
-        </div>
-
-        <div className="grid sm:grid-cols-2 gap-3">
-          <Field label="PIN Code" name="pinCode" formik={formik} />
-          <Field label="Locality" name="locality" formik={formik} />
-        </div>
-
-        <Field label="Address Line" name="address" formik={formik} />
-
-        <div className="grid sm:grid-cols-2 gap-3">
-          <Field label="City" name="city" formik={formik} />
-          <Field label="State" name="state" formik={formik} />
-        </div>
-
-        <div className="flex justify-end gap-2 pt-2">
-          <button type="button" className="btn-secondary" onClick={handleClose}>
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="btn-primary"
-            disabled={!formik.isValid || formik.isSubmitting || saving}
-          >
-            {saving ? 'Saving...' : 'Save & Continue'}
-          </button>
-        </div>
-      </form>
-    </div>
+      <FormFeedbackToast feedback={feedback} onClose={closeFeedback} />
+    </>
   )
 }
 export default AddressForm

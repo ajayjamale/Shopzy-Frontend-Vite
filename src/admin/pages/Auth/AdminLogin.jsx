@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
@@ -6,6 +5,10 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { signin, resetOtpState, sendLoginSignupOtp } from '../../../store/customer/AuthSlice'
 import OTPInput from '../../../customer/components/otp-field/OTPInput'
+import FormFeedbackToast, {
+  getAsyncActionError,
+  useFormFeedback,
+} from '../../../components/forms/FormFeedbackToast'
 const emailSchema = Yup.object({
   email: Yup.string().email('Enter a valid email').required('Email is required'),
 })
@@ -16,6 +19,7 @@ const AdminLoginForm = () => {
   const [otp, setOtp] = useState('')
   const [timer, setTimer] = useState(30)
   const [isTimerActive, setIsTimerActive] = useState(false)
+  const { feedback, showSuccess, showError, closeFeedback } = useFormFeedback()
   const formik = useFormik({
     initialValues: { email: '' },
     validationSchema: emailSchema,
@@ -43,22 +47,36 @@ const AdminLoginForm = () => {
     const errors = await formik.validateForm()
     if (errors.email) {
       formik.setFieldTouched('email', true)
+      showError('Please enter a valid admin email.')
       return
     }
     const action = await dispatch(sendLoginSignupOtp({ email: `signing_${formik.values.email}` }))
     if (sendLoginSignupOtp.fulfilled.match(action)) {
       startTimer()
+      showSuccess('OTP sent to your admin email.')
+      return
     }
+    showError(getAsyncActionError(action, 'Unable to send OTP. Please try again.'))
   }
   const handleResendOtp = async () => {
     const action = await dispatch(sendLoginSignupOtp({ email: `signing_${formik.values.email}` }))
     if (sendLoginSignupOtp.fulfilled.match(action)) {
       startTimer()
+      showSuccess('OTP resent successfully.')
+      return
     }
+    showError(getAsyncActionError(action, 'Unable to resend OTP. Please try again.'))
   }
-  const handleLogin = () => {
-    if (otp.length < 6) return
-    dispatch(signin({ email: formik.values.email, otp, navigate }))
+  const handleLogin = async () => {
+    if (otp.length < 6) {
+      showError('Please enter the 6-digit OTP.')
+      return
+    }
+
+    const action = await dispatch(signin({ email: formik.values.email, otp, navigate }))
+    if (signin.rejected.match(action)) {
+      showError(getAsyncActionError(action, 'Login failed. Please verify OTP and try again.'))
+    }
   }
   const hasEmailError = formik.touched.email && Boolean(formik.errors.email)
   return (
@@ -300,6 +318,8 @@ const AdminLoginForm = () => {
 
         {auth.error && <div className="alf-error-banner">{auth.error}</div>}
       </div>
+
+      <FormFeedbackToast feedback={feedback} onClose={closeFeedback} />
     </>
   )
 }

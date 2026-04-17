@@ -2,6 +2,7 @@ const createTypeAction = (type) => {
   const actionCreator = (payload) => ({ type, payload })
   actionCreator.type = type
   actionCreator.toString = () => type
+  actionCreator.match = (action) => action?.type === type
   return actionCreator
 }
 

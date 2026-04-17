@@ -4,9 +4,15 @@ import * as Yup from 'yup'
 import { Field, SaveButton } from './FormPrimitives'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { updateSeller } from '../../../store/seller/sellerSlice'
+import FormFeedbackToast, {
+  getAsyncActionError,
+  useFormFeedback,
+} from '../../../components/forms/FormFeedbackToast'
+
 const PickupAddressForm = ({ onClose }) => {
   const { sellers } = useAppSelector((s) => s)
   const dispatch = useAppDispatch()
+  const { feedback, showError, closeFeedback } = useFormFeedback()
   const formik = useFormik({
     initialValues: {
       address: '',
@@ -20,13 +26,18 @@ const PickupAddressForm = ({ onClose }) => {
       state: Yup.string().required('State is required'),
       mobile: Yup.string().required('Mobile is required'),
     }),
-    onSubmit: (values) => {
-      dispatch(
+    onSubmit: async (values) => {
+      const action = await dispatch(
         updateSeller({
           pickupAddress: values,
         }),
       )
-      onClose()
+      if (updateSeller.fulfilled.match(action)) {
+        onClose?.()
+        return
+      }
+
+      showError(getAsyncActionError(action, 'Failed to update pickup address.'))
     },
   })
   useEffect(() => {
@@ -40,56 +51,60 @@ const PickupAddressForm = ({ onClose }) => {
     }
   }, [sellers.profile])
   return (
-    <form
-      onSubmit={formik.handleSubmit}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 14,
-      }}
-    >
-      <Field
-        id="address"
-        name="address"
-        label="Address"
-        value={formik.values.address}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.address && Boolean(formik.errors.address)}
-        helperText={formik.touched.address && formik.errors.address}
-      />
-      <Field
-        id="city"
-        name="city"
-        label="City"
-        value={formik.values.city}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.city && Boolean(formik.errors.city)}
-        helperText={formik.touched.city && formik.errors.city}
-      />
-      <Field
-        id="state"
-        name="state"
-        label="State"
-        value={formik.values.state}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.state && Boolean(formik.errors.state)}
-        helperText={formik.touched.state && formik.errors.state}
-      />
-      <Field
-        id="mobile"
-        name="mobile"
-        label="Mobile"
-        value={formik.values.mobile}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={formik.touched.mobile && Boolean(formik.errors.mobile)}
-        helperText={formik.touched.mobile && formik.errors.mobile}
-      />
-      <SaveButton />
-    </form>
+    <>
+      <form
+        onSubmit={formik.handleSubmit}
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14,
+        }}
+      >
+        <Field
+          id="address"
+          name="address"
+          label="Address"
+          value={formik.values.address}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.address && Boolean(formik.errors.address)}
+          helperText={formik.touched.address && formik.errors.address}
+        />
+        <Field
+          id="city"
+          name="city"
+          label="City"
+          value={formik.values.city}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.city && Boolean(formik.errors.city)}
+          helperText={formik.touched.city && formik.errors.city}
+        />
+        <Field
+          id="state"
+          name="state"
+          label="State"
+          value={formik.values.state}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.state && Boolean(formik.errors.state)}
+          helperText={formik.touched.state && formik.errors.state}
+        />
+        <Field
+          id="mobile"
+          name="mobile"
+          label="Mobile"
+          value={formik.values.mobile}
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          error={formik.touched.mobile && Boolean(formik.errors.mobile)}
+          helperText={formik.touched.mobile && formik.errors.mobile}
+        />
+        <SaveButton />
+      </form>
+
+      <FormFeedbackToast feedback={feedback} onClose={closeFeedback} />
+    </>
   )
 }
 export default PickupAddressForm

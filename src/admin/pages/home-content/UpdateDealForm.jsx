@@ -12,6 +12,7 @@ import {
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { getAllDailyDiscounts, updateDailyDiscount } from '../../../store/admin/DealSlice'
 import { fetchHomePageData } from '../../../store/customer/home/AsyncThunk'
+import { getAsyncActionError } from '../../../components/forms/FormFeedbackToast'
 const modernTextField = {
   '& label.Mui-focused': {
     color: '#1E293B',
@@ -36,7 +37,7 @@ const modernTextField = {
     fontSize: 11,
   },
 }
-const UpdateDealForm = ({ id, onSuccess }) => {
+const UpdateDealForm = ({ id, onSuccess, onError }) => {
   const { deal } = useAppSelector((store) => store)
   const dispatch = useAppDispatch()
   const current = deal.discounts.find((item) => item.id === id)
@@ -89,7 +90,10 @@ const UpdateDealForm = ({ id, onSuccess }) => {
         dispatch(getAllDailyDiscounts())
         dispatch(fetchHomePageData())
         onSuccess?.()
+        return
       }
+
+      onError?.(getAsyncActionError(result, 'Failed to update daily discount.'))
     },
   })
   return (

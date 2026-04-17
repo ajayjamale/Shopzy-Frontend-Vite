@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { clearCart } from '../../../store/customer/CartSlice'
 import { paymentSuccess } from '../../../store/customer/OrderSlice'
 import { decrementProductQuantitiesAfterPurchase } from '../../../store/customer/ProductSlice'
+import { getPurchasedItemsFromCart } from '../../../utils/purchaseStock'
 const PaymentSuccessHandler = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
@@ -30,13 +31,12 @@ const PaymentSuccessHandler = () => {
   useEffect(() => {
     if (!paymentConfirmed || successHandledRef.current) return
     successHandledRef.current = true
-    const purchasedItems = (cart?.cartItems ?? []).map((item) => ({
-      productId: Number(item.product?.id ?? 0),
-      quantity: Number(item.quantity ?? 0),
-    }))
+
+    const purchasedItems = getPurchasedItemsFromCart(cart?.cartItems ?? [])
     if (purchasedItems.length) {
       dispatch(decrementProductQuantitiesAfterPurchase(purchasedItems))
     }
+
     dispatch(clearCart())
     navigate('/order-placed', {
       replace: true,

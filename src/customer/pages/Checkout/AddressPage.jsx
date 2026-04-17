@@ -11,6 +11,7 @@ import {
 } from '../../../store/customer/OrderSlice'
 import { clearCart } from '../../../store/customer/CartSlice'
 import { decrementProductQuantitiesAfterPurchase } from '../../../store/customer/ProductSlice'
+import { getPurchasedItemsFromCart } from '../../../utils/purchaseStock'
 import AddressCard from './AddressCard'
 import AddressForm from './AddressForm'
 import PricingCard from '../Cart/PricingCard'
@@ -77,7 +78,7 @@ const AddressPage = () => {
     if (!loaded || !window.Razorpay) {
       setError('Unable to load Razorpay checkout. Please check your connection and retry.')
       unlockCheckout()
-      return
+      return false
     }
     const options = {
       key: payload.razorpay_key,
@@ -111,13 +112,12 @@ const AddressPage = () => {
               razorpaySignature: response.razorpay_signature,
             }),
           ).unwrap()
-          const purchasedItems = (cart.cart?.cartItems ?? []).map((item) => ({
-            productId: Number(item.product?.id ?? 0),
-            quantity: Number(item.quantity ?? 0),
-          }))
+
+          const purchasedItems = getPurchasedItemsFromCart(cart.cart?.cartItems ?? [])
           if (purchasedItems.length) {
             dispatch(decrementProductQuantitiesAfterPurchase(purchasedItems))
           }
+
           dispatch(clearCart())
           navigate('/order-placed', {
             state: {
@@ -151,9 +151,10 @@ const AddressPage = () => {
       unlockCheckout()
     })
     instance.open()
+    return true
   }
   const placeOrder = async (address) => {
-    if (inFlightRef.current || placingOrder || orders.loading) return
+    if (inFlightRef.current || placingOrder || orders.loading) return false
     setError(null)
     lockCheckout()
     let handedOffToCheckout = false
@@ -172,12 +173,14 @@ const AddressPage = () => {
         Number(result?.amount) > 0
       if (!canOpenRazorpay) {
         setError('Unable to initialize Razorpay checkout. Please try again.')
-        return
+        return false
       }
-      handedOffToCheckout = true
-      await openRazorpayCheckout(result)
+      const opened = await openRazorpayCheckout(result)
+      handedOffToCheckout = opened
+      return opened
     } catch (err) {
       setError(typeof err === 'string' ? err : 'Could not create order')
+      return false
     } finally {
       if (!handedOffToCheckout) {
         unlockCheckout()
@@ -274,10 +277,7 @@ const AddressPage = () => {
           <AddressForm
             paymentGateway={paymentGateway}
             handleClose={() => setOpen(false)}
-            onAddressSaved={async (address) => {
-              setOpen(false)
-              await placeOrder(address)
-            }}
+            onAddressSaved={(address) => placeOrder(address)}
           />
         </Box>
       </Modal>
