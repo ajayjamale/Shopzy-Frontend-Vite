@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../store";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 type SpotlightCard = {
   title: string;
@@ -41,16 +42,12 @@ const HeroSpotlights = () => {
       title: item.title || item.subtitle || "Featured",
       subtitle: item.description || item.badgeText || "",
       imageUrl: item.imageUrl || fallbackCards[0].imageUrl,
-      target: item.redirectLink || item.buttonLink || item.categoryId || "/products",
+      target: item.redirectLink || item.buttonLink || item.categoryId || "/catalog",
     })) || fallbackCards;
 
   const handleNavigate = (target: string) => {
     if (!target) return;
-    if (target.startsWith("/")) {
-      navigate(target);
-      return;
-    }
-    navigate(`/products/${target}`);
+    navigate(toCatalogPath(target));
   };
 
   return (

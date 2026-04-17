@@ -13,9 +13,10 @@ export interface Review {
     reviewTitle?: string;
   }
   
-  export interface CreateReviewRequest {
+export interface CreateReviewRequest {
     reviewText: string;
     reviewRating: number;
+    productImages?: string[];
   }
   
   export interface ApiResponse {
@@ -23,13 +24,14 @@ export interface Review {
     status: boolean;
   }
   
-  export interface ReviewState {
+export interface ReviewState {
     reviews: Review[];
     loading: boolean;
     error: string | null;
     reviewCreated: boolean;
     reviewUpdated: boolean;
     reviewDeleted: boolean;
-    success?: boolean;
+    success: boolean;
+    successMessage: string | null;
   }
   

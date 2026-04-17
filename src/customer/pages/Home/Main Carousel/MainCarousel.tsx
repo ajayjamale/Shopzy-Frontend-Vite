@@ -5,6 +5,7 @@ import NavigateBeforeRoundedIcon from "@mui/icons-material/NavigateBeforeRounded
 import NavigateNextRoundedIcon from "@mui/icons-material/NavigateNextRounded";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../store";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 const fallbackSlides = [
   {
@@ -73,12 +74,7 @@ const MainCarousel = () => {
   };
 
   const handleCta = () => {
-    const target = active.link || "/";
-    if (target.startsWith("/")) {
-      navigate(target);
-      return;
-    }
-    navigate(`/products/${target}`);
+    navigate(toCatalogPath(active.link || "/"));
   };
 
   return (

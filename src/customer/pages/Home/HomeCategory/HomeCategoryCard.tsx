@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import './HomeCategoryCard.css'; // import the CSS file
+import { toCatalogPath } from '../../../../utils/catalogRoute';
 
 interface HomeCategoryCardProps {
   item: {
@@ -18,7 +19,7 @@ const HomeCategoryCard: React.FC<HomeCategoryCardProps> = ({ item }) => {
   return (
     <div
       className="hcc-card"
-      onClick={() => navigate(`/products/${item.categoryId}`)}
+      onClick={() => navigate(toCatalogPath(item.categoryId))}
     >
       <div className="hcc-img-wrap">
         <img src={item.image || item.imageUrl} alt={item.name} loading="lazy" />

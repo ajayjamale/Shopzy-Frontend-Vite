@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import type { HomePageContent } from "../../../../types/homeContentTypes";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 type CategoryCard = {
   id: string;
@@ -48,7 +49,7 @@ const fallback: CategoryCard[] = [
   },
 ];
 
-const resolveTarget = (target: string) => (target.startsWith("/") ? target : `/products/${target}`);
+const resolveTarget = (target: string) => toCatalogPath(target);
 
 const ShopCategoryMosaic = ({ data }: { data: HomePageContent | null }) => {
   const navigate = useNavigate();

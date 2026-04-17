@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { clearCart } from "../../../store/customer/CartSlice";
 import { paymentSuccess } from "../../../store/customer/OrderSlice";
+import { decrementProductQuantitiesAfterPurchase } from "../../../store/customer/ProductSlice";
 
 const PaymentSuccessHandler = () => {
   const dispatch = useAppDispatch();
@@ -11,7 +12,9 @@ const PaymentSuccessHandler = () => {
   const location = useLocation();
 
   const { loading, paymentConfirmed, error } = useAppSelector((store) => store.orders);
+  const cart = useAppSelector((store) => store.cart.cart);
   const sentRef = useRef(false);
+  const successHandledRef = useRef(false);
 
   const search = new URLSearchParams(location.search);
   const paymentId = search.get("razorpay_payment_id");
@@ -31,16 +34,25 @@ const PaymentSuccessHandler = () => {
   }, [paymentId, paymentLinkId, dispatch]);
 
   useEffect(() => {
-    if (paymentConfirmed) {
-      dispatch(clearCart());
-      navigate("/order-placed", {
-        replace: true,
-        state: {
-          paymentId: paymentId || undefined,
-        },
-      });
+    if (!paymentConfirmed || successHandledRef.current) return;
+    successHandledRef.current = true;
+
+    const purchasedItems = (cart?.cartItems ?? []).map((item) => ({
+      productId: Number(item.product?.id ?? 0),
+      quantity: Number(item.quantity ?? 0),
+    }));
+    if (purchasedItems.length) {
+      dispatch(decrementProductQuantitiesAfterPurchase(purchasedItems));
     }
-  }, [paymentConfirmed, dispatch, navigate, paymentId]);
+
+    dispatch(clearCart());
+    navigate("/order-placed", {
+      replace: true,
+      state: {
+        paymentId: paymentId || undefined,
+      },
+    });
+  }, [paymentConfirmed, dispatch, navigate, paymentId, cart]);
 
   if (loading) {
     return (

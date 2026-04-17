@@ -15,6 +15,7 @@ import BrandShowcasePanel from "./Sections/BrandShowcasePanel";
 import DailyDiscountSection from "./Sections/DailyDiscountSection";
 import type { HomePageContent } from "../../../types/homeContentTypes";
 import { fetchHomePageData } from "../../../store/customer/home/AsyncThunk";
+import { toCatalogPath } from "../../../utils/catalogRoute";
 
 const Home = () => {
   const dispatch = useAppDispatch();
@@ -75,7 +76,7 @@ const Home = () => {
               icon: <LocalShippingRoundedIcon sx={{ fontSize: 18, color: "#0F766E" }} />,
               title: "Fast Delivery",
               desc: "Tracked shipping across all orders",
-              action: () => navigate("/products"),
+              action: () => navigate(toCatalogPath()),
             },
             {
               icon: <SecurityRoundedIcon sx={{ fontSize: 18, color: "#0F766E" }} />,

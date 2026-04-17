@@ -7,7 +7,7 @@ import {
   fetchOrderById,
   fetchOrderItemById,
 } from "../../../store/customer/OrderSlice";
-import { createReview } from "../../../store/customer/ReviewSlice";
+import { createReview, resetReviewFeedback } from "../../../store/customer/ReviewSlice";
 import { uploadToCloudinary } from "../../../utils/uploadToCloudnary";
 import { useNavigate, useParams } from "react-router-dom";
 import OrderStepper from "./OrderStepper";
@@ -53,7 +53,9 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const reviewLoading = useAppSelector((s) => s.review.loading);
-  const reviewSuccess = useAppSelector((s) => s.review.success);
+  const reviewSuccess = useAppSelector((s) => s.review.success || s.review.reviewCreated);
+  const reviewError = useAppSelector((s) => s.review.error);
+  const reviewSuccessMessage = useAppSelector((s) => s.review.successMessage);
 
   const [hovered, setHovered] = useState(0);
   const [uploadingImg, setUploadingImg] = useState(false);
@@ -71,25 +73,29 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
         .min(1, "Please select a rating")
         .max(5),
     }),
-    onSubmit: (values) => {
-      setSubmitted(true);
-      // ✅ Unified dispatch shape — matches ReviewForm.tsx
-      dispatch(createReview({
-        productId,
-        review: values,
-        jwt: localStorage.getItem("jwt") || "",
-      }));
+    onSubmit: async (values) => {
+      try {
+        await dispatch(createReview({
+          productId,
+          review: values,
+          jwt: localStorage.getItem("jwt") || "",
+        })).unwrap();
+        setSubmitted(true);
+      } catch {
+        setSubmitted(false);
+      }
     },
   });
 
   // Reset when modal opens
   useEffect(() => {
     if (open) {
+      dispatch(resetReviewFeedback());
       formik.resetForm();
       setHovered(0);
       setSubmitted(false);
     }
-  }, [open]);
+  }, [open, dispatch]);
 
   // Auto-close 2s after success
   useEffect(() => {
@@ -97,7 +103,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
       const t = setTimeout(onClose, 2000);
       return () => clearTimeout(t);
     }
-  }, [reviewSuccess, submitted]);
+  }, [reviewSuccess, submitted, onClose]);
 
   if (!open) return null;
 
@@ -199,7 +205,7 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
                   Thank you for your review!
                 </div>
                 <div style={{ fontSize: "0.875rem", color: "#64748B", marginTop: 6 }}>
-                  Your feedback helps others make informed decisions.
+                  {reviewSuccessMessage || "Your feedback helps others make informed decisions."}
                 </div>
               </div>
 
@@ -227,6 +233,22 @@ const ReviewModal: React.FC<ReviewModalProps> = ({
           ) : (
           /* ════════════════ FORM ════════════════ */
           <form onSubmit={formik.handleSubmit} noValidate>
+            {reviewError && !reviewLoading && (
+              <div
+                style={{
+                  background: "#fef2f2",
+                  border: "1px solid #fca5a5",
+                  color: "#991b1b",
+                  borderRadius: 4,
+                  padding: "10px 12px",
+                  marginBottom: 14,
+                  fontSize: "0.85rem",
+                  fontWeight: 600,
+                }}
+              >
+                {reviewError}
+              </div>
+            )}
 
             {/* Product info strip */}
             <div style={{

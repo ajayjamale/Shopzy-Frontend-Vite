@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import type { HomePageContent } from "../../../../types/homeContentTypes";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 type TechItem = {
   id: string;
@@ -48,7 +49,7 @@ const fallback: TechItem[] = [
   },
 ];
 
-const resolveTarget = (target: string) => (target.startsWith("/") ? target : `/products/${target}`);
+const resolveTarget = (target: string) => toCatalogPath(target);
 
 const TechFeatureRail = ({ data }: { data: HomePageContent | null }) => {
   const navigate = useNavigate();
@@ -83,7 +84,7 @@ const TechFeatureRail = ({ data }: { data: HomePageContent | null }) => {
               Electronics Strip
             </h2>
           </div>
-          <button className="btn-secondary" onClick={() => navigate("/products/electronics")}>
+          <button className="btn-secondary" onClick={() => navigate(toCatalogPath("electronics"))}>
             Browse All Electronics
           </button>
         </div>

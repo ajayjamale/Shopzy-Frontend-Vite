@@ -2,6 +2,7 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { IconButton } from "@mui/material";
 import { FormEvent, useState } from "react";
+import { toCatalogPath } from "../../../utils/catalogRoute";
 
 interface Category {
   categoryId: string;
@@ -77,7 +78,7 @@ const DrawerList = ({ onNavigate, onClose, onSearch, categories, hasSeller }: Dr
             <button
               key={category.categoryId}
               className="nav-drawer-item"
-              onClick={() => onNavigate(`/products/${category.categoryId}`)}
+              onClick={() => onNavigate(toCatalogPath(category.categoryId))}
             >
               {category.name}
             </button>

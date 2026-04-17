@@ -40,7 +40,8 @@ const CustomerRoutes = () => {
       <main className="app-page">
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/products/:categoryId" element={<Products />} />
+          <Route path="/catalog" element={<Products />} />
+          <Route path="/catalog/:categoryId" element={<Products />} />
           <Route path="/search-products" element={<SearchProducts />} />
           <Route path="/reviews/:productId" element={<Reviews />} />
           <Route path="/reviews/:productId/create" element={<WriteReviews />} />

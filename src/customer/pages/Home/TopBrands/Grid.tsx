@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../store";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 const fallback = [
   { name: "Ethnic Plus", image: "https://www.ethnicplus.in/cdn/shop/files/2_e396bfa9-adef-490a-9444-1095114de031.jpg?v=1771173950&width=640", badge: "Fashion", target: "women_indian_and_fusion_wear" },
@@ -17,16 +18,12 @@ const TopBrand = () => {
       name: item.title || item.subtitle || "Brand",
       image: item.imageUrl,
       badge: item.badgeText,
-      target: item.redirectLink || item.categoryId || "/products",
+      target: item.redirectLink || item.categoryId || "/catalog",
     })) || fallback;
 
   const handleNavigate = (target: string) => {
     if (!target) return;
-    if (target.startsWith("/")) {
-      navigate(target);
-      return;
-    }
-    navigate(`/products/${target}`);
+    navigate(toCatalogPath(target));
   };
 
   return (

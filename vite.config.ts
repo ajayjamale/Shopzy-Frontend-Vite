@@ -16,6 +16,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      "/products": {
+        target: backendTarget,
+        changeOrigin: true,
+        configure: configureProxyRequest,
+      },
       "/api/_admin": {
         target: backendTarget,
         changeOrigin: true,

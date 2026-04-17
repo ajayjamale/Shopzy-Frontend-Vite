@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../store";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 type DealPreview = {
   id?: number;
@@ -50,16 +51,12 @@ const HomeCategory = () => {
       title: "Fresh Picks",
       discount: 35,
       image: fallback[0].image,
-      redirectLink: "/products",
+      redirectLink: "/catalog",
     };
   }, [homePage.homePageData?.deals]);
 
   const dealTarget = featuredDeal.redirectLink || featuredDeal.category?.categoryId || "";
-  const dealPath = dealTarget
-    ? dealTarget.startsWith("/")
-      ? dealTarget
-      : `/products/${dealTarget}`
-    : "/products";
+  const dealPath = toCatalogPath(dealTarget);
   const dealImage =
     featuredDeal.image || featuredDeal.imageUrl || featuredDeal.category?.image || fallback[0].image;
   const dealTitle = (
@@ -77,9 +74,7 @@ const HomeCategory = () => {
       : "HOT DEAL");
 
   const resolvePath = (target: string) => {
-    if (!target) return "/products";
-    if (target.startsWith("/")) return target;
-    return `/products/${target}`;
+    return toCatalogPath(target);
   };
 
   return (

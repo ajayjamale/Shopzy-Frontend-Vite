@@ -47,6 +47,11 @@ interface GetAllProductsParams {
   pageNumber?: number;
 }
 
+export interface PurchasedProductQuantity {
+  productId: number;
+  quantity: number;
+}
+
 // ─── Initial State ────────────────────────────────────────────────────────────
 
 const initialState: ProductState = {
@@ -114,7 +119,46 @@ export const getAllProducts = createAsyncThunk<PaginatedProducts, GetAllProducts
 const productSlice = createSlice({
   name: "products",
   initialState,
-  reducers: {},
+  reducers: {
+    decrementProductQuantitiesAfterPurchase: (
+      state,
+      action: PayloadAction<PurchasedProductQuantity[]>
+    ) => {
+      if (!action.payload.length) return;
+
+      const purchasedMap = action.payload.reduce<Record<number, number>>((acc, item) => {
+        const productId = Number(item.productId);
+        const quantity = Number(item.quantity);
+        if (!Number.isFinite(productId) || productId <= 0) return acc;
+        if (!Number.isFinite(quantity) || quantity <= 0) return acc;
+        acc[productId] = (acc[productId] ?? 0) + quantity;
+        return acc;
+      }, {});
+
+      const updateProductQuantity = (product: Product): Product => {
+        const productId = Number(product?.id);
+        if (!productId || !purchasedMap[productId]) return product;
+
+        const nextQuantity = Math.max(0, Number(product.quantity ?? 0) - purchasedMap[productId]);
+        return {
+          ...product,
+          quantity: nextQuantity,
+          in_stock: nextQuantity > 0,
+        };
+      };
+
+      if (state.product) {
+        state.product = updateProductQuantity(state.product);
+      }
+
+      state.products = state.products.map(updateProductQuantity);
+      state.searchProduct = state.searchProduct.map(updateProductQuantity);
+
+      if (state.paginatedProducts) {
+        state.paginatedProducts.content = state.paginatedProducts.content.map(updateProductQuantity);
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       // fetchProductById
@@ -165,6 +209,7 @@ const productSlice = createSlice({
 });
 
 export default productSlice.reducer;
+export const { decrementProductQuantitiesAfterPurchase } = productSlice.actions;
 
 // ─── Selectors ────────────────────────────────────────────────────────────────
 

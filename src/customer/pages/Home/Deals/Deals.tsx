@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../store";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 interface DealsProps {
   title?: string;
@@ -39,7 +40,7 @@ const DealCard: React.FC<{ deal: any }> = ({ deal }) => {
 
   return (
     <div
-      onClick={() => target && navigate(target.startsWith("/") ? target : `/products/${target}`)}
+      onClick={() => target && navigate(toCatalogPath(target))}
       style={{
         borderRadius: 14,
         overflow: "hidden",
@@ -270,7 +271,7 @@ const Deals: React.FC<DealsProps> = ({ title = "Daily Deals" }) => {
             onClick={() => {
               const target = featuredDeal.redirectLink || featuredDeal.category?.categoryId;
               if (!target) return;
-              navigate(target.startsWith("/") ? target : `/products/${target}`);
+              navigate(toCatalogPath(target));
             }}
             style={{
               position: "relative",
@@ -352,7 +353,7 @@ const Deals: React.FC<DealsProps> = ({ title = "Daily Deals" }) => {
 
         <div style={{ textAlign: "center", marginTop: "clamp(28px,3.5vw,44px)" }}>
           <button
-            onClick={() => navigate("/products")}
+            onClick={() => navigate(toCatalogPath())}
             style={{
               display: "inline-flex",
               alignItems: "center",

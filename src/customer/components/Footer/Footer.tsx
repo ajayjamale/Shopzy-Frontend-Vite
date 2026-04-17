@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShopzyLogo } from "../../../components/ShopzyLogo";
 import "../Navbar/Navbar.css";
@@ -43,10 +43,10 @@ const Footer = () => {
         <div>
           <p className="footer-title">Shop</p>
           {[
-            ["Men", "/products/men"],
-            ["Women", "/products/women"],
-            ["Electronics", "/products/electronics"],
-            ["Home & Furniture", "/products/home_furniture"],
+            ["Men", "/catalog/men"],
+            ["Women", "/catalog/women"],
+            ["Electronics", "/catalog/electronics"],
+            ["Home & Furniture", "/catalog/home_furniture"],
             ["Wishlist", "/wishlist"],
           ].map(([label, path]) => (
             <button key={label} className="footer-link bg-transparent border-0 p-0 cursor-pointer" onClick={() => navigate(path)}>
@@ -87,7 +87,7 @@ const Footer = () => {
 
       <div className="footer-bottom">
         <div className="footer-bottom-inner">
-          <span>� {year} Shopzy Commerce. All rights reserved.</span>
+          <span>© {year} Shopzy Commerce. All rights reserved.</span>
           <div className="flex gap-4 flex-wrap">
             <span>Privacy</span>
             <span>Terms</span>
@@ -101,3 +101,4 @@ const Footer = () => {
 };
 
 export default Footer;
+

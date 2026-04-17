@@ -5,6 +5,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import "./Navbar.css";
+import { toCatalogPath } from "../../../utils/catalogRoute";
 
 import { menLevelThree }      from "../../../data/category/level three/menLevelThree";
 import { menLevelTwo }        from "../../../data/category/level two/menLevelTwo";
@@ -39,7 +40,7 @@ const CategorySheet = ({ selectedCategory, toggleDrawer, setShowSheet }: any) =>
   const handleCategoryClick = (categoryId: string) => {
     if (toggleDrawer) toggleDrawer(false)();
     if (setShowSheet) setShowSheet(false);
-    navigate("/products/" + categoryId);
+    navigate(toCatalogPath(categoryId));
   };
 
   const toggleSection = (categoryId: string) =>

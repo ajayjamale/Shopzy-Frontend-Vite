@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../../../../store";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 const fallback = [
   { name: "Mobiles", image: "https://rukminim2.flixcart.com/image/416/416/xif0q/mobile/5/t/j/edge-50-fusion-pb300002in-motorola-original-imahywzrfagkuyxx.jpeg?q=70", target: "mobiles" },
@@ -23,11 +24,7 @@ const ElectronicCategory = () => {
 
   const navigateToTarget = (target: string) => {
     if (!target) return;
-    if (target.startsWith("/")) {
-      navigate(target);
-      return;
-    }
-    navigate(`/products/${target}`);
+    navigate(toCatalogPath(target));
   };
 
   return (
@@ -40,7 +37,7 @@ const ElectronicCategory = () => {
               Trending Electronics
             </h2>
           </div>
-          <button className="btn-secondary" onClick={() => navigate("/products/electronics")}>View all</button>
+          <button className="btn-secondary" onClick={() => navigate(toCatalogPath("electronics"))}>View all</button>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">

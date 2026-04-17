@@ -11,6 +11,7 @@ import {
   verifyRazorpayPayment,
 } from "../../../store/customer/OrderSlice";
 import { clearCart } from "../../../store/customer/CartSlice";
+import { decrementProductQuantitiesAfterPurchase } from "../../../store/customer/ProductSlice";
 import AddressCard from "./AddressCard";
 import AddressForm from "./AddresssForm";
 import PricingCard from "../Cart/PricingCard";
@@ -60,7 +61,7 @@ const modalStyle = {
 const AddressPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { user, orders } = useAppSelector((store) => store);
+  const { user, orders, cart } = useAppSelector((store) => store);
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [paymentGateway, setPaymentGateway] = useState("RAZORPAY");
@@ -139,6 +140,13 @@ const AddressPage = () => {
             })
           ).unwrap();
 
+          const purchasedItems = (cart.cart?.cartItems ?? []).map((item) => ({
+            productId: Number(item.product?.id ?? 0),
+            quantity: Number(item.quantity ?? 0),
+          }));
+          if (purchasedItems.length) {
+            dispatch(decrementProductQuantitiesAfterPurchase(purchasedItems));
+          }
           dispatch(clearCart());
           navigate("/order-placed", {
             state: {

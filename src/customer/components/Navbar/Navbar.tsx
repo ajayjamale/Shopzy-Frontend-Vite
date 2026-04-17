@@ -11,7 +11,9 @@ import { mainCategory } from "../../../data/category/mainCategory";
 import { useAppDispatch, useAppSelector } from "../../../store";
 import { searchProduct } from "../../../store/customer/ProductSlice";
 import { ShopzyLogo } from "../../../components/ShopzyLogo";
+import { toCatalogPath } from "../../../utils/catalogRoute";
 import DrawerList from "./DrawerList";
+import CategorySheet from "./CategorySheet";
 import "./Navbar.css";
 
 const Navbar = () => {
@@ -25,6 +27,7 @@ const Navbar = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [showMobileSearch, setShowMobileSearch] = useState(false);
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null);
 
   const firstName = useMemo(
     () => user.user?.fullName?.split(" ")?.[0] || "Guest",
@@ -37,6 +40,10 @@ const Navbar = () => {
     const queryFromUrl = params.get("query") ?? "";
     setSearchQuery(queryFromUrl);
   }, [location.pathname, location.search]);
+
+  useEffect(() => {
+    if (isMobile) setHoveredCategory(null);
+  }, [isMobile]);
 
   const handleSearch = () => {
     const query = searchQuery.trim();
@@ -137,20 +144,46 @@ const Navbar = () => {
         </div>
       )}
 
-      <div className="nav-cats">
-        {mainCategory.map((category) => (
+      <div className="nav-cats-wrap" onMouseLeave={() => setHoveredCategory(null)}>
+        <div className="nav-cats">
+          {mainCategory.map((category) => (
+            <button
+              key={category.categoryId}
+              className={`nav-cat-pill${hoveredCategory === category.categoryId ? " nav-cat-pill-active" : ""}`}
+              onMouseEnter={() => {
+                if (!isMobile) setHoveredCategory(category.categoryId);
+              }}
+              onFocus={() => {
+                if (!isMobile) setHoveredCategory(category.categoryId);
+              }}
+              onClick={() => navigate(toCatalogPath(category.categoryId))}
+            >
+              {category.name}
+            </button>
+          ))}
           <button
-            key={category.categoryId}
-            className="nav-cat-pill"
-            onClick={() => navigate(`/products/${category.categoryId}`)}
+            className="nav-cat-pill nav-sell"
+            onMouseEnter={() => setHoveredCategory(null)}
+            onFocus={() => setHoveredCategory(null)}
+            onClick={becomeSellerClick}
           >
-            {category.name}
+            <SellRoundedIcon sx={{ fontSize: 14 }} />
+            Become a Seller
           </button>
-        ))}
-        <button className="nav-cat-pill nav-sell" onClick={becomeSellerClick}>
-          <SellRoundedIcon sx={{ fontSize: 14 }} />
-          Become a Seller
-        </button>
+        </div>
+
+        {!isMobile && hoveredCategory && (
+          <div className="nav-hover-sheet-wrap">
+            <div className="nav-hover-sheet">
+              <CategorySheet
+                selectedCategory={hoveredCategory}
+                setShowSheet={(isOpen: boolean) => {
+                  if (!isOpen) setHoveredCategory(null);
+                }}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>

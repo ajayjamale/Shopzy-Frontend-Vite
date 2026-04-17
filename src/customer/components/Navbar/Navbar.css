@@ -91,6 +91,10 @@
   scrollbar-width: none;
 }
 
+.nav-cats-wrap {
+  position: relative;
+}
+
 .nav-cats::-webkit-scrollbar {
   display: none;
 }
@@ -115,11 +119,64 @@
   transform: translateY(-1px);
 }
 
+.nav-cat-pill-active {
+  border-color: #5daea6;
+  background: #eff8f7;
+  color: #0f766e;
+}
+
 .nav-sell {
   margin-left: auto;
   border: 1px solid #0f766e;
   color: #0f766e;
   background: #e9f7f5;
+}
+
+.nav-hover-sheet-wrap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 1300;
+}
+
+.nav-hover-sheet {
+  width: min(1240px, 94vw);
+  margin-inline: auto;
+  border: 1px solid #d7e4e8;
+  border-radius: 16px;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.14);
+  background: #ffffff;
+  overflow: hidden;
+  max-height: min(72vh, 620px);
+}
+
+.category-desktop-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 24px;
+}
+
+.styled-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.styled-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.styled-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .nav-mobile-search {

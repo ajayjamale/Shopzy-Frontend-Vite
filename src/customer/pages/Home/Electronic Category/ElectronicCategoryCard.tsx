@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 interface ElectronicItem {
   categoryId: string;
@@ -41,7 +42,7 @@ const ElectronicCategoryCard = ({ item, index = 0 }: { item: ElectronicItem; ind
 
       <div
         className="fk-cat-card"
-        onClick={() => navigate(`/products/${item.categoryId}`)}
+        onClick={() => navigate(toCatalogPath(item.categoryId))}
       >
         <div style={{
           width: 60, height: 60, borderRadius: "50%",

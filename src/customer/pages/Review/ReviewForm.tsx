@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { useAppDispatch, useAppSelector } from '../../../store';
-import { createReview } from '../../../store/customer/ReviewSlice';
+import { createReview, resetReviewFeedback } from '../../../store/customer/ReviewSlice';
 import { uploadToCloudinary } from '../../../utils/uploadToCloudnary';
 import { useNavigate, useParams } from 'react-router-dom';
 import StarIcon from "@mui/icons-material/Star";
@@ -32,10 +32,18 @@ const ReviewForm: React.FC = () => {
   // ✅ Granular selectors
   const reviewLoading = useAppSelector((s) => s.review.loading);
   const reviewError = useAppSelector((s) => s.review.error);
+  const reviewSuccessMessage = useAppSelector((s) => s.review.successMessage);
 
   const [hovered, setHovered] = useState(0);
   const [uploadingImg, setUploadingImg] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+
+  useEffect(() => {
+    dispatch(resetReviewFeedback());
+    return () => {
+      dispatch(resetReviewFeedback());
+    };
+  }, [dispatch]);
 
   const formik = useFormik<CreateReviewRequest>({
     initialValues: {
@@ -139,7 +147,7 @@ const ReviewForm: React.FC = () => {
             fontWeight: 600,
           }}
         >
-          Review submitted successfully.
+          {reviewSuccessMessage || "Review submitted successfully."}
         </div>
       )}
 

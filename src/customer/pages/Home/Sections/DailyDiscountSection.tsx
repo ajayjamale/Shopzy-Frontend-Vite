@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import type { HomePageContent } from "../../../../types/homeContentTypes";
+import { toCatalogPath } from "../../../../utils/catalogRoute";
 
 type DiscountItem = {
   id: string;
@@ -38,7 +39,7 @@ const fallback: DiscountItem[] = [
   },
 ];
 
-const resolveTarget = (target: string) => (target.startsWith("/") ? target : `/products/${target}`);
+const resolveTarget = (target: string) => toCatalogPath(target);
 
 const DailyDiscountSection = ({ data }: { data: HomePageContent | null }) => {
   const navigate = useNavigate();
@@ -58,7 +59,7 @@ const DailyDiscountSection = ({ data }: { data: HomePageContent | null }) => {
           discountText:
             item.discountLabel || (Number.isFinite(value) && value > 0 ? `${Math.round(value)}% OFF` : "HOT DEAL"),
           image: item.imageUrl || fallback[0].image,
-          target: item.redirectLink || "/products",
+          target: item.redirectLink || "/catalog",
         };
       })
       .slice(0, 8);
@@ -94,7 +95,7 @@ const DailyDiscountSection = ({ data }: { data: HomePageContent | null }) => {
               Fresh discount cards synced from backend each day.
             </p>
           </div>
-          <button className="btn-secondary" onClick={() => navigate("/products")}>
+          <button className="btn-secondary" onClick={() => navigate(toCatalogPath())}>
             Explore All Offers
           </button>
         </div>
