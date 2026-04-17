@@ -3,7 +3,7 @@ import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded'
 import { useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import {
   createOrder,
   markPaymentFailed,

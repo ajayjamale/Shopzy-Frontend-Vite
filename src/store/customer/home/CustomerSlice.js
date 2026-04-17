@@ -1,5 +1,5 @@
 // homeSlice.ts
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice } from '../../../context/miniToolkit.js'
 import { createHomeCategories, fetchHomePageData } from './AsyncThunk'
 const initialState = {
   homePageData: null,

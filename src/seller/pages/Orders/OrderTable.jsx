@@ -18,7 +18,7 @@ import {
 import ShoppingBagRoundedIcon from '@mui/icons-material/ShoppingBagRounded'
 import ReplayRoundedIcon from '@mui/icons-material/ReplayRounded'
 import LocalShippingRoundedIcon from '@mui/icons-material/LocalShippingRounded'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { fetchSellerOrders, updateOrderStatus } from '../../../store/seller/sellerOrderSlice'
 import { OrderStatus } from '../../../types/orderTypes'
 import { getSellerToken } from '../../../utils/authToken'

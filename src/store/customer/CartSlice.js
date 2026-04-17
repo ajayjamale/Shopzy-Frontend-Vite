@@ -1,5 +1,5 @@
 // src/slices/cartSlice.ts
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '../../context/miniToolkit.js'
 import { api } from '../../config/Api'
 import { applyCoupon } from './CouponSlice'
 import { sumCartItemMrpPrice, sumCartItemSellingPrice } from '../../utils/cartCalculator'

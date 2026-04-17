@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import SearchRoundedIcon from '@mui/icons-material/SearchRounded'
 import { useSearchParams } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { searchProduct } from '../../../store/customer/ProductSlice'
 import ProductCard from '../Products/ProductCard/ProductCard'
 const SearchProducts = () => {

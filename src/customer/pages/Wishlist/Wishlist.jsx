@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { getWishlistByUserId } from '../../../store/customer/WishlistSlice'
 import WishlistProductCard from './WishlistProductCard'
 const Wishlist = () => {

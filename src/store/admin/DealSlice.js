@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '../../context/miniToolkit.js'
 import { adminApiPath, api } from '../../config/Api'
 import { getAdminToken } from '../../utils/authToken'
 const initialState = {

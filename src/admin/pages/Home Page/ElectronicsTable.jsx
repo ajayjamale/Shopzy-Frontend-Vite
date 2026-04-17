@@ -1,4 +1,4 @@
-import { useAppSelector } from '../../../store'
+import { useAppSelector } from '../../../context/AppContext'
 import HomeCategoryTable from './HomeCategoryTable'
 function ElectronicsTable() {
   const { homePage } = useAppSelector((store) => store)

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { fetchSettlementById, updateSettlementStatus } from '../../../store/seller/settlementSlice'
 import { getAdminToken } from '../../../utils/authToken'
 const C = {

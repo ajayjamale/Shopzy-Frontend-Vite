@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '../../context/miniToolkit.js'
 import axios from 'axios'
 import { adminApiPath, api } from '../../config/Api'
 import { getAdminToken, getSellerToken } from '../../utils/authToken'

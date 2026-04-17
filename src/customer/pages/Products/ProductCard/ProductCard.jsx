@@ -1,7 +1,7 @@
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../../store'
+import { useAppDispatch, useAppSelector } from '../../../../context/AppContext'
 import { addItemToCart } from '../../../../store/customer/CartSlice'
 import { addProductToWishlist } from '../../../../store/customer/WishlistSlice'
 import { isWishlisted } from '../../../../utils/isWishlisted'

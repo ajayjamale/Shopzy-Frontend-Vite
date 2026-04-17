@@ -15,7 +15,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { fetchSellers, updateSellerAccountStatus } from '../../../store/seller/sellerSlice'
 import { useSearchParams } from 'react-router-dom'
 const accountStatuses = [

@@ -1,5 +1,5 @@
 import React from 'react'
-import { useAppSelector } from '../../../store'
+import { useAppSelector } from '../../../context/AppContext'
 import HomeCategoryTable from './HomeCategoryTable'
 import { Box, Typography } from '@mui/material'
 import CategoryIcon from '@mui/icons-material/Category'

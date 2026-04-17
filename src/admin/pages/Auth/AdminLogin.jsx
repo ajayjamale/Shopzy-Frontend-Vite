@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { signin, resetOtpState, sendLoginSignupOtp } from '../../../store/customer/AuthSlice'
 import OTPInput from '../../../customer/components/OtpFild/OTPInput'
 const emailSchema = Yup.object({

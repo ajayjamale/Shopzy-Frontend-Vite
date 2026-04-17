@@ -1,5 +1,5 @@
 import Divider from '@mui/material/Divider'
-import { useAppSelector } from '../../../store'
+import { useAppSelector } from '../../../context/AppContext'
 import { sumCartItemMrpPrice, sumCartItemSellingPrice } from '../../../utils/cartCalculator'
 const PricingCard = () => {
   const { cart } = useAppSelector((store) => store)

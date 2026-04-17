@@ -4,7 +4,7 @@ import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceW
 import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded'
 import AutorenewRoundedIcon from '@mui/icons-material/AutorenewRounded'
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import {
   fetchSettlementSummary,
   fetchSettlements,

@@ -1,5 +1,5 @@
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
-import { useAppSelector } from '../../../store'
+import { useAppSelector } from '../../../context/AppContext'
 import './Profile.css'
 const UserDetails = () => {
   const { user } = useAppSelector((store) => store)

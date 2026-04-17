@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { chatBot, clearMessages } from '../../../store/customer/AiChatBotSlice'
 import { IconButton } from '@mui/material'
 import SendIcon from '@mui/icons-material/Send'

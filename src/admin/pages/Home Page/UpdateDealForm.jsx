@@ -10,7 +10,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { getAllDailyDiscounts, updateDailyDiscount } from '../../../store/admin/DealSlice'
 import { fetchHomePageData } from '../../../store/customer/home/AsyncThunk'
 const modernTextField = {

@@ -3,7 +3,7 @@ import { FormControl, MenuItem, Pagination, Select, useMediaQuery, useTheme } fr
 import FilterAltRoundedIcon from '@mui/icons-material/FilterAltRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { getAllProducts } from '../../../store/customer/ProductSlice'
 import ProductCard from './ProductCard/ProductCard'
 import FilterSection from './FilterSection'

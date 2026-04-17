@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useFormik } from 'formik'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { createSeller } from '../../../store/seller/sellerAuthenticationSlice'
 const C = {
   text: '#0E1B2C',

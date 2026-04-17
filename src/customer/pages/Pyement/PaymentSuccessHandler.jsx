@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import ErrorOutlineRoundedIcon from '@mui/icons-material/ErrorOutlineRounded'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { clearCart } from '../../../store/customer/CartSlice'
 import { paymentSuccess } from '../../../store/customer/OrderSlice'
 import { decrementProductQuantitiesAfterPurchase } from '../../../store/customer/ProductSlice'

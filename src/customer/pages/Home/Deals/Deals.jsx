@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppSelector } from '../../../../store'
+import { useAppSelector } from '../../../../context/AppContext'
 import { toCatalogPath } from '../../../../utils/catalogRoute'
 const fallbackDeals = [
   {

@@ -25,7 +25,7 @@ import {
 } from '../../../store/customer/ReturnSlice'
 import { fetchSellerOrders } from '../../../store/seller/sellerOrderSlice'
 import { fetchSellerReport } from '../../../store/seller/sellerSlice'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { getSellerToken } from '../../../utils/authToken'
 import {
   SellerEmptyState,

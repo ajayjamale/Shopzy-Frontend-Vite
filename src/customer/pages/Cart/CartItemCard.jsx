@@ -1,7 +1,7 @@
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
-import { useAppDispatch } from '../../../store'
+import { useAppDispatch } from '../../../context/AppContext'
 import { deleteCartItem, updateCartItem } from '../../../store/customer/CartSlice'
 const CartItemCard = ({ item }) => {
   const dispatch = useAppDispatch()

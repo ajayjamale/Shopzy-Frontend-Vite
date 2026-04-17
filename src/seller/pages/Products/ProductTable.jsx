@@ -22,7 +22,7 @@ import SellRoundedIcon from '@mui/icons-material/SellRounded'
 import WarningAmberRoundedIcon from '@mui/icons-material/WarningAmberRounded'
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { fetchSellerProducts, updateProductStock } from '../../../store/seller/sellerProductSlice'
 import { getSellerToken } from '../../../utils/authToken'
 import {

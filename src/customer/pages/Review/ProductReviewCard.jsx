@@ -2,7 +2,7 @@ import React from 'react'
 import StarIcon from '@mui/icons-material/Star'
 import DeleteIcon from '@mui/icons-material/Delete'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { deleteReview } from '../../../store/customer/ReviewSlice'
 import './Reviews.css'
 const StarDisplay = ({ value }) => (

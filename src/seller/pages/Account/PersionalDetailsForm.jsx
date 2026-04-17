@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { Field, SaveButton } from './FormPrimitives'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { updateSeller } from '../../../store/seller/sellerSlice'
 const PersonalDetailsForm = ({ onClose }) => {
   const { sellers } = useAppSelector((s) => s)

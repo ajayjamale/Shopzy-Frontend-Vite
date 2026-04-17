@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAppDispatch } from '../../store'
+import { useAppDispatch } from '../../context/AppContext'
 import { verifySellerEmail } from '../../store/seller/sellerSlice'
 const SellerAccountVerification = () => {
   const { otp } = useParams()

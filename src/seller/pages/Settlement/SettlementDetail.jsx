@@ -5,7 +5,7 @@ import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceW
 import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded'
 import DescriptionRoundedIcon from '@mui/icons-material/DescriptionRounded'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { fetchSettlementById, updateSettlementStatus } from '../../../store/seller/settlementSlice'
 import { getSellerToken } from '../../../utils/authToken'
 import {

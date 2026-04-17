@@ -4,7 +4,7 @@ import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
 import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded'
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded'
 import { useNavigate } from 'react-router-dom'
-import { useAppSelector } from '../../../../store'
+import { useAppSelector } from '../../../../context/AppContext'
 import { toCatalogPath } from '../../../../utils/catalogRoute'
 const fallbackSlides = [
   {

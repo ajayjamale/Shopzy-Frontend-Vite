@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { createReview, resetReviewFeedback } from '../../../store/customer/ReviewSlice'
 import { uploadToCloudinary } from '../../../utils/uploadToCloudnary'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -62,7 +62,7 @@ const ReviewForm = () => {
         setReviewSubmitted(true)
         resetForm()
       } catch {
-        // Error is rendered from redux state via reviewError.
+        // Error is already surfaced by reviewError from global app state.
       }
     },
   })

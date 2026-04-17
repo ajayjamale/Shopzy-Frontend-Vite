@@ -1,6 +1,6 @@
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import LocationOnRoundedIcon from '@mui/icons-material/LocationOnRounded'
-import { useAppSelector } from '../../../store'
+import { useAppSelector } from '../../../context/AppContext'
 import UserAddressCard from './UserAddressCard'
 import './Profile.css'
 const Addresses = () => {

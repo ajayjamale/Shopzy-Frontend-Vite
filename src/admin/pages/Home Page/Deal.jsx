@@ -6,7 +6,7 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'
 import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
 import DealsTable from './DealsTable'
 import CreateDealForm from './CreateDealForm'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { getAllDailyDiscounts } from '../../../store/admin/DealSlice'
 const tabs = [
   { name: 'Daily Discounts', icon: <TableChartIcon sx={{ fontSize: 15 }} /> },

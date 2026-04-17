@@ -11,7 +11,7 @@ import {
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { createDailyDiscount, getAllDailyDiscounts } from '../../../store/admin/DealSlice'
 import { fetchHomePageData } from '../../../store/customer/home/AsyncThunk'
 const modernTextField = {

@@ -1,5 +1,5 @@
 // src/slices/authSlice.ts
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import { createSlice, createAsyncThunk } from '../../context/miniToolkit.js'
 import { api } from '../../config/Api'
 import { resetUserState } from './UserSlice'
 import { resetCartState } from './CartSlice'

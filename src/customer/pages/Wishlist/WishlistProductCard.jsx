@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAppDispatch } from '../../../store'
+import { useAppDispatch } from '../../../context/AppContext'
 import { addProductToWishlist } from '../../../store/customer/WishlistSlice'
 import { addItemToCart } from '../../../store/customer/CartSlice'
 const WishlistProductCard = ({ item }) => {

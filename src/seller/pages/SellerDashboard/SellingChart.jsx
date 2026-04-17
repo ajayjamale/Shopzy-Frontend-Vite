@@ -8,7 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { fetchRevenueChart } from '../../../store/seller/revenueChartSlice'
 import { Skeleton } from '@mui/material'
 const SellingChart = ({ chartType }) => {

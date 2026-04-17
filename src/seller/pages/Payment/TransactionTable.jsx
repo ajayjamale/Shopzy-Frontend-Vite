@@ -11,7 +11,7 @@ import {
   Typography,
 } from '@mui/material'
 import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { fetchTransactionsBySeller } from '../../../store/seller/transactionSlice'
 import { getSellerToken } from '../../../utils/authToken'
 import {

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useAppDispatch, useAppSelector } from '../../../store'
+import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { resetSellerAuthState } from '../../../store/seller/sellerAuthenticationSlice'
 import SellerAccountForm from './SellerAccountForm'
 import SellerLoginForm from './SellerLoginForm'

@@ -1,4 +1,4 @@
-import { createAsyncThunk } from '@reduxjs/toolkit'
+import { createAsyncThunk } from '../../../context/miniToolkit.js'
 import { api } from '../../../config/Api'
 // Async thunk to fetch home page data with try-catch for error handling
 export const fetchHomePageData = createAsyncThunk(

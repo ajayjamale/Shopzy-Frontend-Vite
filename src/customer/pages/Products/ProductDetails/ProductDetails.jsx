@@ -8,7 +8,7 @@ import AddShoppingCartRoundedIcon from '@mui/icons-material/AddShoppingCartRound
 import RemoveRoundedIcon from '@mui/icons-material/RemoveRounded'
 import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import { useNavigate, useParams } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../../../store'
+import { useAppDispatch, useAppSelector } from '../../../../context/AppContext'
 import { fetchProductById, getAllProducts } from '../../../../store/customer/ProductSlice'
 import { addItemToCart } from '../../../../store/customer/CartSlice'
 import { addProductToWishlist } from '../../../../store/customer/WishlistSlice'
