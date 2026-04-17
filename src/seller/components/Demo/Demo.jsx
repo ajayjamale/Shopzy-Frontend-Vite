@@ -1,6 +1,5 @@
-import React from "react";
-import "./Demo.css";
-import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import './Demo.css'
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance'
 
 const Demo = () => {
   return (
@@ -42,7 +41,7 @@ const Demo = () => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Demo;
+export default Demo
