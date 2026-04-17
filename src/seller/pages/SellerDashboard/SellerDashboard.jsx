@@ -8,7 +8,7 @@ import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { useAppSelector } from '../../../context/AppContext'
 import SellerRoutes from '../../../routes/SellerRoutes'
-import SellerDrawerList from '../../components/SideBar/DrawerList'
+import SellerDrawerList from '../../components/sidebar/DrawerList'
 import ChatBot from '../../../customer/pages/ChatBot/ChatBot'
 import { getSellerPageMeta } from '../../sellerNavigation'
 const SellerDashboard = () => {

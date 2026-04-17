@@ -12,7 +12,7 @@ import {
 import { clearCart } from '../../../store/customer/CartSlice'
 import { decrementProductQuantitiesAfterPurchase } from '../../../store/customer/ProductSlice'
 import AddressCard from './AddressCard'
-import AddressForm from './AddresssForm'
+import AddressForm from './AddressForm'
 import PricingCard from '../Cart/PricingCard'
 let razorpayScriptPromise = null
 const loadRazorpayCheckoutScript = () => {

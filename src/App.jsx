@@ -1,7 +1,7 @@
 import './App.css'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
-import customeTheme from './theme/customeTheme'
+import customTheme from './theme/customTheme'
 import { Route, Routes, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from './context/AppContext'
@@ -15,7 +15,7 @@ import SellerAccountVerification from './seller/pages/SellerAccountVerification'
 import SellerAccountVerified from './seller/pages/SellerAccountVerified'
 import BecomeSeller from './customer/pages/BecomeSeller/BecomeSeller'
 import AdminAuth from './admin/pages/Auth/AdminAuth'
-import Mobile from './data/Products/mobile'
+import Mobile from './data/products/mobile'
 import ProtectedRoute from './routes/ProtectedRoute'
 import { getCustomerToken, getSellerToken } from './utils/authToken'
 function App() {
@@ -42,7 +42,7 @@ function App() {
     dispatch(fetchHomePageData())
   }, [dispatch])
   return (
-    <ThemeProvider theme={customeTheme}>
+    <ThemeProvider theme={customTheme}>
       <CssBaseline />
       <div className="App">
         <Routes>

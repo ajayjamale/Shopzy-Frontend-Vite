@@ -5,7 +5,7 @@ import * as Yup from 'yup'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { signin, resetOtpState, sendLoginSignupOtp } from '../../../store/customer/AuthSlice'
-import OTPInput from '../../../customer/components/OtpFild/OTPInput'
+import OTPInput from '../../../customer/components/otp-field/OTPInput'
 const emailSchema = Yup.object({
   email: Yup.string().email('Enter a valid email').required('Email is required'),
 })

@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '../../../../context/AppContext'
-const SmilarProduct = () => {
+const SimilarProducts = () => {
   const navigate = useNavigate()
   const { products } = useAppSelector((store) => store)
   if (!products.products?.length) {
@@ -33,4 +33,4 @@ const SmilarProduct = () => {
     </div>
   )
 }
-export default SmilarProduct
+export default SimilarProducts

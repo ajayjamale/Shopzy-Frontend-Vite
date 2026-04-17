@@ -11,7 +11,7 @@ import { performLogout } from '../../../store/customer/AuthSlice'
 import UserDetails from './UserDetails'
 import Order from './Order'
 import SavedCards from './SavedCards'
-import Addresses from './Adresses'
+import Addresses from './Addresses'
 import OrderDetails from './OrderDetails'
 import './Profile.css'
 const menu = [

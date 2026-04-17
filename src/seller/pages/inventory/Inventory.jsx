@@ -1,5 +1,5 @@
 import ProductTable from '../Products/ProductTable'
-const Invetory = () => {
+const Inventory = () => {
   return <ProductTable variant="inventory" />
 }
-export default Invetory
+export default Inventory

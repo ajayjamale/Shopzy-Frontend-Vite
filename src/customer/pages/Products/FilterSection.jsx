@@ -1,8 +1,8 @@
 import TuneRoundedIcon from '@mui/icons-material/TuneRounded'
 import CheckRoundedIcon from '@mui/icons-material/CheckRounded'
-import { colors } from '../../../data/Filter/color'
-import { price } from '../../../data/Filter/price'
-import { discount } from '../../../data/Filter/discount'
+import { colors } from '../../../data/filters/color'
+import { price } from '../../../data/filters/price'
+import { discount } from '../../../data/filters/discount'
 import { useSearchParams } from 'react-router-dom'
 const FilterGroup = ({ title, options, param, selected, onToggle }) => {
   return (

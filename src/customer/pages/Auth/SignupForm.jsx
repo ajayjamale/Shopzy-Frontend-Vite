@@ -4,7 +4,7 @@ import * as Yup from 'yup'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { sendLoginSignupOtp, signup } from '../../../store/customer/AuthSlice'
-import OTPInput from '../../components/OtpFild/OTPInput'
+import OTPInput from '../../components/otp-field/OTPInput'
 import './Auth.css'
 const schema = Yup.object({
   fullName: Yup.string().min(2, 'Minimum 2 characters').required('Required'),

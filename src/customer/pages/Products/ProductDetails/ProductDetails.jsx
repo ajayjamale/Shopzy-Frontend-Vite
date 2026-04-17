@@ -15,7 +15,7 @@ import { addProductToWishlist } from '../../../../store/customer/WishlistSlice'
 import { fetchReviewsByProductId } from '../../../../store/customer/ReviewSlice'
 import RatingCard from '../../Review/RatingCard'
 import ProductReviewCard from '../../Review/ProductReviewCard'
-import SmilarProduct from '../SimilarProduct/SmilarProduct'
+import SimilarProducts from '../SimilarProduct/SimilarProducts'
 import ZoomableImage from './ZoomableImage'
 const modalStyle = {
   position: 'absolute',
@@ -227,7 +227,7 @@ const ProductDetails = () => {
 
       <section className="mt-9">
         <h2 style={{ fontSize: '1.35rem', marginBottom: 14 }}>You may also like</h2>
-        <SmilarProduct />
+        <SimilarProducts />
       </section>
 
       <Modal open={openZoom} onClose={() => setOpenZoom(false)}>
