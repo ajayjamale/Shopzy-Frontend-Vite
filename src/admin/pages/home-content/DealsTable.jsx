@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Alert,
   Box,
@@ -36,7 +36,11 @@ const DealsTable = () => {
   const dispatch = useAppDispatch()
   const [editTarget, setEditTarget] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
-  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' })
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success',
+  })
   const allDiscounts = useMemo(
     () =>
       [...deal.discounts].sort(
@@ -56,14 +60,27 @@ const DealsTable = () => {
     setDeleteTarget(null)
     if (deleteDailyDiscount.fulfilled.match(result)) {
       dispatch(fetchHomePageData())
-      setSnackbar({ open: true, message: 'Daily discount deleted', severity: 'success' })
+      setSnackbar({
+        open: true,
+        message: 'Daily discount deleted',
+        severity: 'success',
+      })
     } else {
-      setSnackbar({ open: true, message: 'Failed to delete daily discount', severity: 'error' })
+      setSnackbar({
+        open: true,
+        message: 'Failed to delete daily discount',
+        severity: 'error',
+      })
     }
   }
   const toggleStatus = async (item) => {
     if (!item.id) return
-    const result = await dispatch(updateDailyDiscountStatus({ id: item.id, active: !item.active }))
+    const result = await dispatch(
+      updateDailyDiscountStatus({
+        id: item.id,
+        active: !item.active,
+      }),
+    )
     if (updateDailyDiscountStatus.fulfilled.match(result)) {
       dispatch(fetchHomePageData())
       setSnackbar({
@@ -72,7 +89,11 @@ const DealsTable = () => {
         severity: 'success',
       })
     } else {
-      setSnackbar({ open: true, message: 'Failed to update status', severity: 'error' })
+      setSnackbar({
+        open: true,
+        message: 'Failed to update status',
+        severity: 'error',
+      })
     }
   }
   return (
@@ -86,9 +107,17 @@ const DealsTable = () => {
           overflow: 'hidden',
         }}
       >
-        <Table sx={{ minWidth: 980 }}>
+        <Table
+          sx={{
+            minWidth: 980,
+          }}
+        >
           <TableHead>
-            <TableRow sx={{ backgroundColor: '#1E293B' }}>
+            <TableRow
+              sx={{
+                backgroundColor: '#1E293B',
+              }}
+            >
               {['Preview', 'Title', 'Discount', 'Window', 'Flags', 'Status', 'Actions'].map(
                 (head) => (
                   <TableCell
@@ -112,7 +141,11 @@ const DealsTable = () => {
             {!deal.loading &&
               allDiscounts.map((item) => (
                 <TableRow key={item.id} hover>
-                  <TableCell sx={{ width: 96 }}>
+                  <TableCell
+                    sx={{
+                      width: 96,
+                    }}
+                  >
                     <Box
                       sx={{
                         width: 80,
@@ -126,36 +159,79 @@ const DealsTable = () => {
                       <img
                         src={item.imageUrl}
                         alt={item.title}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
                       />
                     </Box>
                   </TableCell>
                   <TableCell>
-                    <Typography sx={{ fontSize: 13, fontWeight: 800, color: '#0F172A' }}>
+                    <Typography
+                      sx={{
+                        fontSize: 13,
+                        fontWeight: 800,
+                        color: '#0F172A',
+                      }}
+                    >
                       {item.title}
                     </Typography>
-                    <Typography sx={{ fontSize: 11, color: '#64748B', mt: 0.5 }}>
+                    <Typography
+                      sx={{
+                        fontSize: 11,
+                        color: '#64748B',
+                        mt: 0.5,
+                      }}
+                    >
                       {item.subtitle || '-'}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography sx={{ fontSize: 13, fontWeight: 800, color: '#0F766E' }}>
+                    <Typography
+                      sx={{
+                        fontSize: 13,
+                        fontWeight: 800,
+                        color: '#0F766E',
+                      }}
+                    >
                       {item.discountLabel || `${item.discountPercent}% OFF`}
                     </Typography>
-                    <Typography sx={{ fontSize: 11, color: '#64748B' }}>
+                    <Typography
+                      sx={{
+                        fontSize: 11,
+                        color: '#64748B',
+                      }}
+                    >
                       {item.discountPercent}%
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Typography sx={{ fontSize: 12, color: '#0F172A' }}>
+                    <Typography
+                      sx={{
+                        fontSize: 12,
+                        color: '#0F172A',
+                      }}
+                    >
                       {item.startDate || '-'} to {item.endDate || '-'}
                     </Typography>
-                    <Typography sx={{ fontSize: 11, color: '#64748B' }}>
+                    <Typography
+                      sx={{
+                        fontSize: 11,
+                        color: '#64748B',
+                      }}
+                    >
                       Order: {item.displayOrder ?? 0}
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Box sx={{ display: 'flex', gap: 0.8, flexWrap: 'wrap' }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 0.8,
+                        flexWrap: 'wrap',
+                      }}
+                    >
                       {item.highlighted && (
                         <Chip size="small" label="Highlighted" color="warning" />
                       )}
@@ -171,19 +247,36 @@ const DealsTable = () => {
                     />
                   </TableCell>
                   <TableCell>
-                    <Box sx={{ display: 'flex', gap: 0.7 }}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        gap: 0.7,
+                      }}
+                    >
                       <Tooltip title={item.active ? 'Disable' : 'Enable'}>
                         <IconButton size="small" onClick={() => toggleStatus(item)}>
                           {item.active ? (
-                            <ToggleOnRoundedIcon sx={{ color: '#0F766E' }} />
+                            <ToggleOnRoundedIcon
+                              sx={{
+                                color: '#0F766E',
+                              }}
+                            />
                           ) : (
-                            <ToggleOffRoundedIcon sx={{ color: '#94A3B8' }} />
+                            <ToggleOffRoundedIcon
+                              sx={{
+                                color: '#94A3B8',
+                              }}
+                            />
                           )}
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Edit">
                         <IconButton size="small" onClick={() => setEditTarget(item.id ?? null)}>
-                          <EditIcon sx={{ fontSize: 18 }} />
+                          <EditIcon
+                            sx={{
+                              fontSize: 18,
+                            }}
+                          />
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Delete">
@@ -192,7 +285,11 @@ const DealsTable = () => {
                           color="error"
                           onClick={() => setDeleteTarget(item)}
                         >
-                          <DeleteIcon sx={{ fontSize: 18 }} />
+                          <DeleteIcon
+                            sx={{
+                              fontSize: 18,
+                            }}
+                          />
                         </IconButton>
                       </Tooltip>
                     </Box>
@@ -202,9 +299,25 @@ const DealsTable = () => {
             {!deal.loading && allDiscounts.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7}>
-                  <Box sx={{ textAlign: 'center', py: 7 }}>
-                    <LocalOfferIcon sx={{ fontSize: 42, color: '#CBD5E1', mb: 1.2 }} />
-                    <Typography sx={{ color: '#64748B', fontWeight: 700 }}>
+                  <Box
+                    sx={{
+                      textAlign: 'center',
+                      py: 7,
+                    }}
+                  >
+                    <LocalOfferIcon
+                      sx={{
+                        fontSize: 42,
+                        color: '#CBD5E1',
+                        mb: 1.2,
+                      }}
+                    />
+                    <Typography
+                      sx={{
+                        color: '#64748B',
+                        fontWeight: 700,
+                      }}
+                    >
                       No daily discounts found.
                     </Typography>
                   </Box>
@@ -232,14 +345,24 @@ const DealsTable = () => {
               p: 2.4,
             }}
           >
-            <Typography sx={{ fontSize: 18, fontWeight: 800, mb: 1.2 }}>
+            <Typography
+              sx={{
+                fontSize: 18,
+                fontWeight: 800,
+                mb: 1.2,
+              }}
+            >
               Update Daily Discount
             </Typography>
             <UpdateDealForm
               id={editTarget}
               onSuccess={() => {
                 setEditTarget(null)
-                setSnackbar({ open: true, message: 'Daily discount updated', severity: 'success' })
+                setSnackbar({
+                  open: true,
+                  message: 'Daily discount updated',
+                  severity: 'success',
+                })
               }}
             />
           </Box>
@@ -249,9 +372,20 @@ const DealsTable = () => {
       <Dialog
         open={!!deleteTarget}
         onClose={() => setDeleteTarget(null)}
-        PaperProps={{ sx: { borderRadius: '8px', border: '1px solid #DDE9ED' } }}
+        PaperProps={{
+          sx: {
+            borderRadius: '8px',
+            border: '1px solid #DDE9ED',
+          },
+        }}
       >
-        <DialogTitle sx={{ fontWeight: 800 }}>Delete Daily Discount</DialogTitle>
+        <DialogTitle
+          sx={{
+            fontWeight: 800,
+          }}
+        >
+          Delete Daily Discount
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
             Delete <strong>{deleteTarget?.title || 'this daily discount'}</strong>? This action
@@ -267,13 +401,26 @@ const DealsTable = () => {
       </Dialog>
 
       <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         open={snackbar.open}
         autoHideDuration={4200}
-        onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+        onClose={() =>
+          setSnackbar((prev) => ({
+            ...prev,
+            open: false,
+          }))
+        }
       >
         <Alert
-          onClose={() => setSnackbar((prev) => ({ ...prev, open: false }))}
+          onClose={() =>
+            setSnackbar((prev) => ({
+              ...prev,
+              open: false,
+            }))
+          }
           severity={snackbar.severity}
           variant="filled"
         >

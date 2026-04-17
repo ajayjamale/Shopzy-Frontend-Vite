@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Alert, Box, Button, Drawer, Snackbar, Stack, Typography } from '@mui/material'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
@@ -21,10 +21,50 @@ import {
   sellerSecondaryButtonSx,
 } from '../../theme/sellerUi'
 const tabs = [
-  { id: 'personal', label: 'Personal', icon: <PersonRoundedIcon sx={{ fontSize: 18 }} /> },
-  { id: 'business', label: 'Business', icon: <BusinessRoundedIcon sx={{ fontSize: 18 }} /> },
-  { id: 'address', label: 'Pickup', icon: <WarehouseRoundedIcon sx={{ fontSize: 18 }} /> },
-  { id: 'bank', label: 'Bank', icon: <AccountBalanceRoundedIcon sx={{ fontSize: 18 }} /> },
+  {
+    id: 'personal',
+    label: 'Personal',
+    icon: (
+      <PersonRoundedIcon
+        sx={{
+          fontSize: 18,
+        }}
+      />
+    ),
+  },
+  {
+    id: 'business',
+    label: 'Business',
+    icon: (
+      <BusinessRoundedIcon
+        sx={{
+          fontSize: 18,
+        }}
+      />
+    ),
+  },
+  {
+    id: 'address',
+    label: 'Pickup',
+    icon: (
+      <WarehouseRoundedIcon
+        sx={{
+          fontSize: 18,
+        }}
+      />
+    ),
+  },
+  {
+    id: 'bank',
+    label: 'Bank',
+    icon: (
+      <AccountBalanceRoundedIcon
+        sx={{
+          fontSize: 18,
+        }}
+      />
+    ),
+  },
 ]
 const Profile = () => {
   const { sellers } = useAppSelector((state) => state)
@@ -100,7 +140,11 @@ const Profile = () => {
         ))}
       </Box>
 
-      <Box sx={{ mt: 2 }}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <SellerSection
           title={currentSection.label}
           description="Use the tabs to switch sections and edit only the fields relevant to that area."
@@ -115,7 +159,15 @@ const Profile = () => {
             </Button>
           }
         >
-          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap" sx={{ mb: 2 }}>
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            flexWrap="wrap"
+            sx={{
+              mb: 2,
+            }}
+          >
             {tabs.map((tab) => (
               <Button
                 key={tab.id}
@@ -129,7 +181,12 @@ const Profile = () => {
             ))}
           </Stack>
 
-          <Box sx={{ borderTop: '1px solid #E8EFF2', pt: 0.8 }}>
+          <Box
+            sx={{
+              borderTop: '1px solid #E8EFF2',
+              pt: 0.8,
+            }}
+          >
             {currentSection.rows.map((row) => (
               <ProfileFieldCard key={row.key} keys={row.key} value={row.val} />
             ))}
@@ -143,26 +200,54 @@ const Profile = () => {
         onClose={() => setDrawerOpen(null)}
         PaperProps={{
           sx: {
-            width: { xs: '100%', sm: 440 },
+            width: {
+              xs: '100%',
+              sm: 440,
+            },
             p: 0,
             borderLeft: '1px solid #DCE8EC',
             boxShadow: '-24px 0 44px rgba(15, 23, 42, 0.16)',
           },
         }}
       >
-        <Box sx={{ p: 2.4, borderBottom: '1px solid #DCE8EC', bgcolor: '#F8FBFC' }}>
-          <Typography variant="h6" sx={{ fontSize: '1.1rem' }}>
+        <Box
+          sx={{
+            p: 2.4,
+            borderBottom: '1px solid #DCE8EC',
+            bgcolor: '#F8FBFC',
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontSize: '1.1rem',
+            }}
+          >
             {drawerOpen ? drawerTitles[drawerOpen] : 'Edit details'}
           </Typography>
-          <Typography sx={{ color: '#64748B', mt: 0.6 }}>
+          <Typography
+            sx={{
+              color: '#64748B',
+              mt: 0.6,
+            }}
+          >
             Save the updates below to keep your seller profile current.
           </Typography>
         </Box>
-        <Box sx={{ p: 2.4 }}>{renderDrawerForm(drawerOpen, () => setDrawerOpen(null))}</Box>
+        <Box
+          sx={{
+            p: 2.4,
+          }}
+        >
+          {renderDrawerForm(drawerOpen, () => setDrawerOpen(null))}
+        </Box>
       </Drawer>
 
       <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         open={toastOpen}
         autoHideDuration={5000}
         onClose={() => setToastOpen(false)}
@@ -204,37 +289,76 @@ const getTabSection = (tab, profile) => {
       label: 'Personal details',
       shortLabel: 'personal',
       rows: [
-        { key: 'Seller name', val: profile?.sellerName },
-        { key: 'Email', val: profile?.email },
-        { key: 'Mobile', val: profile?.mobile },
+        {
+          key: 'Seller name',
+          val: profile?.sellerName,
+        },
+        {
+          key: 'Email',
+          val: profile?.email,
+        },
+        {
+          key: 'Mobile',
+          val: profile?.mobile,
+        },
       ],
     },
     business: {
       label: 'Business details',
       shortLabel: 'business',
       rows: [
-        { key: 'Business name', val: profile?.businessDetails?.businessName },
-        { key: 'GSTIN', val: profile?.gstin },
-        { key: 'Account status', val: humanizeSellerValue(profile?.accountStatus) },
+        {
+          key: 'Business name',
+          val: profile?.businessDetails?.businessName,
+        },
+        {
+          key: 'GSTIN',
+          val: profile?.gstin,
+        },
+        {
+          key: 'Account status',
+          val: humanizeSellerValue(profile?.accountStatus),
+        },
       ],
     },
     address: {
       label: 'Pickup address',
       shortLabel: 'pickup',
       rows: [
-        { key: 'Address', val: profile?.pickupAddress?.address },
-        { key: 'City', val: profile?.pickupAddress?.city },
-        { key: 'State', val: profile?.pickupAddress?.state },
-        { key: 'Mobile', val: profile?.pickupAddress?.mobile },
+        {
+          key: 'Address',
+          val: profile?.pickupAddress?.address,
+        },
+        {
+          key: 'City',
+          val: profile?.pickupAddress?.city,
+        },
+        {
+          key: 'State',
+          val: profile?.pickupAddress?.state,
+        },
+        {
+          key: 'Mobile',
+          val: profile?.pickupAddress?.mobile,
+        },
       ],
     },
     bank: {
       label: 'Bank details',
       shortLabel: 'bank',
       rows: [
-        { key: 'Account holder', val: profile?.bankDetails?.accountHolderName },
-        { key: 'Account number', val: profile?.bankDetails?.accountNumber },
-        { key: 'IFSC code', val: profile?.bankDetails?.ifscCode },
+        {
+          key: 'Account holder',
+          val: profile?.bankDetails?.accountHolderName,
+        },
+        {
+          key: 'Account number',
+          val: profile?.bankDetails?.accountNumber,
+        },
+        {
+          key: 'IFSC code',
+          val: profile?.bankDetails?.ifscCode,
+        },
       ],
     },
   }

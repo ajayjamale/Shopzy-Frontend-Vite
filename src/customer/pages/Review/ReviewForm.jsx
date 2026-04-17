@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
@@ -177,7 +177,11 @@ const ReviewForm = () => {
       )}
 
       {/* ── Overall Rating ── */}
-      <div style={{ marginBottom: 18 }}>
+      <div
+        style={{
+          marginBottom: 18,
+        }}
+      >
         <label
           style={{
             display: 'block',
@@ -187,9 +191,22 @@ const ReviewForm = () => {
             marginBottom: 8,
           }}
         >
-          Overall rating <span style={{ color: '#c40000' }}>*</span>
+          Overall rating{' '}
+          <span
+            style={{
+              color: '#c40000',
+            }}
+          >
+            *
+          </span>
         </label>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+          }}
+        >
           {[1, 2, 3, 4, 5].map((star) => (
             <button
               key={star}
@@ -208,14 +225,30 @@ const ReviewForm = () => {
               }}
             >
               {activeRating >= star ? (
-                <StarIcon style={{ fontSize: '2.25rem', color: '#ff9900' }} />
+                <StarIcon
+                  style={{
+                    fontSize: '2.25rem',
+                    color: '#ff9900',
+                  }}
+                />
               ) : (
-                <StarBorderIcon style={{ fontSize: '2.25rem', color: '#adb1b8' }} />
+                <StarBorderIcon
+                  style={{
+                    fontSize: '2.25rem',
+                    color: '#adb1b8',
+                  }}
+                />
               )}
             </button>
           ))}
           {activeRating > 0 && (
-            <span style={{ fontSize: '0.875rem', color: '#565959', marginLeft: 10 }}>
+            <span
+              style={{
+                fontSize: '0.875rem',
+                color: '#565959',
+                marginLeft: 10,
+              }}
+            >
               {RATING_LABELS[activeRating]}
             </span>
           )}
@@ -224,7 +257,11 @@ const ReviewForm = () => {
       </div>
 
       {/* ── Review text ── */}
-      <div style={{ marginBottom: 16 }}>
+      <div
+        style={{
+          marginBottom: 16,
+        }}
+      >
         <label
           htmlFor="reviewText"
           style={{
@@ -235,7 +272,14 @@ const ReviewForm = () => {
             marginBottom: 6,
           }}
         >
-          Written review <span style={{ color: '#c40000' }}>*</span>
+          Written review{' '}
+          <span
+            style={{
+              color: '#c40000',
+            }}
+          >
+            *
+          </span>
         </label>
         <textarea
           id="reviewText"
@@ -255,16 +299,32 @@ const ReviewForm = () => {
             resize: 'vertical',
           }}
         />
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginTop: 4,
+          }}
+        >
           {formik.touched.reviewText && <ErrMsg msg={formik.errors.reviewText} />}
-          <span style={{ fontSize: '0.75rem', color: '#888c8c', marginLeft: 'auto' }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              color: '#888c8c',
+              marginLeft: 'auto',
+            }}
+          >
             {formik.values.reviewText.length}/2000
           </span>
         </div>
       </div>
 
       {/* ── Photo upload ── */}
-      <div style={{ marginBottom: 22 }}>
+      <div
+        style={{
+          marginBottom: 22,
+        }}
+      >
         <label
           style={{
             display: 'block',
@@ -275,11 +335,24 @@ const ReviewForm = () => {
           }}
         >
           Add photos{' '}
-          <span style={{ fontSize: '0.75rem', fontWeight: 'normal', color: '#565959' }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              fontWeight: 'normal',
+              color: '#565959',
+            }}
+          >
             (optional)
           </span>
         </label>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'flex-start' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: 10,
+            alignItems: 'flex-start',
+          }}
+        >
           {/* Upload trigger */}
           <label
             htmlFor="fileInput"
@@ -314,7 +387,12 @@ const ReviewForm = () => {
               />
             ) : (
               <>
-                <AddPhotoAlternateIcon style={{ fontSize: '1.5rem', color: '#565959' }} />
+                <AddPhotoAlternateIcon
+                  style={{
+                    fontSize: '1.5rem',
+                    color: '#565959',
+                  }}
+                />
                 <span>Add photo</span>
               </>
             )}
@@ -323,14 +401,23 @@ const ReviewForm = () => {
             id="fileInput"
             type="file"
             accept="image/*"
-            style={{ display: 'none' }}
+            style={{
+              display: 'none',
+            }}
             onChange={handleImageChange}
             disabled={uploadingImg}
           />
 
           {/* Thumbnails */}
           {formik.values.productImages.map((img, i) => (
-            <div key={i} style={{ position: 'relative', width: 76, height: 76 }}>
+            <div
+              key={i}
+              style={{
+                position: 'relative',
+                width: 76,
+                height: 76,
+              }}
+            >
               <img
                 src={img}
                 alt={`upload-${i}`}
@@ -383,13 +470,25 @@ const ReviewForm = () => {
           lineHeight: 1.6,
         }}
       >
-        <strong style={{ color: '#0f1111' }}>Review guidelines: </strong>
+        <strong
+          style={{
+            color: '#0f1111',
+          }}
+        >
+          Review guidelines:{' '}
+        </strong>
         Focus on the product's features and your experience. Keep it helpful and relevant to other
         shoppers.
       </div>
 
       {/* ── Actions ── */}
-      <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 10,
+          justifyContent: 'flex-end',
+        }}
+      >
         <button type="button" onClick={() => navigate(-1)} className="amz-rv-btn-secondary">
           Cancel
         </button>
@@ -398,7 +497,9 @@ const ReviewForm = () => {
           type="submit"
           disabled={reviewLoading || uploadingImg}
           className="amz-rv-btn-primary"
-          style={{ opacity: reviewLoading || uploadingImg ? 0.6 : 1 }}
+          style={{
+            opacity: reviewLoading || uploadingImg ? 0.6 : 1,
+          }}
         >
           {reviewLoading ? (
             <>

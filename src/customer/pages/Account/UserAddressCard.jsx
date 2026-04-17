@@ -1,4 +1,3 @@
-import React from 'react'
 import EditIcon from '@mui/icons-material/Edit'
 import DeleteIcon from '@mui/icons-material/Delete'
 import './Profile.css'
@@ -15,7 +14,12 @@ const UserAddressCard = ({ item }) => {
         }}
       >
         <div className="amz-address-card-name">{item.name}</div>
-        <div style={{ display: 'flex', gap: 8 }}>
+        <div
+          style={{
+            display: 'flex',
+            gap: 8,
+          }}
+        >
           <button
             className="amz-btn-secondary"
             style={{
@@ -26,7 +30,11 @@ const UserAddressCard = ({ item }) => {
               gap: 4,
             }}
           >
-            <EditIcon style={{ fontSize: '0.875rem' }} />
+            <EditIcon
+              style={{
+                fontSize: '0.875rem',
+              }}
+            />
             Edit
           </button>
           <button
@@ -39,7 +47,11 @@ const UserAddressCard = ({ item }) => {
               gap: 4,
             }}
           >
-            <DeleteIcon style={{ fontSize: '0.875rem' }} />
+            <DeleteIcon
+              style={{
+                fontSize: '0.875rem',
+              }}
+            />
             Delete
           </button>
         </div>
@@ -54,7 +66,12 @@ const UserAddressCard = ({ item }) => {
       </div>
 
       {/* Mobile */}
-      <div className="amz-address-card-mobile" style={{ marginTop: 8 }}>
+      <div
+        className="amz-address-card-mobile"
+        style={{
+          marginTop: 8,
+        }}
+      >
         <strong>Mobile:</strong> {item.mobile}
       </div>
     </div>

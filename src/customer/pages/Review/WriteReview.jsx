@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { useNavigate, useParams } from 'react-router-dom'
 import { fetchProductById } from '../../../store/customer/ProductSlice'
@@ -56,10 +56,19 @@ const WriteReviews = () => {
 
             <button
               className="amz-rv-btn-secondary"
-              style={{ width: '100%', justifyContent: 'center', marginTop: 12, padding: '9px' }}
+              style={{
+                width: '100%',
+                justifyContent: 'center',
+                marginTop: 12,
+                padding: '9px',
+              }}
               onClick={() => navigate(`/reviews/${productId}`)}
             >
-              <ArrowBackIcon style={{ fontSize: '1rem' }} />
+              <ArrowBackIcon
+                style={{
+                  fontSize: '1rem',
+                }}
+              />
               See all reviews
             </button>
           </aside>
@@ -82,7 +91,13 @@ const WriteReviews = () => {
                     lineHeight: 1.6,
                   }}
                 >
-                  <strong style={{ color: '#0f1111' }}>Review guidelines</strong>
+                  <strong
+                    style={{
+                      color: '#0f1111',
+                    }}
+                  >
+                    Review guidelines
+                  </strong>
                   <br />
                   Focus on the product's features and your experience using it. Keep it helpful,
                   honest, and relevant to other shoppers.

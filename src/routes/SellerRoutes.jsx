@@ -1,4 +1,3 @@
-import React from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import HomePage from '../seller/pages/SellerDashboard/HomePage'
 import Products from '../seller/pages/Products/Products'

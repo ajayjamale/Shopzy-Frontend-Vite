@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Box,
   Paper,
@@ -27,7 +27,9 @@ const UserManagement = () => {
   const fetchCustomers = async () => {
     try {
       const res = await api.get(adminApiPath('/users'), {
-        headers: { Authorization: `Bearer ${getAdminToken()}` },
+        headers: {
+          Authorization: `Bearer ${getAdminToken()}`,
+        },
       })
       setCustomers(Array.isArray(res.data) ? res.data : [])
     } catch (error) {
@@ -47,7 +49,9 @@ const UserManagement = () => {
     const nextParams = new URLSearchParams(searchParams)
     nextParams.set('tab', 'customers')
     nextParams.delete('status')
-    setSearchParams(nextParams, { replace: true })
+    setSearchParams(nextParams, {
+      replace: true,
+    })
   }, [searchParams, setSearchParams])
   const filteredCustomers = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
@@ -61,12 +65,25 @@ const UserManagement = () => {
     )
   }, [customers, query])
   return (
-    <Box sx={{ p: 2, display: 'grid', gap: 2 }}>
+    <Box
+      sx={{
+        p: 2,
+        display: 'grid',
+        gap: 2,
+      }}
+    >
       <Typography variant="h5" fontWeight={700}>
         User & Seller Management
       </Typography>
 
-      <Paper sx={{ p: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Paper
+        sx={{
+          p: 1.5,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+        }}
+      >
         <Tabs
           value={tab}
           onChange={(_, v) => {
@@ -80,7 +97,9 @@ const UserManagement = () => {
             } else {
               nextParams.delete('status')
             }
-            setSearchParams(nextParams, { replace: true })
+            setSearchParams(nextParams, {
+              replace: true,
+            })
           }}
         >
           <Tab label="Customers" value="customers" />

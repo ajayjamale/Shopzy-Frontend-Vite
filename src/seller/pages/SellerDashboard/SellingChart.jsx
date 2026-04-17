@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import {
   AreaChart,
   Area,
@@ -16,7 +16,11 @@ const SellingChart = ({ chartType }) => {
   const { revenueChart } = useAppSelector((store) => store)
   useEffect(() => {
     if (chartType) {
-      dispatch(fetchRevenueChart({ type: chartType }))
+      dispatch(
+        fetchRevenueChart({
+          type: chartType,
+        }),
+      )
     }
   }, [chartType, dispatch])
   if (revenueChart.loading) {
@@ -26,7 +30,12 @@ const SellingChart = ({ chartType }) => {
     <ResponsiveContainer width="100%" height="100%">
       <AreaChart
         data={revenueChart.chart || []}
-        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+        margin={{
+          top: 10,
+          right: 30,
+          left: 0,
+          bottom: 0,
+        }}
       >
         <defs>
           <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">

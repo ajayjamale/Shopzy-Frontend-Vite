@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import {
@@ -26,7 +26,10 @@ const statusOptions = [
   'FAILED',
   'CANCELLED',
 ]
-const formatCurrency = (v) => `₹${(v ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+const formatCurrency = (v) =>
+  `₹${(v ?? 0).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+  })}`
 const StatusSelect = ({ current, onChange }) => (
   <select
     value={current}
@@ -62,19 +65,41 @@ const AdminSettlementList = () => {
       size: 30,
       sort: 'createdAt,desc',
     }
-    dispatch(fetchSettlements({ jwt, query }))
-    dispatch(fetchSettlementSummary({ jwt, query }))
+    dispatch(
+      fetchSettlements({
+        jwt,
+        query,
+      }),
+    )
+    dispatch(
+      fetchSettlementSummary({
+        jwt,
+        query,
+      }),
+    )
   }
   useEffect(() => {
     load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, sellerId])
   const handleStatus = (id, next) => {
-    dispatch(updateSettlementStatus({ jwt, id, status: next }))
+    dispatch(
+      updateSettlementStatus({
+        jwt,
+        id,
+        status: next,
+      }),
+    )
   }
   const summary = settlement.summary
   return (
-    <div style={{ padding: 16, background: C.bg, minHeight: '100vh' }}>
+    <div
+      style={{
+        padding: 16,
+        background: C.bg,
+        minHeight: '100vh',
+      }}
+    >
       <div
         style={{
           display: 'flex',
@@ -85,10 +110,24 @@ const AdminSettlementList = () => {
         }}
       >
         <div>
-          <h1 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: C.text }}>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 24,
+              fontWeight: 800,
+              color: C.text,
+            }}
+          >
             Settlement Console
           </h1>
-          <p style={{ margin: '4px 0 0', color: C.mid }}>Monitor payouts across all sellers</p>
+          <p
+            style={{
+              margin: '4px 0 0',
+              color: C.mid,
+            }}
+          >
+            Monitor payouts across all sellers
+          </p>
         </div>
         <button
           onClick={load}
@@ -119,12 +158,30 @@ const AdminSettlementList = () => {
           alignItems: 'end',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim }}>Status</label>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 6,
+          }}
+        >
+          <label
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              color: C.dim,
+            }}
+          >
+            Status
+          </label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
-            style={{ padding: '9px 10px', borderRadius: 10, border: `1px solid ${C.border}` }}
+            style={{
+              padding: '9px 10px',
+              borderRadius: 10,
+              border: `1px solid ${C.border}`,
+            }}
           >
             {statusOptions.map((s) => (
               <option key={s} value={s}>
@@ -134,13 +191,31 @@ const AdminSettlementList = () => {
           </select>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim }}>Seller ID</label>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 6,
+          }}
+        >
+          <label
+            style={{
+              fontSize: 12,
+              fontWeight: 700,
+              color: C.dim,
+            }}
+          >
+            Seller ID
+          </label>
           <input
             placeholder="Filter by seller"
             value={sellerId}
             onChange={(e) => setSellerId(e.target.value)}
-            style={{ padding: '9px 10px', borderRadius: 10, border: `1px solid ${C.border}` }}
+            style={{
+              padding: '9px 10px',
+              borderRadius: 10,
+              border: `1px solid ${C.border}`,
+            }}
           />
         </div>
       </div>
@@ -161,8 +236,22 @@ const AdminSettlementList = () => {
             padding: 14,
           }}
         >
-          <div style={{ fontSize: 12, color: C.dim, letterSpacing: '0.08em' }}>NET PAYABLE</div>
-          <div style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>
+          <div
+            style={{
+              fontSize: 12,
+              color: C.dim,
+              letterSpacing: '0.08em',
+            }}
+          >
+            NET PAYABLE
+          </div>
+          <div
+            style={{
+              fontSize: 26,
+              fontWeight: 800,
+              marginTop: 4,
+            }}
+          >
             {formatCurrency(summary?.totalNetAmount)}
           </div>
         </div>
@@ -174,8 +263,22 @@ const AdminSettlementList = () => {
             padding: 14,
           }}
         >
-          <div style={{ fontSize: 12, color: C.dim, letterSpacing: '0.08em' }}>PENDING</div>
-          <div style={{ fontSize: 22, fontWeight: 800, marginTop: 4 }}>
+          <div
+            style={{
+              fontSize: 12,
+              color: C.dim,
+              letterSpacing: '0.08em',
+            }}
+          >
+            PENDING
+          </div>
+          <div
+            style={{
+              fontSize: 22,
+              fontWeight: 800,
+              marginTop: 4,
+            }}
+          >
             {summary?.pendingCount ?? 0}
           </div>
         </div>
@@ -187,10 +290,22 @@ const AdminSettlementList = () => {
             padding: 14,
           }}
         >
-          <div style={{ fontSize: 12, color: C.dim, letterSpacing: '0.08em' }}>
+          <div
+            style={{
+              fontSize: 12,
+              color: C.dim,
+              letterSpacing: '0.08em',
+            }}
+          >
             FAILED/CANCELLED
           </div>
-          <div style={{ fontSize: 22, fontWeight: 800, marginTop: 4 }}>
+          <div
+            style={{
+              fontSize: 22,
+              fontWeight: 800,
+              marginTop: 4,
+            }}
+          >
             {(summary?.failedCount ?? 0) + (summary?.cancelledCount ?? 0)}
           </div>
         </div>
@@ -205,10 +320,25 @@ const AdminSettlementList = () => {
           background: C.card,
         }}
       >
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 960 }}>
+        <div
+          style={{
+            overflowX: 'auto',
+          }}
+        >
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              minWidth: 960,
+            }}
+          >
             <thead>
-              <tr style={{ background: '#1E293B', color: '#fff' }}>
+              <tr
+                style={{
+                  background: '#1E293B',
+                  color: '#fff',
+                }}
+              >
                 {['ID', 'Seller', 'Order', 'Net Amount', 'Status', 'Date', 'Action'].map((h, i) => (
                   <th
                     key={h}
@@ -229,13 +359,27 @@ const AdminSettlementList = () => {
             <tbody>
               {settlement.loading ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '30px 0', color: C.mid }}>
+                  <td
+                    colSpan={7}
+                    style={{
+                      textAlign: 'center',
+                      padding: '30px 0',
+                      color: C.mid,
+                    }}
+                  >
                     Loading settlements…
                   </td>
                 </tr>
               ) : settlement.items.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ textAlign: 'center', padding: '30px 0', color: C.mid }}>
+                  <td
+                    colSpan={7}
+                    style={{
+                      textAlign: 'center',
+                      padding: '30px 0',
+                      color: C.mid,
+                    }}
+                  >
                     No settlements found.
                   </td>
                 </tr>
@@ -248,27 +392,79 @@ const AdminSettlementList = () => {
                       borderBottom: `1px solid ${C.border}`,
                     }}
                   >
-                    <td style={{ padding: '12px 14px', fontWeight: 700, color: '#2563EB' }}>
+                    <td
+                      style={{
+                        padding: '12px 14px',
+                        fontWeight: 700,
+                        color: '#2563EB',
+                      }}
+                    >
                       #{item.id}
                     </td>
-                    <td style={{ padding: '12px 14px', color: C.text }}>
-                      <div style={{ fontWeight: 600 }}>Seller #{item.sellerId}</div>
-                      <div style={{ fontSize: 12, color: C.dim }}>{item.transactionId ?? '—'}</div>
+                    <td
+                      style={{
+                        padding: '12px 14px',
+                        color: C.text,
+                      }}
+                    >
+                      <div
+                        style={{
+                          fontWeight: 600,
+                        }}
+                      >
+                        Seller #{item.sellerId}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: C.dim,
+                        }}
+                      >
+                        {item.transactionId ?? '—'}
+                      </div>
                     </td>
-                    <td style={{ padding: '12px 14px', color: C.mid }}>Order #{item.orderId}</td>
-                    <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: 700 }}>
+                    <td
+                      style={{
+                        padding: '12px 14px',
+                        color: C.mid,
+                      }}
+                    >
+                      Order #{item.orderId}
+                    </td>
+                    <td
+                      style={{
+                        padding: '12px 14px',
+                        textAlign: 'right',
+                        fontWeight: 700,
+                      }}
+                    >
                       {formatCurrency(item.netSettlementAmount)}
                     </td>
-                    <td style={{ padding: '12px 14px' }}>
+                    <td
+                      style={{
+                        padding: '12px 14px',
+                      }}
+                    >
                       <StatusSelect
                         current={item.settlementStatus}
                         onChange={(v) => handleStatus(item.id, v)}
                       />
                     </td>
-                    <td style={{ padding: '12px 14px', color: C.dim, textAlign: 'right' }}>
+                    <td
+                      style={{
+                        padding: '12px 14px',
+                        color: C.dim,
+                        textAlign: 'right',
+                      }}
+                    >
                       {item.settlementDate?.split('T')[0] ?? item.createdAt?.split('T')[0] ?? '—'}
                     </td>
-                    <td style={{ padding: '12px 14px', textAlign: 'right' }}>
+                    <td
+                      style={{
+                        padding: '12px 14px',
+                        textAlign: 'right',
+                      }}
+                    >
                       <button
                         onClick={() => navigate(`/admin/settlements/${item.id}`)}
                         style={{

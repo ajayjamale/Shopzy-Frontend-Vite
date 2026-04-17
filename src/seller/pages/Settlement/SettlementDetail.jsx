@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { Box, Button, LinearProgress, Stack, Typography } from '@mui/material'
 import ArrowBackRoundedIcon from '@mui/icons-material/ArrowBackRounded'
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded'
@@ -37,13 +37,24 @@ const SettlementDetail = () => {
   const jwt = getSellerToken()
   useEffect(() => {
     if (id && jwt) {
-      dispatch(fetchSettlementById({ jwt, id: Number(id) }))
+      dispatch(
+        fetchSettlementById({
+          jwt,
+          id: Number(id),
+        }),
+      )
     }
   }, [dispatch, id, jwt])
   const data = settlement.current
   const handleStatus = (status) => {
     if (!data || !jwt) return
-    dispatch(updateSettlementStatus({ jwt, id: data.id, status }))
+    dispatch(
+      updateSettlementStatus({
+        jwt,
+        id: data.id,
+        status,
+      }),
+    )
   }
   return (
     <Box>
@@ -63,7 +74,13 @@ const SettlementDetail = () => {
         }
       />
 
-      {settlement.loading && !data ? <LinearProgress sx={{ mb: 2 }} /> : null}
+      {settlement.loading && !data ? (
+        <LinearProgress
+          sx={{
+            mb: 2,
+          }}
+        />
+      ) : null}
 
       {!data ? (
         <SellerEmptyState
@@ -78,7 +95,10 @@ const SettlementDetail = () => {
             sx={{
               display: 'grid',
               gap: 2,
-              gridTemplateColumns: { xs: '1fr', md: 'repeat(3, minmax(0, 1fr))' },
+              gridTemplateColumns: {
+                xs: '1fr',
+                md: 'repeat(3, minmax(0, 1fr))',
+              },
               mb: 2,
             }}
           >
@@ -109,7 +129,10 @@ const SettlementDetail = () => {
             sx={{
               display: 'grid',
               gap: 2,
-              gridTemplateColumns: { xs: '1fr', xl: '1.2fr 1fr' },
+              gridTemplateColumns: {
+                xs: '1fr',
+                xl: '1.2fr 1fr',
+              },
             }}
           >
             <SellerSection
@@ -153,7 +176,11 @@ const SettlementDetail = () => {
               title="Remarks"
               description="Settlement notes or admin comments captured for this payout."
             >
-              <Typography sx={{ color: '#64748B' }}>
+              <Typography
+                sx={{
+                  color: '#64748B',
+                }}
+              >
                 {data.remarks || 'No remarks added for this settlement.'}
               </Typography>
             </SellerSection>

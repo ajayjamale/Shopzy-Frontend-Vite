@@ -1,4 +1,3 @@
-import React from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Coupon from '../admin/pages/Coupon/Coupon'
 import CouponForm from '../admin/pages/Coupon/CreateCouponForm'

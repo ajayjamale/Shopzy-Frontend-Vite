@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { chatBot, clearMessages } from '../../../store/customer/AiChatBotSlice'
 import { IconButton } from '@mui/material'
@@ -18,7 +18,9 @@ const ChatBot = ({ handleClose, productId, mode = 'customer' }) => {
     if (!prompt.trim() || aiChatBot.loading) return
     dispatch(
       chatBot({
-        prompt: { prompt: prompt.trim() },
+        prompt: {
+          prompt: prompt.trim(),
+        },
         productId,
         userId: null,
         mode,
@@ -34,7 +36,9 @@ const ChatBot = ({ handleClose, productId, mode = 'customer' }) => {
     dispatch(clearMessages())
   }, [dispatch])
   useEffect(() => {
-    chatBottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    chatBottomRef.current?.scrollIntoView({
+      behavior: 'smooth',
+    })
   }, [aiChatBot.messages, aiChatBot.loading])
   return (
     <div style={styles.wrapper}>
@@ -42,7 +46,12 @@ const ChatBot = ({ handleClose, productId, mode = 'customer' }) => {
       <div style={styles.header}>
         <div style={styles.headerLeft}>
           <div style={styles.iconWrap}>
-            <AutoAwesomeIcon style={{ fontSize: 16, color: '#fff' }} />
+            <AutoAwesomeIcon
+              style={{
+                fontSize: 16,
+                color: '#fff',
+              }}
+            />
           </div>
           <div>
             <p style={styles.headerTitle}>
@@ -58,7 +67,12 @@ const ChatBot = ({ handleClose, productId, mode = 'customer' }) => {
           </div>
         </div>
         <IconButton onClick={handleClose} size="small" style={styles.closeBtn}>
-          <CloseIcon style={{ fontSize: 18, color: '#71717a' }} />
+          <CloseIcon
+            style={{
+              fontSize: 18,
+              color: '#71717a',
+            }}
+          />
         </IconButton>
       </div>
 
@@ -83,8 +97,18 @@ const ChatBot = ({ handleClose, productId, mode = 'customer' }) => {
         {aiChatBot.loading && (
           <div style={styles.loadingWrap}>
             <span style={styles.dot} />
-            <span style={{ ...styles.dot, animationDelay: '0.15s' }} />
-            <span style={{ ...styles.dot, animationDelay: '0.3s' }} />
+            <span
+              style={{
+                ...styles.dot,
+                animationDelay: '0.15s',
+              }}
+            />
+            <span
+              style={{
+                ...styles.dot,
+                animationDelay: '0.3s',
+              }}
+            />
           </div>
         )}
 
@@ -110,7 +134,12 @@ const ChatBot = ({ handleClose, productId, mode = 'customer' }) => {
             cursor: prompt.trim() && !aiChatBot.loading ? 'pointer' : 'not-allowed',
           }}
         >
-          <SendIcon style={{ fontSize: 17, color: '#fff' }} />
+          <SendIcon
+            style={{
+              fontSize: 17,
+              color: '#fff',
+            }}
+          />
         </button>
       </div>
 

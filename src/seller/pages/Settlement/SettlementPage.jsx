@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Box, LinearProgress, MenuItem, TextField } from '@mui/material'
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded'
 import ReceiptLongRoundedIcon from '@mui/icons-material/ReceiptLongRounded'
@@ -44,8 +44,18 @@ const SettlementPage = () => {
       toDate: toDate || undefined,
     }
     dispatch(setSettlementFilters(query))
-    dispatch(fetchSettlements({ jwt, query }))
-    dispatch(fetchSettlementSummary({ jwt, query }))
+    dispatch(
+      fetchSettlements({
+        jwt,
+        query,
+      }),
+    )
+    dispatch(
+      fetchSettlementSummary({
+        jwt,
+        query,
+      }),
+    )
   }
   useEffect(() => {
     refresh()
@@ -101,18 +111,31 @@ const SettlementPage = () => {
         />
       </Box>
 
-      <Box sx={{ mt: 2 }}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <SellerSection
           title="Settlement filters"
           description="Narrow the ledger by status and settlement date."
         >
-          {settlement.loading ? <LinearProgress sx={{ mb: 2 }} /> : null}
+          {settlement.loading ? (
+            <LinearProgress
+              sx={{
+                mb: 2,
+              }}
+            />
+          ) : null}
 
           <Box
             sx={{
               display: 'grid',
               gap: 1.5,
-              gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, minmax(0, 1fr))' },
+              gridTemplateColumns: {
+                xs: '1fr',
+                sm: 'repeat(3, minmax(0, 1fr))',
+              },
             }}
           >
             <TextField
@@ -135,7 +158,9 @@ const SettlementPage = () => {
               label="From"
               value={fromDate}
               onChange={(event) => setFromDate(event.target.value)}
-              InputLabelProps={{ shrink: true }}
+              InputLabelProps={{
+                shrink: true,
+              }}
               sx={sellerInputSx}
             />
             <TextField
@@ -144,15 +169,23 @@ const SettlementPage = () => {
               label="To"
               value={toDate}
               onChange={(event) => setToDate(event.target.value)}
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ min: fromDate || undefined }}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              inputProps={{
+                min: fromDate || undefined,
+              }}
               sx={sellerInputSx}
             />
           </Box>
         </SellerSection>
       </Box>
 
-      <Box sx={{ mt: 2 }}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <SellerSection
           title="Payout records"
           description="Recent settlements with gross, deduction, and net payout visibility."

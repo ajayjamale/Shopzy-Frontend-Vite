@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { fetchSettlementById, updateSettlementStatus } from '../../../store/seller/settlementSlice'
@@ -11,7 +11,10 @@ const C = {
   card: '#FFFFFF',
   bg: '#F5F6F8',
 }
-const formatCurrency = (v) => `₹${(v ?? 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+const formatCurrency = (v) =>
+  `₹${(v ?? 0).toLocaleString('en-IN', {
+    minimumFractionDigits: 2,
+  })}`
 const AdminSettlementDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
@@ -19,15 +22,33 @@ const AdminSettlementDetail = () => {
   const { settlement } = useAppSelector((s) => s)
   const jwt = getAdminToken()
   useEffect(() => {
-    if (id && jwt) dispatch(fetchSettlementById({ jwt, id: Number(id) }))
+    if (id && jwt)
+      dispatch(
+        fetchSettlementById({
+          jwt,
+          id: Number(id),
+        }),
+      )
   }, [dispatch, id, jwt])
   const data = settlement.current
   const handleStatus = (status) => {
     if (!data) return
-    dispatch(updateSettlementStatus({ jwt, id: data.id, status }))
+    dispatch(
+      updateSettlementStatus({
+        jwt,
+        id: data.id,
+        status,
+      }),
+    )
   }
   return (
-    <div style={{ padding: 16, background: C.bg, minHeight: '100vh' }}>
+    <div
+      style={{
+        padding: 16,
+        background: C.bg,
+        minHeight: '100vh',
+      }}
+    >
       <div
         style={{
           display: 'flex',
@@ -37,10 +58,24 @@ const AdminSettlementDetail = () => {
         }}
       >
         <div>
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: C.text }}>
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 22,
+              fontWeight: 800,
+              color: C.text,
+            }}
+          >
             Settlement #{id}
           </h1>
-          <p style={{ margin: '4px 0 0', color: C.mid }}>Admin view</p>
+          <p
+            style={{
+              margin: '4px 0 0',
+              color: C.mid,
+            }}
+          >
+            Admin view
+          </p>
         </div>
         <button
           onClick={() => navigate(-1)}
@@ -88,11 +123,31 @@ const AdminSettlementDetail = () => {
               padding: 16,
             }}
           >
-            <div style={{ fontSize: 12, color: C.dim, letterSpacing: '0.08em' }}>SELLER</div>
-            <div style={{ fontSize: 18, fontWeight: 800, marginTop: 4 }}>
+            <div
+              style={{
+                fontSize: 12,
+                color: C.dim,
+                letterSpacing: '0.08em',
+              }}
+            >
+              SELLER
+            </div>
+            <div
+              style={{
+                fontSize: 18,
+                fontWeight: 800,
+                marginTop: 4,
+              }}
+            >
               Seller #{data.sellerId}
             </div>
-            <div style={{ marginTop: 8, fontSize: 14, color: C.mid }}>
+            <div
+              style={{
+                marginTop: 8,
+                fontSize: 14,
+                color: C.mid,
+              }}
+            >
               Order #{data.orderId} • Txn {data.transactionId ?? '—'}
             </div>
           </div>
@@ -105,26 +160,76 @@ const AdminSettlementDetail = () => {
               padding: 16,
             }}
           >
-            <div style={{ fontSize: 12, color: C.dim, letterSpacing: '0.08em' }}>AMOUNTS</div>
-            <div style={{ marginTop: 8, fontSize: 14, color: C.mid }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+            <div
+              style={{
+                fontSize: 12,
+                color: C.dim,
+                letterSpacing: '0.08em',
+              }}
+            >
+              AMOUNTS
+            </div>
+            <div
+              style={{
+                marginTop: 8,
+                fontSize: 14,
+                color: C.mid,
+              }}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginBottom: 6,
+                }}
+              >
                 <span>Gross</span>
                 <strong>{formatCurrency(data.grossAmount)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginBottom: 6,
+                }}
+              >
                 <span>Commission</span>
                 <strong>{formatCurrency(data.commissionAmount)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginBottom: 6,
+                }}
+              >
                 <span>Platform Fee</span>
                 <strong>{formatCurrency(data.platformFee)}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  marginBottom: 6,
+                }}
+              >
                 <span>Tax</span>
                 <strong>{formatCurrency(data.taxAmount)}</strong>
               </div>
-              <div style={{ height: 1, background: C.border, margin: '8px 0' }} />
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 16 }}>
+              <div
+                style={{
+                  height: 1,
+                  background: C.border,
+                  margin: '8px 0',
+                }}
+              />
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontSize: 16,
+                }}
+              >
                 <span>Net Payable</span>
                 <strong>{formatCurrency(data.netSettlementAmount)}</strong>
               </div>
@@ -139,8 +244,23 @@ const AdminSettlementDetail = () => {
               padding: 16,
             }}
           >
-            <div style={{ fontSize: 12, color: C.dim, letterSpacing: '0.08em' }}>STATUS</div>
-            <div style={{ display: 'flex', gap: 8, marginTop: 10, flexWrap: 'wrap' }}>
+            <div
+              style={{
+                fontSize: 12,
+                color: C.dim,
+                letterSpacing: '0.08em',
+              }}
+            >
+              STATUS
+            </div>
+            <div
+              style={{
+                display: 'flex',
+                gap: 8,
+                marginTop: 10,
+                flexWrap: 'wrap',
+              }}
+            >
               {[
                 'PENDING',
                 'PROCESSING',
@@ -167,11 +287,35 @@ const AdminSettlementDetail = () => {
                 </button>
               ))}
             </div>
-            <div style={{ marginTop: 12 }}>
-              <div style={{ fontSize: 12, color: C.dim }}>Payment Method</div>
-              <div style={{ fontSize: 14, fontWeight: 700 }}>{data.paymentMethod}</div>
+            <div
+              style={{
+                marginTop: 12,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 12,
+                  color: C.dim,
+                }}
+              >
+                Payment Method
+              </div>
+              <div
+                style={{
+                  fontSize: 14,
+                  fontWeight: 700,
+                }}
+              >
+                {data.paymentMethod}
+              </div>
             </div>
-            <div style={{ marginTop: 8, fontSize: 12, color: C.dim }}>
+            <div
+              style={{
+                marginTop: 8,
+                fontSize: 12,
+                color: C.dim,
+              }}
+            >
               Created {data.createdAt?.split('T')[0] ?? '—'} • Settled{' '}
               {data.settlementDate?.split('T')[0] ?? '—'}
             </div>

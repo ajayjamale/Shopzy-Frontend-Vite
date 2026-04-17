@@ -1,4 +1,3 @@
-import React from 'react'
 const PromptMessage = ({ message }) => {
   return (
     <div className="prompt-message">

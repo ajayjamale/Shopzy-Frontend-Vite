@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { useNavigate } from 'react-router-dom'
@@ -36,7 +36,11 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
   const [submitted, setSubmitted] = useState(false)
   // ── Formik — exact same shape as ReviewForm ──
   const formik = useFormik({
-    initialValues: { reviewText: '', reviewRating: 0, productImages: [] },
+    initialValues: {
+      reviewText: '',
+      reviewRating: 0,
+      productImages: [],
+    },
     validationSchema: Yup.object({
       reviewText: Yup.string()
         .required('Review text is required')
@@ -150,8 +154,7 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
       </p>
     ) : null
   return (
-    /* ── Backdrop ── */
-    <div
+    /* ── Backdrop ── */ <div
       onClick={onClose}
       style={{
         position: 'fixed',
@@ -191,7 +194,14 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
             justifyContent: 'space-between',
           }}
         >
-          <span style={{ fontWeight: 700, fontSize: '1rem' }}>Write a Customer Review</span>
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: '1rem',
+            }}
+          >
+            Write a Customer Review
+          </span>
           <button
             onClick={onClose}
             style={{
@@ -207,7 +217,11 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
           </button>
         </div>
 
-        <div style={{ padding: '20px 24px' }}>
+        <div
+          style={{
+            padding: '20px 24px',
+          }}
+        >
           {/* ════════════════ SUCCESS SCREEN ════════════════ */}
           {reviewSuccess && submitted ? (
             <div
@@ -220,7 +234,12 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                 gap: 16,
               }}
             >
-              <CheckCircleIcon style={{ fontSize: '4rem', color: '#067d62' }} />
+              <CheckCircleIcon
+                style={{
+                  fontSize: '4rem',
+                  color: '#067d62',
+                }}
+              />
 
               <div>
                 <div
@@ -233,7 +252,13 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                 >
                   Thank you for your review!
                 </div>
-                <div style={{ fontSize: '0.875rem', color: '#64748B', lineHeight: 1.6 }}>
+                <div
+                  style={{
+                    fontSize: '0.875rem',
+                    color: '#64748B',
+                    lineHeight: 1.6,
+                  }}
+                >
                   {reviewSuccessMessage ||
                     'Your feedback helps millions of shoppers make better decisions.'}
                 </div>
@@ -267,7 +292,14 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                 />
                 <div>
                   {sellerName && (
-                    <div style={{ fontSize: '0.75rem', color: '#64748B' }}>{sellerName}</div>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#64748B',
+                      }}
+                    >
+                      {sellerName}
+                    </div>
                   )}
                   <div
                     style={{
@@ -280,14 +312,29 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                     {productTitle}
                   </div>
                   {/* Show submitted rating as stars */}
-                  <div style={{ display: 'flex', gap: 2, marginTop: 4 }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 2,
+                      marginTop: 4,
+                    }}
+                  >
                     {[1, 2, 3, 4, 5].map((s) =>
                       s <= formik.values.reviewRating ? (
-                        <StarIcon key={s} style={{ fontSize: '0.875rem', color: '#0f766e' }} />
+                        <StarIcon
+                          key={s}
+                          style={{
+                            fontSize: '0.875rem',
+                            color: '#0f766e',
+                          }}
+                        />
                       ) : (
                         <StarBorderIcon
                           key={s}
-                          style={{ fontSize: '0.875rem', color: '#d5d9d9' }}
+                          style={{
+                            fontSize: '0.875rem',
+                            color: '#d5d9d9',
+                          }}
                         />
                       ),
                     )}
@@ -295,10 +342,16 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                 </div>
               </div>
 
-              <div style={{ fontSize: '0.8125rem', color: '#64748B' }}>Closing automatically…</div>
-            </div>
+              <div
+                style={{
+                  fontSize: '0.8125rem',
+                  color: '#64748B',
+                }}
+              >
+                Closing automatically…
+              </div>
+            </div> /* ════════════════ FORM ════════════════ */
           ) : (
-            /* ════════════════ FORM ════════════════ */
             <form onSubmit={formik.handleSubmit} noValidate>
               {reviewError && !reviewLoading && (
                 <div
@@ -345,7 +398,13 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                 />
                 <div>
                   {sellerName && (
-                    <div style={{ fontSize: '0.75rem', color: '#64748B', marginBottom: 2 }}>
+                    <div
+                      style={{
+                        fontSize: '0.75rem',
+                        color: '#64748B',
+                        marginBottom: 2,
+                      }}
+                    >
                       Sold by {sellerName}
                     </div>
                   )}
@@ -359,14 +418,24 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                   >
                     {productTitle}
                   </div>
-                  <div style={{ fontSize: '0.8125rem', color: '#64748B', marginTop: 4 }}>
+                  <div
+                    style={{
+                      fontSize: '0.8125rem',
+                      color: '#64748B',
+                      marginTop: 4,
+                    }}
+                  >
                     Share your experience to help other customers
                   </div>
                 </div>
               </div>
 
               {/* ── Overall Rating ── */}
-              <div style={{ marginBottom: 18 }}>
+              <div
+                style={{
+                  marginBottom: 18,
+                }}
+              >
                 <label
                   style={{
                     display: 'block',
@@ -376,9 +445,22 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                     marginBottom: 8,
                   }}
                 >
-                  Overall rating <span style={{ color: '#c40000' }}>*</span>
+                  Overall rating{' '}
+                  <span
+                    style={{
+                      color: '#c40000',
+                    }}
+                  >
+                    *
+                  </span>
                 </label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 2,
+                  }}
+                >
                   {[1, 2, 3, 4, 5].map((star) => (
                     <button
                       key={star}
@@ -397,14 +479,30 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                       }}
                     >
                       {activeRating >= star ? (
-                        <StarIcon style={{ fontSize: '2.25rem', color: '#0f766e' }} />
+                        <StarIcon
+                          style={{
+                            fontSize: '2.25rem',
+                            color: '#0f766e',
+                          }}
+                        />
                       ) : (
-                        <StarBorderIcon style={{ fontSize: '2.25rem', color: '#adb1b8' }} />
+                        <StarBorderIcon
+                          style={{
+                            fontSize: '2.25rem',
+                            color: '#adb1b8',
+                          }}
+                        />
                       )}
                     </button>
                   ))}
                   {activeRating > 0 && (
-                    <span style={{ fontSize: '0.875rem', color: '#64748B', marginLeft: 10 }}>
+                    <span
+                      style={{
+                        fontSize: '0.875rem',
+                        color: '#64748B',
+                        marginLeft: 10,
+                      }}
+                    >
                       {RATING_LABELS[activeRating]}
                     </span>
                   )}
@@ -413,7 +511,11 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
               </div>
 
               {/* ── Review text — exact same as ReviewForm ── */}
-              <div style={{ marginBottom: 16 }}>
+              <div
+                style={{
+                  marginBottom: 16,
+                }}
+              >
                 <label
                   htmlFor="oi-reviewText"
                   style={{
@@ -424,7 +526,14 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                     marginBottom: 6,
                   }}
                 >
-                  Written review <span style={{ color: '#c40000' }}>*</span>
+                  Written review{' '}
+                  <span
+                    style={{
+                      color: '#c40000',
+                    }}
+                  >
+                    *
+                  </span>
                 </label>
                 <textarea
                   id="oi-reviewText"
@@ -444,16 +553,32 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                     resize: 'vertical',
                   }}
                 />
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 4 }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    marginTop: 4,
+                  }}
+                >
                   {formik.touched.reviewText && <ErrMsg msg={formik.errors.reviewText} />}
-                  <span style={{ fontSize: '0.75rem', color: '#888c8c', marginLeft: 'auto' }}>
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      color: '#888c8c',
+                      marginLeft: 'auto',
+                    }}
+                  >
                     {formik.values.reviewText.length}/2000
                   </span>
                 </div>
               </div>
 
               {/* ── Photo upload — exact same as ReviewForm ── */}
-              <div style={{ marginBottom: 22 }}>
+              <div
+                style={{
+                  marginBottom: 22,
+                }}
+              >
                 <label
                   style={{
                     display: 'block',
@@ -464,12 +589,23 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                   }}
                 >
                   Add photos{' '}
-                  <span style={{ fontSize: '0.75rem', fontWeight: 'normal', color: '#64748B' }}>
+                  <span
+                    style={{
+                      fontSize: '0.75rem',
+                      fontWeight: 'normal',
+                      color: '#64748B',
+                    }}
+                  >
                     (optional)
                   </span>
                 </label>
                 <div
-                  style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'flex-start' }}
+                  style={{
+                    display: 'flex',
+                    flexWrap: 'wrap',
+                    gap: 10,
+                    alignItems: 'flex-start',
+                  }}
                 >
                   {/* Upload trigger */}
                   <label
@@ -505,7 +641,12 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                       />
                     ) : (
                       <>
-                        <AddPhotoAlternateIcon style={{ fontSize: '1.5rem', color: '#64748B' }} />
+                        <AddPhotoAlternateIcon
+                          style={{
+                            fontSize: '1.5rem',
+                            color: '#64748B',
+                          }}
+                        />
                         <span>Add photo</span>
                       </>
                     )}
@@ -514,14 +655,23 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                     id="oi-fileInput"
                     type="file"
                     accept="image/*"
-                    style={{ display: 'none' }}
+                    style={{
+                      display: 'none',
+                    }}
                     onChange={handleImageChange}
                     disabled={uploadingImg}
                   />
 
                   {/* Thumbnails */}
                   {formik.values.productImages.map((img, i) => (
-                    <div key={i} style={{ position: 'relative', width: 76, height: 76 }}>
+                    <div
+                      key={i}
+                      style={{
+                        position: 'relative',
+                        width: 76,
+                        height: 76,
+                      }}
+                    >
                       <img
                         src={img}
                         alt={`upload-${i}`}
@@ -574,13 +724,25 @@ const ReviewModal = ({ open, onClose, productId, productTitle, productImage, sel
                   lineHeight: 1.6,
                 }}
               >
-                <strong style={{ color: '#0f1111' }}>Review guidelines: </strong>
+                <strong
+                  style={{
+                    color: '#0f1111',
+                  }}
+                >
+                  Review guidelines:{' '}
+                </strong>
                 Focus on the product's features and your experience. Keep it helpful and relevant to
                 other shoppers.
               </div>
 
               {/* ── Actions ── */}
-              <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 10,
+                  justifyContent: 'flex-end',
+                }}
+              >
                 <button
                   type="button"
                   onClick={onClose}
@@ -678,7 +840,9 @@ const OrderItemCard = ({ item, order }) => {
           src={item.product.images[0]}
           alt={item.product.title}
           onClick={() => navigate(`/account/orders/${order.id}/${item.id}`)}
-          style={{ cursor: 'pointer' }}
+          style={{
+            cursor: 'pointer',
+          }}
         />
 
         <div className="amz-order-item-info">
@@ -689,7 +853,9 @@ const OrderItemCard = ({ item, order }) => {
           <div
             className="amz-order-item-title"
             onClick={() => navigate(`/account/orders/${order.id}/${item.id}`)}
-            style={{ cursor: 'pointer' }}
+            style={{
+              cursor: 'pointer',
+            }}
           >
             {item.product.title}
           </div>
@@ -710,7 +876,12 @@ const OrderItemCard = ({ item, order }) => {
           >
             <span className={`amz-badge ${badgeCls}`}>{order.orderStatus}</span>
             {order.deliverDate && !isCancelled && (
-              <span style={{ fontSize: '0.75rem', color: '#64748B' }}>
+              <span
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#64748B',
+                }}
+              >
                 {isDelivered ? 'Delivered ' : 'Arriving '}
                 <strong>{formatDate(order.deliverDate)}</strong>
               </span>
@@ -719,7 +890,14 @@ const OrderItemCard = ({ item, order }) => {
 
           {/* Review + View details — DELIVERED only */}
           {isDelivered && (
-            <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <div
+              style={{
+                marginTop: 10,
+                display: 'flex',
+                gap: 8,
+                flexWrap: 'wrap',
+              }}
+            >
               <button
                 className="amz-btn-primary"
                 style={{
@@ -734,7 +912,11 @@ const OrderItemCard = ({ item, order }) => {
                   setReviewOpen(true)
                 }}
               >
-                <RateReviewIcon style={{ fontSize: '0.875rem' }} />
+                <RateReviewIcon
+                  style={{
+                    fontSize: '0.875rem',
+                  }}
+                />
                 Write a review
               </button>
 
@@ -770,7 +952,11 @@ const OrderItemCard = ({ item, order }) => {
                     setReturnOpen(true)
                   }}
                 >
-                  <ReplayIcon style={{ fontSize: '0.875rem' }} />
+                  <ReplayIcon
+                    style={{
+                      fontSize: '0.875rem',
+                    }}
+                  />
                   Request return
                 </button>
               )}
@@ -779,14 +965,30 @@ const OrderItemCard = ({ item, order }) => {
         </div>
 
         {/* Price */}
-        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+        <div
+          style={{
+            textAlign: 'right',
+            flexShrink: 0,
+          }}
+        >
           <div className="amz-order-item-price">₹{item.sellingPrice?.toLocaleString('en-IN')}</div>
           {item.mrpPrice > item.sellingPrice && (
             <>
-              <div style={{ fontSize: '0.75rem', color: '#888c8c', marginTop: 2 }}>
+              <div
+                style={{
+                  fontSize: '0.75rem',
+                  color: '#888c8c',
+                  marginTop: 2,
+                }}
+              >
                 <s>₹{item.mrpPrice?.toLocaleString('en-IN')}</s>
               </div>
-              <div className="amz-price-save" style={{ fontSize: '0.75rem' }}>
+              <div
+                className="amz-price-save"
+                style={{
+                  fontSize: '0.75rem',
+                }}
+              >
                 −₹{(item.mrpPrice - item.sellingPrice).toLocaleString('en-IN')}
               </div>
             </>
@@ -935,17 +1137,40 @@ const ReturnRequestModal = ({
             justifyContent: 'space-between',
           }}
         >
-          <span style={{ fontWeight: 700 }}>Request a return</span>
+          <span
+            style={{
+              fontWeight: 700,
+            }}
+          >
+            Request a return
+          </span>
           <button
             onClick={onClose}
-            style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer' }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#fff',
+              cursor: 'pointer',
+            }}
           >
             <CloseIcon />
           </button>
         </div>
 
-        <div style={{ padding: '16px 18px', display: 'grid', gap: 12 }}>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+        <div
+          style={{
+            padding: '16px 18px',
+            display: 'grid',
+            gap: 12,
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              gap: 12,
+              alignItems: 'center',
+            }}
+          >
             <img
               src={productImage}
               alt={productTitle}
@@ -958,9 +1183,22 @@ const ReturnRequestModal = ({
               }}
             />
             <div>
-              <div style={{ fontWeight: 700 }}>{productTitle}</div>
+              <div
+                style={{
+                  fontWeight: 700,
+                }}
+              >
+                {productTitle}
+              </div>
               {sellerName && (
-                <div style={{ fontSize: 12, color: '#64748B' }}>Sold by {sellerName}</div>
+                <div
+                  style={{
+                    fontSize: 12,
+                    color: '#64748B',
+                  }}
+                >
+                  Sold by {sellerName}
+                </div>
               )}
             </div>
           </div>
@@ -992,7 +1230,14 @@ const ReturnRequestModal = ({
             </div>
           )}
 
-          <label style={{ fontSize: 13, fontWeight: 700 }}>Reason</label>
+          <label
+            style={{
+              fontSize: 13,
+              fontWeight: 700,
+            }}
+          >
+            Reason
+          </label>
           <select
             name="reason"
             value={formik.values.reason}
@@ -1012,10 +1257,24 @@ const ReturnRequestModal = ({
             <option value="Other">Other</option>
           </select>
           {formik.touched.reason && formik.errors.reason && (
-            <span style={{ color: '#c40000', fontSize: 12 }}>{formik.errors.reason}</span>
+            <span
+              style={{
+                color: '#c40000',
+                fontSize: 12,
+              }}
+            >
+              {formik.errors.reason}
+            </span>
           )}
 
-          <label style={{ fontSize: 13, fontWeight: 700 }}>Details</label>
+          <label
+            style={{
+              fontSize: 13,
+              fontWeight: 700,
+            }}
+          >
+            Details
+          </label>
           <textarea
             name="description"
             rows={3}
@@ -1031,10 +1290,24 @@ const ReturnRequestModal = ({
             placeholder="Describe the issue to help us resolve faster"
           />
           {formik.touched.description && formik.errors.description && (
-            <span style={{ color: '#c40000', fontSize: 12 }}>{formik.errors.description}</span>
+            <span
+              style={{
+                color: '#c40000',
+                fontSize: 12,
+              }}
+            >
+              {formik.errors.description}
+            </span>
           )}
 
-          <label style={{ fontSize: 13, fontWeight: 700 }}>Quantity</label>
+          <label
+            style={{
+              fontSize: 13,
+              fontWeight: 700,
+            }}
+          >
+            Quantity
+          </label>
           <input
             type="number"
             min={1}
@@ -1051,27 +1324,65 @@ const ReturnRequestModal = ({
             }}
           />
 
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 10,
+              alignItems: 'center',
+            }}
+          >
             <button
               type="button"
               onClick={() => document.getElementById(`return-img-${orderItemId}`)?.click()}
               className="amz-btn-secondary"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 10px' }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 10px',
+              }}
             >
-              <AddPhotoAlternateIcon sx={{ fontSize: 18 }} />
+              <AddPhotoAlternateIcon
+                sx={{
+                  fontSize: 18,
+                }}
+              />
               Add photo
             </button>
             <input
               id={`return-img-${orderItemId}`}
               type="file"
               accept="image/*"
-              style={{ display: 'none' }}
+              style={{
+                display: 'none',
+              }}
               onChange={(e) => addImage(e.target.files?.[0] || undefined)}
             />
-            {uploading && <span style={{ fontSize: 12, color: '#64748B' }}>Uploading...</span>}
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {uploading && (
+              <span
+                style={{
+                  fontSize: 12,
+                  color: '#64748B',
+                }}
+              >
+                Uploading...
+              </span>
+            )}
+            <div
+              style={{
+                display: 'flex',
+                gap: 6,
+                flexWrap: 'wrap',
+              }}
+            >
               {formik.values.images.map((url, idx) => (
-                <div key={url} style={{ position: 'relative' }}>
+                <div
+                  key={url}
+                  style={{
+                    position: 'relative',
+                  }}
+                >
                   <img
                     src={url}
                     alt=""
@@ -1113,12 +1424,21 @@ const ReturnRequestModal = ({
             </div>
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 6 }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: 10,
+              marginTop: 6,
+            }}
+          >
             <button
               type="button"
               onClick={onClose}
               className="amz-btn-secondary"
-              style={{ padding: '8px 14px' }}
+              style={{
+                padding: '8px 14px',
+              }}
               disabled={loading}
             >
               Cancel
@@ -1127,7 +1447,10 @@ const ReturnRequestModal = ({
               type="button"
               onClick={formik.submitForm}
               className="amz-btn-primary"
-              style={{ padding: '8px 16px', minWidth: 140 }}
+              style={{
+                padding: '8px 16px',
+                minWidth: 140,
+              }}
               disabled={loading || uploading}
             >
               {loading ? 'Submitting...' : 'Submit return'}

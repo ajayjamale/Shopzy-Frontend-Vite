@@ -1,23 +1,67 @@
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import CheckIcon from '@mui/icons-material/Check'
 import CloseIcon from '@mui/icons-material/Close'
 import './Profile.css'
 const ORDER_FLOW_STEPS = [
-  { name: 'Order Placed', description: 'Received', value: 'PLACED' },
-  { name: 'Confirmed', description: 'Warehouse', value: 'CONFIRMED' },
-  { name: 'Shipped', description: 'On the way', value: 'SHIPPED' },
-  { name: 'Delivered', description: 'Completed', value: 'DELIVERED' },
+  {
+    name: 'Order Placed',
+    description: 'Received',
+    value: 'PLACED',
+  },
+  {
+    name: 'Confirmed',
+    description: 'Warehouse',
+    value: 'CONFIRMED',
+  },
+  {
+    name: 'Shipped',
+    description: 'On the way',
+    value: 'SHIPPED',
+  },
+  {
+    name: 'Delivered',
+    description: 'Completed',
+    value: 'DELIVERED',
+  },
 ]
 const CANCELLED_FLOW_STEPS = [
-  { name: 'Order Placed', description: 'Received', value: 'PLACED' },
-  { name: 'Cancelled', description: 'Refund initiated', value: 'CANCELLED' },
+  {
+    name: 'Order Placed',
+    description: 'Received',
+    value: 'PLACED',
+  },
+  {
+    name: 'Cancelled',
+    description: 'Refund initiated',
+    value: 'CANCELLED',
+  },
 ]
 const RETURN_FLOW_STEPS = [
-  { name: 'Order Placed', description: 'Received', value: 'PLACED' },
-  { name: 'Delivered', description: 'Completed', value: 'DELIVERED' },
-  { name: 'Return Requested', description: 'Under review', value: 'RETURN_REQUESTED' },
-  { name: 'Refund Initiated', description: 'Processing', value: 'REFUND_INITIATED' },
-  { name: 'Returned', description: 'Refund completed', value: 'RETURNED' },
+  {
+    name: 'Order Placed',
+    description: 'Received',
+    value: 'PLACED',
+  },
+  {
+    name: 'Delivered',
+    description: 'Completed',
+    value: 'DELIVERED',
+  },
+  {
+    name: 'Return Requested',
+    description: 'Under review',
+    value: 'RETURN_REQUESTED',
+  },
+  {
+    name: 'Refund Initiated',
+    description: 'Processing',
+    value: 'REFUND_INITIATED',
+  },
+  {
+    name: 'Returned',
+    description: 'Refund completed',
+    value: 'RETURNED',
+  },
 ]
 const RETURN_FLOW_STATUSES = new Set(['RETURN_REQUESTED', 'REFUND_INITIATED', 'RETURNED'])
 const STATUS_ALIAS_MAP = {
@@ -49,11 +93,19 @@ const OrderStepper = ({ orderStatus }) => {
   const fillPct = statusSteps.length > 1 ? (currentIndex / (statusSteps.length - 1)) * 100 : 0
   const isCancelledFlow = normalizedStatus === 'CANCELLED'
   return (
-    <div className="amz-stepper" role="list" style={{ '--amz-step-count': statusSteps.length }}>
+    <div
+      className="amz-stepper"
+      role="list"
+      style={{
+        '--amz-step-count': statusSteps.length,
+      }}
+    >
       <div className="amz-stepper-track">
         <div
           className={`amz-stepper-fill ${isCancelledFlow ? 'cancelled' : ''}`}
-          style={{ width: `${fillPct}%` }}
+          style={{
+            width: `${fillPct}%`,
+          }}
         />
       </div>
 
@@ -72,9 +124,17 @@ const OrderStepper = ({ orderStatus }) => {
               className={`amz-stepper-circle ${isCancelStep ? 'cancelled' : isDone ? 'done' : isCurrent ? 'current' : ''}`}
             >
               {isCancelStep ? (
-                <CloseIcon style={{ fontSize: '0.875rem' }} />
+                <CloseIcon
+                  style={{
+                    fontSize: '0.875rem',
+                  }}
+                />
               ) : isDone ? (
-                <CheckIcon style={{ fontSize: '0.875rem' }} />
+                <CheckIcon
+                  style={{
+                    fontSize: '0.875rem',
+                  }}
+                />
               ) : (
                 <span>{index + 1}</span>
               )}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 const OTPInput = ({ length, onChange, error = false }) => {
   const [otp, setOtp] = useState(Array(length).fill(''))
   const [focused, setFocused] = useState(null)
@@ -42,7 +42,13 @@ const OTPInput = ({ length, onChange, error = false }) => {
   }
   const filledCount = otp.filter(Boolean).length
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+      }}
+    >
       {/* Progress track */}
       <div
         style={{
@@ -65,13 +71,24 @@ const OTPInput = ({ length, onChange, error = false }) => {
       </div>
 
       {/* Boxes */}
-      <div style={{ display: 'flex', gap: 10 }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 10,
+        }}
+      >
         {otp.map((digit, index) => {
           const isFocused = focused === index
           const isFilled = Boolean(digit)
           const isError = error
           return (
-            <div key={index} style={{ position: 'relative', flex: 1 }}>
+            <div
+              key={index}
+              style={{
+                position: 'relative',
+                flex: 1,
+              }}
+            >
               <input
                 ref={(el) => {
                   inputRefs.current[index] = el
@@ -180,7 +197,11 @@ export const OTPField = ({ label, error, helperText }) => {
   }
   const filledCount = otp.filter(Boolean).length
   return (
-    <div style={{ marginBottom: 20 }}>
+    <div
+      style={{
+        marginBottom: 20,
+      }}
+    >
       {/* Label */}
       <label
         style={{
@@ -218,12 +239,23 @@ export const OTPField = ({ label, error, helperText }) => {
       </div>
 
       {/* OTP boxes */}
-      <div style={{ display: 'flex', gap: 10 }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: 10,
+        }}
+      >
         {otp.map((digit, index) => {
           const isFocused = focused === index
           const isFilled = Boolean(digit)
           return (
-            <div key={index} style={{ position: 'relative', flex: 1 }}>
+            <div
+              key={index}
+              style={{
+                position: 'relative',
+                flex: 1,
+              }}
+            >
               <input
                 ref={(el) => {
                   inputRefs.current[index] = el

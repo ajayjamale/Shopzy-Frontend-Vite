@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import {
@@ -21,15 +21,28 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import PercentIcon from '@mui/icons-material/Percent'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
 const modernTextField = {
-  '& label.Mui-focused': { color: '#1E293B' },
+  '& label.Mui-focused': {
+    color: '#1E293B',
+  },
   '& .MuiOutlinedInput-root': {
     fontFamily: '"Manrope", Arial, sans-serif',
     fontSize: 13,
-    '&:hover fieldset': { borderColor: '#0F766E' },
-    '&.Mui-focused fieldset': { borderColor: '#0F766E', borderWidth: 2 },
+    '&:hover fieldset': {
+      borderColor: '#0F766E',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#0F766E',
+      borderWidth: 2,
+    },
   },
-  '& label': { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13 },
-  '& .MuiFormHelperText-root': { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 11 },
+  '& label': {
+    fontFamily: '"Manrope", Arial, sans-serif',
+    fontSize: 13,
+  },
+  '& .MuiFormHelperText-root': {
+    fontFamily: '"Manrope", Arial, sans-serif',
+    fontSize: 11,
+  },
 }
 const CreateCouponForm = () => {
   const dispatch = useAppDispatch()
@@ -115,7 +128,12 @@ const CreateCouponForm = () => {
           borderBottom: '3px solid #0F766E',
         }}
       >
-        <LocalOfferIcon sx={{ color: '#0F766E', fontSize: 20 }} />
+        <LocalOfferIcon
+          sx={{
+            color: '#0F766E',
+            fontSize: 20,
+          }}
+        />
         <Typography
           sx={{
             color: '#fff',
@@ -128,12 +146,21 @@ const CreateCouponForm = () => {
         </Typography>
       </Box>
 
-      <Box sx={{ p: 3 }}>
+      <Box
+        sx={{
+          p: 3,
+        }}
+      >
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Box component="form" onSubmit={formik.handleSubmit}>
             <Grid container spacing={2}>
               {/* Coupon Code */}
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <TextField
                   fullWidth
                   id="code"
@@ -149,7 +176,12 @@ const CreateCouponForm = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <LocalOfferIcon sx={{ fontSize: 16, color: '#64748B' }} />
+                        <LocalOfferIcon
+                          sx={{
+                            fontSize: 16,
+                            color: '#64748B',
+                          }}
+                        />
                       </InputAdornment>
                     ),
                     sx: {
@@ -163,7 +195,12 @@ const CreateCouponForm = () => {
               </Grid>
 
               {/* Discount Percentage */}
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <TextField
                   fullWidth
                   id="discountPercentage"
@@ -180,17 +217,30 @@ const CreateCouponForm = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <PercentIcon sx={{ fontSize: 16, color: '#64748B' }} />
+                        <PercentIcon
+                          sx={{
+                            fontSize: 16,
+                            color: '#64748B',
+                          }}
+                        />
                       </InputAdornment>
                     ),
-                    inputProps: { min: 1, max: 100 },
+                    inputProps: {
+                      min: 1,
+                      max: 100,
+                    },
                   }}
                   sx={modernTextField}
                 />
               </Grid>
 
               {/* Start Date */}
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <DatePicker
                   label="Validity Start Date"
                   value={formik.values.validityStartDate}
@@ -217,7 +267,12 @@ const CreateCouponForm = () => {
               </Grid>
 
               {/* End Date */}
-              <Grid size={{ xs: 12, sm: 6 }}>
+              <Grid
+                size={{
+                  xs: 12,
+                  sm: 6,
+                }}
+              >
                 <DatePicker
                   label="Validity End Date"
                   value={formik.values.validityEndDate}
@@ -242,7 +297,11 @@ const CreateCouponForm = () => {
               </Grid>
 
               {/* Minimum Order Value */}
-              <Grid size={{ xs: 12 }}>
+              <Grid
+                size={{
+                  xs: 12,
+                }}
+              >
                 <TextField
                   fullWidth
                   id="minimumOrderValue"
@@ -259,17 +318,28 @@ const CreateCouponForm = () => {
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
-                        <AttachMoneyIcon sx={{ fontSize: 16, color: '#64748B' }} />
+                        <AttachMoneyIcon
+                          sx={{
+                            fontSize: 16,
+                            color: '#64748B',
+                          }}
+                        />
                       </InputAdornment>
                     ),
-                    inputProps: { min: 1 },
+                    inputProps: {
+                      min: 1,
+                    },
                   }}
                   sx={modernTextField}
                 />
               </Grid>
 
               {/* Note */}
-              <Grid size={{ xs: 12 }}>
+              <Grid
+                size={{
+                  xs: 12,
+                }}
+              >
                 <Box
                   sx={{
                     backgroundColor: '#FFF3CD',
@@ -294,7 +364,11 @@ const CreateCouponForm = () => {
               </Grid>
 
               {/* Submit */}
-              <Grid size={{ xs: 12 }}>
+              <Grid
+                size={{
+                  xs: 12,
+                }}
+              >
                 <Button
                   variant="contained"
                   type="submit"
@@ -311,13 +385,26 @@ const CreateCouponForm = () => {
                     py: 1.2,
                     border: '1px solid #0b5f59',
                     boxShadow: '0 1px 0 rgba(255,255,255,.4) inset, 0 -1px 0 rgba(0,0,0,.15) inset',
-                    '&:hover': { backgroundColor: '#0b5f59', boxShadow: 'none' },
-                    '&:active': { backgroundColor: '#115e59' },
-                    '&.Mui-disabled': { backgroundColor: '#f7ca7d', color: '#9d9d9d' },
+                    '&:hover': {
+                      backgroundColor: '#0b5f59',
+                      boxShadow: 'none',
+                    },
+                    '&:active': {
+                      backgroundColor: '#115e59',
+                    },
+                    '&.Mui-disabled': {
+                      backgroundColor: '#f7ca7d',
+                      color: '#9d9d9d',
+                    },
                   }}
                 >
                   {adminCoupon.loading ? (
-                    <CircularProgress size={22} sx={{ color: '#0F172A' }} />
+                    <CircularProgress
+                      size={22}
+                      sx={{
+                        color: '#0F172A',
+                      }}
+                    />
                   ) : (
                     'Create Coupon'
                   )}
@@ -329,7 +416,10 @@ const CreateCouponForm = () => {
       </Box>
 
       <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         open={snackbarOpen}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}

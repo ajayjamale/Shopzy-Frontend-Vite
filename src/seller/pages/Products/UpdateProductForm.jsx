@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import {
@@ -189,7 +189,10 @@ const UpdateProductForm = () => {
         sx={{
           display: 'grid',
           gap: 2,
-          gridTemplateColumns: { xs: '1fr', md: 'repeat(3, minmax(0, 1fr))' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            md: 'repeat(3, minmax(0, 1fr))',
+          },
           mb: 2,
         }}
       >
@@ -222,7 +225,10 @@ const UpdateProductForm = () => {
         sx={{
           display: 'grid',
           gap: 2,
-          gridTemplateColumns: { xs: '1fr', lg: '1.45fr 0.95fr' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            lg: '1.45fr 0.95fr',
+          },
           alignItems: 'start',
         }}
       >
@@ -278,7 +284,10 @@ const UpdateProductForm = () => {
               sx={{
                 display: 'grid',
                 gap: 1.6,
-                gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, minmax(0, 1fr))' },
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: 'repeat(2, minmax(0, 1fr))',
+                },
               }}
             >
               <TextField
@@ -347,7 +356,13 @@ const UpdateProductForm = () => {
                 >
                   {discountPreview > 0 ? `-${discountPreview}%` : '0%'}
                 </Typography>
-                <Typography sx={{ fontSize: '.8rem', color: '#64748B', mt: 0.4 }}>
+                <Typography
+                  sx={{
+                    fontSize: '.8rem',
+                    color: '#64748B',
+                    mt: 0.4,
+                  }}
+                >
                   Auto-calculated from MRP and selling price
                 </Typography>
               </Box>
@@ -355,7 +370,17 @@ const UpdateProductForm = () => {
           </SellerSection>
         </Stack>
 
-        <Stack spacing={2} sx={{ position: { lg: 'sticky' }, top: { lg: 90 } }}>
+        <Stack
+          spacing={2}
+          sx={{
+            position: {
+              lg: 'sticky',
+            },
+            top: {
+              lg: 90,
+            },
+          }}
+        >
           <SellerSection
             title="Attributes"
             description="Quick listing values used in the storefront."
@@ -423,7 +448,10 @@ const UpdateProductForm = () => {
                 uploading ? <CircularProgress size={14} /> : <AddPhotoAlternateOutlinedIcon />
               }
               disabled={uploading}
-              sx={{ ...sellerSecondaryButtonSx, borderStyle: 'dashed' }}
+              sx={{
+                ...sellerSecondaryButtonSx,
+                borderStyle: 'dashed',
+              }}
             >
               {uploading ? 'Uploading...' : 'Add product image'}
               <input hidden type="file" accept="image/*" onChange={handleImageUpload} />
@@ -452,7 +480,11 @@ const UpdateProductForm = () => {
                   <img
                     src={image}
                     alt={`product-${index}`}
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'cover',
+                    }}
                   />
                   <Button
                     size="small"
@@ -470,7 +502,11 @@ const UpdateProductForm = () => {
                       bgcolor: 'rgba(255,255,255,0.92)',
                     }}
                   >
-                    <DeleteOutlineRoundedIcon sx={{ fontSize: 14 }} />
+                    <DeleteOutlineRoundedIcon
+                      sx={{
+                        fontSize: 14,
+                      }}
+                    />
                   </Button>
                 </Box>
               ))}
@@ -484,7 +520,12 @@ const UpdateProductForm = () => {
                     bgcolor: 'rgba(14, 116, 144, 0.04)',
                   }}
                 >
-                  <Typography sx={{ fontSize: '.82rem', color: '#64748B' }}>
+                  <Typography
+                    sx={{
+                      fontSize: '.82rem',
+                      color: '#64748B',
+                    }}
+                  >
                     No product images yet. Upload at least one image to keep the listing
                     presentable.
                   </Typography>
@@ -507,7 +548,16 @@ const UpdateProductForm = () => {
               <SummaryRow label="Images" value={String(formik.values.images.length)} />
             </Stack>
 
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.2} sx={{ mt: 2 }}>
+            <Stack
+              direction={{
+                xs: 'column',
+                sm: 'row',
+              }}
+              spacing={1.2}
+              sx={{
+                mt: 2,
+              }}
+            >
               <Button
                 fullWidth
                 variant="outlined"
@@ -525,7 +575,12 @@ const UpdateProductForm = () => {
                 sx={sellerPrimaryButtonSx}
               >
                 {sellerProduct.loading ? (
-                  <CircularProgress size={18} sx={{ color: '#fff' }} />
+                  <CircularProgress
+                    size={18}
+                    sx={{
+                      color: '#fff',
+                    }}
+                  />
                 ) : (
                   'Save updates'
                 )}
@@ -536,7 +591,10 @@ const UpdateProductForm = () => {
       </Box>
 
       <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
         open={snackbarOpen}
         autoHideDuration={5000}
         onClose={() => setSnackbarOpen(false)}
@@ -557,10 +615,28 @@ const SummaryRow = ({ label, value }) => (
     direction="row"
     alignItems="center"
     justifyContent="space-between"
-    sx={{ py: 0.8, borderBottom: '1px solid #E8EFF2' }}
+    sx={{
+      py: 0.8,
+      borderBottom: '1px solid #E8EFF2',
+    }}
   >
-    <Typography sx={{ color: '#64748B', fontSize: '.82rem' }}>{label}</Typography>
-    <Typography sx={{ fontWeight: 800, fontSize: '.86rem', color: '#0F172A' }}>{value}</Typography>
+    <Typography
+      sx={{
+        color: '#64748B',
+        fontSize: '.82rem',
+      }}
+    >
+      {label}
+    </Typography>
+    <Typography
+      sx={{
+        fontWeight: 800,
+        fontSize: '.86rem',
+        color: '#0F172A',
+      }}
+    >
+      {value}
+    </Typography>
   </Stack>
 )
 export default UpdateProductForm

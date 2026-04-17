@@ -1,4 +1,3 @@
-import React from 'react'
 import StarIcon from '@mui/icons-material/Star'
 import './Reviews.css'
 const LABELS = ['Poor', 'Average', 'Good', 'Very Good', 'Excellent']
@@ -10,10 +9,19 @@ const RatingCard = ({ reviews }) => {
   )
   const avg = total > 0 ? (reviews.reduce((s, r) => s + r.rating, 0) / total).toFixed(1) : '0.0'
   const StarDisplay = ({ value }) => (
-    <div className="amz-rv-stars" style={{ marginBottom: 6 }}>
+    <div
+      className="amz-rv-stars"
+      style={{
+        marginBottom: 6,
+      }}
+    >
       {[1, 2, 3, 4, 5].map((s) => (
         <span key={s} className={`amz-rv-star ${s <= Math.round(value) ? '' : 'empty'}`}>
-          <StarIcon style={{ fontSize: '1rem' }} />
+          <StarIcon
+            style={{
+              fontSize: '1rem',
+            }}
+          />
         </span>
       ))}
     </div>
@@ -40,7 +48,12 @@ const RatingCard = ({ reviews }) => {
                 <div key={star} className="amz-rv-bar-row">
                   <span className="amz-rv-bar-label">{LABELS[star - 1]}</span>
                   <div className="amz-rv-bar-track">
-                    <div className={`amz-rv-bar-fill ${fillCls}`} style={{ width: `${pct}%` }} />
+                    <div
+                      className={`amz-rv-bar-fill ${fillCls}`}
+                      style={{
+                        width: `${pct}%`,
+                      }}
+                    />
                   </div>
                   <span className="amz-rv-bar-count">{count}</span>
                 </div>
@@ -49,7 +62,12 @@ const RatingCard = ({ reviews }) => {
           </div>
         </div>
 
-        <div style={{ fontSize: '0.8125rem', color: '#565959' }}>
+        <div
+          style={{
+            fontSize: '0.8125rem',
+            color: '#565959',
+          }}
+        >
           {total} global rating{total !== 1 ? 's' : ''}
         </div>
       </div>

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAppSelector } from '../context/AppContext'
 import { getCustomerToken, getRoleFromToken, getSellerToken } from '../utils/authToken'
@@ -30,7 +29,15 @@ const ProtectedRoute = ({
   const sellerStatus = sellerProfile?.accountStatus?.toUpperCase?.()
   // Not logged in
   if (requireAuth && !jwt) {
-    return <Navigate to={fallback} replace state={{ from: location.pathname }} />
+    return (
+      <Navigate
+        to={fallback}
+        replace
+        state={{
+          from: location.pathname,
+        }}
+      />
+    )
   }
   // Role guard
   if (allowedRoles && allowedRoles.length > 0) {
@@ -41,7 +48,15 @@ const ProtectedRoute = ({
   // Seller status guard (must be approved/active)
   if (requireSellerActive) {
     if (sellerJwt && sellerLoading && !sellerProfile) {
-      return <div style={{ padding: 24 }}>Loading seller profile...</div>
+      return (
+        <div
+          style={{
+            padding: 24,
+          }}
+        >
+          Loading seller profile...
+        </div>
+      )
     }
     const blocked = ['SUSPENDED', 'BANNED', 'DEACTIVATED', 'CLOSED'].includes(sellerStatus || '')
     const pending = ['PENDING_VERIFICATION'].includes(sellerStatus || '')
@@ -59,8 +74,20 @@ const ProtectedRoute = ({
             textAlign: 'center',
           }}
         >
-          <h2 style={{ margin: 0, color: '#111827' }}>Seller access unavailable</h2>
-          <p style={{ maxWidth: 520, color: '#4B5563' }}>
+          <h2
+            style={{
+              margin: 0,
+              color: '#111827',
+            }}
+          >
+            Seller access unavailable
+          </h2>
+          <p
+            style={{
+              maxWidth: 520,
+              color: '#4B5563',
+            }}
+          >
             {blocked
               ? 'Your seller account is blocked or suspended. Please contact support.'
               : pending

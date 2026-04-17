@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { Field, SaveButton } from './FormPrimitives'
@@ -8,14 +8,22 @@ const BankDetailsForm = ({ onClose }) => {
   const { sellers } = useAppSelector((s) => s)
   const dispatch = useAppDispatch()
   const formik = useFormik({
-    initialValues: { accountHolderName: '', accountNumber: '', ifscCode: '' },
+    initialValues: {
+      accountHolderName: '',
+      accountNumber: '',
+      ifscCode: '',
+    },
     validationSchema: Yup.object({
       accountHolderName: Yup.string().required('Account holder name is required'),
       accountNumber: Yup.string().required('Account number is required'),
       ifscCode: Yup.string().required('IFSC code is required'),
     }),
     onSubmit: (values) => {
-      dispatch(updateSeller({ bankDetails: values }))
+      dispatch(
+        updateSeller({
+          bankDetails: values,
+        }),
+      )
       onClose()
     },
   })
@@ -31,7 +39,11 @@ const BankDetailsForm = ({ onClose }) => {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 14,
+      }}
     >
       <Field
         id="accountHolderName"

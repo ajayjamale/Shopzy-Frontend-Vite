@@ -1,4 +1,3 @@
-import React from 'react'
 import StarIcon from '@mui/icons-material/Star'
 import DeleteIcon from '@mui/icons-material/Delete'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
@@ -9,10 +8,20 @@ const StarDisplay = ({ value }) => (
   <div className="amz-rv-stars">
     {[1, 2, 3, 4, 5].map((s) => (
       <span key={s} className={`amz-rv-star ${s <= Math.round(value) ? '' : 'empty'}`}>
-        <StarIcon style={{ fontSize: '0.875rem' }} />
+        <StarIcon
+          style={{
+            fontSize: '0.875rem',
+          }}
+        />
       </span>
     ))}
-    <span style={{ fontSize: '0.8125rem', color: '#565959', marginLeft: 6 }}>
+    <span
+      style={{
+        fontSize: '0.8125rem',
+        color: '#565959',
+        marginLeft: 6,
+      }}
+    >
       {value.toFixed(1)}
     </span>
   </div>
@@ -41,7 +50,11 @@ const ProductReviewCard = ({ item }) => {
   return (
     <div className="amz-rv-review-item">
       <div className="amz-rv-review-top">
-        <div style={{ flex: 1 }}>
+        <div
+          style={{
+            flex: 1,
+          }}
+        >
           {/* Reviewer */}
           <div className="amz-rv-reviewer">
             <div className="amz-rv-avatar">{initials}</div>
@@ -58,8 +71,17 @@ const ProductReviewCard = ({ item }) => {
           {item.reviewTitle && <div className="amz-rv-headline">{item.reviewTitle}</div>}
 
           {/* Verified purchase */}
-          <div className="amz-rv-verified" style={{ marginBottom: 8 }}>
-            <CheckCircleIcon style={{ fontSize: '0.875rem' }} />
+          <div
+            className="amz-rv-verified"
+            style={{
+              marginBottom: 8,
+            }}
+          >
+            <CheckCircleIcon
+              style={{
+                fontSize: '0.875rem',
+              }}
+            />
             Verified Purchase
           </div>
 
@@ -79,7 +101,11 @@ const ProductReviewCard = ({ item }) => {
         {/* Delete — only for review owner */}
         {isOwner && (
           <button className="amz-rv-delete-btn" onClick={handleDelete} title="Delete review">
-            <DeleteIcon style={{ fontSize: '1.125rem' }} />
+            <DeleteIcon
+              style={{
+                fontSize: '1.125rem',
+              }}
+            />
           </button>
         )}
       </div>

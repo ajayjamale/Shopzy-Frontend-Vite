@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAppDispatch } from '../../context/AppContext'
 import { verifySellerEmail } from '../../store/seller/sellerSlice'
@@ -7,7 +7,12 @@ const SellerAccountVerification = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   useEffect(() => {
-    dispatch(verifySellerEmail({ otp: Number(otp), navigate }))
+    dispatch(
+      verifySellerEmail({
+        otp: Number(otp),
+        navigate,
+      }),
+    )
   }, [otp])
   return <div>SellerAccountVerification</div>
 }

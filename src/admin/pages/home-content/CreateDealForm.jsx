@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Box,
   Button,
@@ -15,15 +14,28 @@ import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { createDailyDiscount, getAllDailyDiscounts } from '../../../store/admin/DealSlice'
 import { fetchHomePageData } from '../../../store/customer/home/AsyncThunk'
 const modernTextField = {
-  '& label.Mui-focused': { color: '#1E293B' },
+  '& label.Mui-focused': {
+    color: '#1E293B',
+  },
   '& .MuiOutlinedInput-root': {
     fontFamily: '"Manrope", Arial, sans-serif',
     fontSize: 13,
-    '&:hover fieldset': { borderColor: '#0F766E' },
-    '&.Mui-focused fieldset': { borderColor: '#0F766E', borderWidth: 2 },
+    '&:hover fieldset': {
+      borderColor: '#0F766E',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: '#0F766E',
+      borderWidth: 2,
+    },
   },
-  '& label': { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 13 },
-  '& .MuiFormHelperText-root': { fontFamily: '"Manrope", Arial, sans-serif', fontSize: 11 },
+  '& label': {
+    fontFamily: '"Manrope", Arial, sans-serif',
+    fontSize: 13,
+  },
+  '& .MuiFormHelperText-root': {
+    fontFamily: '"Manrope", Arial, sans-serif',
+    fontSize: 11,
+  },
 }
 const CreateDealForm = ({ onSuccess }) => {
   const { deal } = useAppSelector((store) => store)
@@ -98,7 +110,12 @@ const CreateDealForm = ({ onSuccess }) => {
           borderBottom: '3px solid #0F766E',
         }}
       >
-        <LocalOfferIcon sx={{ color: '#0F766E', fontSize: 20 }} />
+        <LocalOfferIcon
+          sx={{
+            color: '#0F766E',
+            fontSize: 20,
+          }}
+        />
         <Typography
           sx={{
             color: '#fff',
@@ -111,7 +128,15 @@ const CreateDealForm = ({ onSuccess }) => {
         </Typography>
       </Box>
 
-      <Box component="form" onSubmit={formik.handleSubmit} sx={{ p: 3, display: 'grid', gap: 2 }}>
+      <Box
+        component="form"
+        onSubmit={formik.handleSubmit}
+        sx={{
+          p: 3,
+          display: 'grid',
+          gap: 2,
+        }}
+      >
         <TextField
           fullWidth
           id="title"
@@ -162,7 +187,16 @@ const CreateDealForm = ({ onSuccess }) => {
           sx={modernTextField}
         />
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 1.5 }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              md: '1fr 1fr',
+            },
+            gap: 1.5,
+          }}
+        >
           <TextField
             fullWidth
             id="discountPercent"
@@ -174,7 +208,10 @@ const CreateDealForm = ({ onSuccess }) => {
             onBlur={formik.handleBlur}
             error={formik.touched.discountPercent && Boolean(formik.errors.discountPercent)}
             helperText={formik.touched.discountPercent && formik.errors.discountPercent}
-            inputProps={{ min: 1, max: 95 }}
+            inputProps={{
+              min: 1,
+              max: 95,
+            }}
             sx={modernTextField}
           />
           <TextField
@@ -191,7 +228,14 @@ const CreateDealForm = ({ onSuccess }) => {
         </Box>
 
         <Box
-          sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr 1fr' }, gap: 1.5 }}
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: {
+              xs: '1fr',
+              md: '1fr 1fr 1fr',
+            },
+            gap: 1.5,
+          }}
         >
           <TextField
             fullWidth
@@ -199,7 +243,9 @@ const CreateDealForm = ({ onSuccess }) => {
             name="startDate"
             label="Start Date"
             type="date"
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{
+              shrink: true,
+            }}
             value={formik.values.startDate}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -213,7 +259,9 @@ const CreateDealForm = ({ onSuccess }) => {
             name="endDate"
             label="End Date"
             type="date"
-            InputLabelProps={{ shrink: true }}
+            InputLabelProps={{
+              shrink: true,
+            }}
             value={formik.values.endDate}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
@@ -230,12 +278,20 @@ const CreateDealForm = ({ onSuccess }) => {
             value={formik.values.displayOrder}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            inputProps={{ min: 0 }}
+            inputProps={{
+              min: 0,
+            }}
             sx={modernTextField}
           />
         </Box>
 
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: 2,
+            flexWrap: 'wrap',
+          }}
+        >
           <FormControlLabel
             control={
               <Switch
@@ -271,12 +327,22 @@ const CreateDealForm = ({ onSuccess }) => {
             borderRadius: '20px',
             py: 1.2,
             border: '1px solid #0b5f59',
-            '&:hover': { backgroundColor: '#0b5f59' },
-            '&.Mui-disabled': { backgroundColor: '#d1e4e2', color: '#64748B' },
+            '&:hover': {
+              backgroundColor: '#0b5f59',
+            },
+            '&.Mui-disabled': {
+              backgroundColor: '#d1e4e2',
+              color: '#64748B',
+            },
           }}
         >
           {deal.loading ? (
-            <CircularProgress size={22} sx={{ color: '#0F172A' }} />
+            <CircularProgress
+              size={22}
+              sx={{
+                color: '#0F172A',
+              }}
+            />
           ) : (
             'Create Daily Discount'
           )}

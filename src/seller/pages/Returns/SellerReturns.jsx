@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   Box,
   LinearProgress,
@@ -63,7 +63,11 @@ const SellerReturns = () => {
   const [query, setQuery] = useState('')
   const syncSellerData = useCallback(() => {
     if (!jwt) return
-    dispatch(fetchReturnRequests({ jwt }))
+    dispatch(
+      fetchReturnRequests({
+        jwt,
+      }),
+    )
     dispatch(fetchSellerOrders(jwt))
     dispatch(fetchSellerReport(jwt))
   }, [dispatch, jwt])
@@ -92,7 +96,13 @@ const SellerReturns = () => {
   const handleStatusUpdate = async (id, current, next) => {
     if (!id || !jwt || current === next) return
     try {
-      await dispatch(updateReturnStatus({ jwt, id, status: next })).unwrap()
+      await dispatch(
+        updateReturnStatus({
+          jwt,
+          id,
+          status: next,
+        }),
+      ).unwrap()
       syncSellerData()
     } catch {
       // Error is handled in slice state.
@@ -163,7 +173,11 @@ const SellerReturns = () => {
         />
       </Box>
 
-      <Box sx={{ mt: 2 }}>
+      <Box
+        sx={{
+          mt: 2,
+        }}
+      >
         <SellerSection
           title="Return request table"
           description="Filter by status and search by return id, order id, reason, or notes."
@@ -172,16 +186,26 @@ const SellerReturns = () => {
           {returns.loading ? <LinearProgress /> : null}
 
           <Stack
-            direction={{ xs: 'column', lg: 'row' }}
+            direction={{
+              xs: 'column',
+              lg: 'row',
+            }}
             spacing={1.5}
-            sx={{ px: 2.4, py: 2, borderBottom: '1px solid #DCE8EC' }}
+            sx={{
+              px: 2.4,
+              py: 2,
+              borderBottom: '1px solid #DCE8EC',
+            }}
           >
             <TextField
               select
               size="small"
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
-              sx={{ ...sellerInputSx, minWidth: 190 }}
+              sx={{
+                ...sellerInputSx,
+                minWidth: 190,
+              }}
             >
               <MenuItem value="ALL">All statuses</MenuItem>
               {ALL_STATUSES.map((status) => (
@@ -196,12 +220,21 @@ const SellerReturns = () => {
               placeholder="Search returns, orders, reasons, or status"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              sx={{ ...sellerInputSx, flex: 1, minWidth: 240 }}
+              sx={{
+                ...sellerInputSx,
+                flex: 1,
+                minWidth: 240,
+              }}
             />
           </Stack>
 
           {returns.error ? (
-            <Box sx={{ px: 2.4, pt: 2 }}>
+            <Box
+              sx={{
+                px: 2.4,
+                pt: 2,
+              }}
+            >
               <Typography
                 sx={{
                   borderRadius: '10px',
@@ -219,7 +252,11 @@ const SellerReturns = () => {
           ) : null}
 
           {!rows.length && !returns.loading ? (
-            <Box sx={{ p: 2.4 }}>
+            <Box
+              sx={{
+                p: 2.4,
+              }}
+            >
               <SellerEmptyState
                 title="No return requests in this view"
                 description="Broaden the filters or wait for new return activity to sync."
@@ -227,7 +264,11 @@ const SellerReturns = () => {
             </Box>
           ) : (
             <TableContainer>
-              <Table sx={{ minWidth: 1040 }}>
+              <Table
+                sx={{
+                  minWidth: 1040,
+                }}
+              >
                 <TableHead>
                   <TableRow>
                     <TableCell sx={sellerTableHeadCellSx}>Return</TableCell>
@@ -242,21 +283,57 @@ const SellerReturns = () => {
                   {rows.map((item) => (
                     <TableRow key={item.id} hover>
                       <TableCell sx={sellerTableCellSx}>
-                        <Typography sx={{ fontWeight: 800 }}>#{item.id}</Typography>
-                        <Typography sx={{ fontSize: '.8rem', color: '#64748B', mt: 0.4 }}>
+                        <Typography
+                          sx={{
+                            fontWeight: 800,
+                          }}
+                        >
+                          #{item.id}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '.8rem',
+                            color: '#64748B',
+                            mt: 0.4,
+                          }}
+                        >
                           Qty {item.quantity}
                         </Typography>
                       </TableCell>
                       <TableCell sx={sellerTableCellSx}>
-                        <Typography sx={{ fontWeight: 800 }}>Order #{item.orderId}</Typography>
-                        <Typography sx={{ fontSize: '.8rem', color: '#64748B', mt: 0.4 }}>
+                        <Typography
+                          sx={{
+                            fontWeight: 800,
+                          }}
+                        >
+                          Order #{item.orderId}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: '.8rem',
+                            color: '#64748B',
+                            mt: 0.4,
+                          }}
+                        >
                           Item #{item.orderItemId}
                         </Typography>
                       </TableCell>
                       <TableCell sx={sellerTableCellSx}>
-                        <Typography sx={{ fontWeight: 800 }}>{item.reason}</Typography>
+                        <Typography
+                          sx={{
+                            fontWeight: 800,
+                          }}
+                        >
+                          {item.reason}
+                        </Typography>
                         {item.description ? (
-                          <Typography sx={{ fontSize: '.8rem', color: '#64748B', mt: 0.4 }}>
+                          <Typography
+                            sx={{
+                              fontSize: '.8rem',
+                              color: '#64748B',
+                              mt: 0.4,
+                            }}
+                          >
                             {item.description}
                           </Typography>
                         ) : null}
@@ -269,7 +346,11 @@ const SellerReturns = () => {
                         />
                       </TableCell>
                       <TableCell sx={sellerTableCellSx}>
-                        <Typography sx={{ fontWeight: 700 }}>
+                        <Typography
+                          sx={{
+                            fontWeight: 700,
+                          }}
+                        >
                           {formatSellerDateTime(item.createdAt)}
                         </Typography>
                       </TableCell>
@@ -280,7 +361,10 @@ const SellerReturns = () => {
                           onChange={(event) =>
                             handleStatusUpdate(item.id, item.status, event.target.value)
                           }
-                          sx={{ ...sellerInputSx, minWidth: 180 }}
+                          sx={{
+                            ...sellerInputSx,
+                            minWidth: 180,
+                          }}
                         >
                           {ALL_STATUSES.map((status) => (
                             <MenuItem key={status} value={status}>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Box, IconButton, Tooltip, Typography } from '@mui/material'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import TableChartIcon from '@mui/icons-material/TableChart'
@@ -9,8 +9,26 @@ import CreateDealForm from './CreateDealForm'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { getAllDailyDiscounts } from '../../../store/admin/DealSlice'
 const tabs = [
-  { name: 'Daily Discounts', icon: <TableChartIcon sx={{ fontSize: 15 }} /> },
-  { name: 'Create Discount', icon: <AddCircleOutlineIcon sx={{ fontSize: 15 }} /> },
+  {
+    name: 'Daily Discounts',
+    icon: (
+      <TableChartIcon
+        sx={{
+          fontSize: 15,
+        }}
+      />
+    ),
+  },
+  {
+    name: 'Create Discount',
+    icon: (
+      <AddCircleOutlineIcon
+        sx={{
+          fontSize: 15,
+        }}
+      />
+    ),
+  },
 ]
 const Deal = () => {
   const [activeTab, setActiveTab] = useState(tabs[0].name)
@@ -32,14 +50,35 @@ const Deal = () => {
   }, [deal.discounts])
   const cards = useMemo(
     () => [
-      { label: 'Total Discounts', value: deal.discounts.length, tone: '#0F766E' },
-      { label: 'Active Today', value: activeToday, tone: '#334155' },
-      { label: 'Status', value: deal.loading ? 'Syncing...' : 'Up to date', tone: '#7C3AED' },
+      {
+        label: 'Total Discounts',
+        value: deal.discounts.length,
+        tone: '#0F766E',
+      },
+      {
+        label: 'Active Today',
+        value: activeToday,
+        tone: '#334155',
+      },
+      {
+        label: 'Status',
+        value: deal.loading ? 'Syncing...' : 'Up to date',
+        tone: '#7C3AED',
+      },
     ],
     [activeToday, deal.discounts.length, deal.loading],
   )
   return (
-    <Box sx={{ backgroundColor: '#F3F7F8', minHeight: '100vh', p: { xs: 1.5, md: 2.5 } }}>
+    <Box
+      sx={{
+        backgroundColor: '#F3F7F8',
+        minHeight: '100vh',
+        p: {
+          xs: 1.5,
+          md: 2.5,
+        },
+      }}
+    >
       {/* Page header */}
       <Box
         sx={{
@@ -48,13 +87,21 @@ const Deal = () => {
           gap: 1.5,
           flexWrap: 'wrap',
           mb: 2.2,
-          p: { xs: 1.4, md: 1.8 },
+          p: {
+            xs: 1.4,
+            md: 1.8,
+          },
           border: '1px solid #DCE8EC',
           borderRadius: '14px',
           background: 'linear-gradient(145deg, #FFFFFF 0%, #F8FCFC 100%)',
         }}
       >
-        <LocalOfferIcon sx={{ color: '#0F766E', fontSize: 24 }} />
+        <LocalOfferIcon
+          sx={{
+            color: '#0F766E',
+            fontSize: 24,
+          }}
+        />
         <Box>
           <Typography
             variant="h6"
@@ -83,7 +130,10 @@ const Deal = () => {
           variant="body2"
           sx={{
             color: '#64748B',
-            ml: { xs: 0, md: 'auto' },
+            ml: {
+              xs: 0,
+              md: 'auto',
+            },
             fontSize: 11,
             fontFamily: '"Manrope", Arial, sans-serif',
           }}
@@ -98,10 +148,16 @@ const Deal = () => {
               ml: 'auto',
               border: '1px solid #CFE3E6',
               color: '#0F766E',
-              '&:hover': { backgroundColor: '#E9F8F5' },
+              '&:hover': {
+                backgroundColor: '#E9F8F5',
+              },
             }}
           >
-            <RefreshRoundedIcon sx={{ fontSize: 18 }} />
+            <RefreshRoundedIcon
+              sx={{
+                fontSize: 18,
+              }}
+            />
           </IconButton>
         </Tooltip>
       </Box>
@@ -109,7 +165,10 @@ const Deal = () => {
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: { xs: '1fr', sm: 'repeat(3, 1fr)' },
+          gridTemplateColumns: {
+            xs: '1fr',
+            sm: 'repeat(3, 1fr)',
+          },
           gap: 1.5,
           mb: 2.5,
         }}
@@ -188,7 +247,9 @@ const Deal = () => {
                 border: isActive ? '1px solid #0F766E' : '1px solid transparent',
                 transition: 'all 0.2s ease',
                 userSelect: 'none',
-                '&:hover': { backgroundColor: isActive ? '#0b5f59' : '#F5FAFA' },
+                '&:hover': {
+                  backgroundColor: isActive ? '#0b5f59' : '#F5FAFA',
+                },
               }}
             >
               {tab.icon}
@@ -202,7 +263,13 @@ const Deal = () => {
       <Box>
         {activeTab === 'Daily Discounts' && <DealsTable />}
         {activeTab === 'Create Discount' && (
-          <Box sx={{ display: 'flex', justifyContent: 'center', pt: 2 }}>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              pt: 2,
+            }}
+          >
             <CreateDealForm
               onSuccess={() => {
                 setActiveTab('Daily Discounts')

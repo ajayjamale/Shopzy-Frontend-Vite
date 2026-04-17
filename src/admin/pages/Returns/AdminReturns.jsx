@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   clearReturnError,
   fetchReturnRequests,
@@ -53,7 +53,11 @@ const AdminReturns = () => {
   const [comments, setComments] = useState({})
   useEffect(() => {
     if (!jwt) return
-    dispatch(fetchReturnRequests({ jwt }))
+    dispatch(
+      fetchReturnRequests({
+        jwt,
+      }),
+    )
     return () => {
       dispatch(clearReturnError())
     }
@@ -90,10 +94,22 @@ const AdminReturns = () => {
     )
   }
   if (!jwt) {
-    return <div style={{ padding: 20 }}>Admin token not found. Please login again.</div>
+    return (
+      <div
+        style={{
+          padding: 20,
+        }}
+      >
+        Admin token not found. Please login again.
+      </div>
+    )
   }
   return (
-    <div style={{ padding: 16 }}>
+    <div
+      style={{
+        padding: 16,
+      }}
+    >
       <div
         style={{
           display: 'flex',
@@ -104,13 +120,32 @@ const AdminReturns = () => {
         }}
       >
         <div>
-          <h2 style={{ margin: 0, fontSize: 24 }}>Return Management</h2>
-          <p style={{ margin: '6px 0 0', color: '#4B5563', fontSize: 13 }}>
+          <h2
+            style={{
+              margin: 0,
+              fontSize: 24,
+            }}
+          >
+            Return Management
+          </h2>
+          <p
+            style={{
+              margin: '6px 0 0',
+              color: '#4B5563',
+              fontSize: 13,
+            }}
+          >
             Review customer return requests and update lifecycle states.
           </p>
         </div>
         <button
-          onClick={() => dispatch(fetchReturnRequests({ jwt }))}
+          onClick={() =>
+            dispatch(
+              fetchReturnRequests({
+                jwt,
+              }),
+            )
+          }
           style={{
             border: 'none',
             background: '#111827',
@@ -140,7 +175,11 @@ const AdminReturns = () => {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          style={{ border: '1px solid #D1D5DB', borderRadius: 10, padding: '10px 12px' }}
+          style={{
+            border: '1px solid #D1D5DB',
+            borderRadius: 10,
+            padding: '10px 12px',
+          }}
         >
           <option value="ALL">All statuses</option>
           {ALL_STATUSES.map((status) => (
@@ -154,7 +193,11 @@ const AdminReturns = () => {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search by return/order/user/seller/reason"
-          style={{ border: '1px solid #D1D5DB', borderRadius: 10, padding: '10px 12px' }}
+          style={{
+            border: '1px solid #D1D5DB',
+            borderRadius: 10,
+            padding: '10px 12px',
+          }}
         />
       </div>
 
@@ -184,10 +227,25 @@ const AdminReturns = () => {
           background: '#fff',
         }}
       >
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 1320 }}>
+        <div
+          style={{
+            overflowX: 'auto',
+          }}
+        >
+          <table
+            style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              minWidth: 1320,
+            }}
+          >
             <thead>
-              <tr style={{ background: '#111827', color: '#fff' }}>
+              <tr
+                style={{
+                  background: '#111827',
+                  color: '#fff',
+                }}
+              >
                 {[
                   'Return',
                   'Order',
@@ -218,7 +276,12 @@ const AdminReturns = () => {
                 <tr>
                   <td
                     colSpan={9}
-                    style={{ ...cell, textAlign: 'center', padding: '26px 0', color: '#6B7280' }}
+                    style={{
+                      ...cell,
+                      textAlign: 'center',
+                      padding: '26px 0',
+                      color: '#6B7280',
+                    }}
                   >
                     Loading returns...
                   </td>
@@ -227,7 +290,12 @@ const AdminReturns = () => {
                 <tr>
                   <td
                     colSpan={9}
-                    style={{ ...cell, textAlign: 'center', padding: '26px 0', color: '#6B7280' }}
+                    style={{
+                      ...cell,
+                      textAlign: 'center',
+                      padding: '26px 0',
+                      color: '#6B7280',
+                    }}
                   >
                     No return requests found.
                   </td>
@@ -238,18 +306,43 @@ const AdminReturns = () => {
                     <td style={cell}>#{item.id}</td>
                     <td style={cell}>
                       <div>Order #{item.orderId}</div>
-                      <div style={{ color: '#6B7280', marginTop: 4 }}>Item #{item.orderItemId}</div>
+                      <div
+                        style={{
+                          color: '#6B7280',
+                          marginTop: 4,
+                        }}
+                      >
+                        Item #{item.orderItemId}
+                      </div>
                     </td>
                     <td style={cell}>
                       <div>User #{item.userId ?? 'N/A'}</div>
-                      <div style={{ color: '#6B7280', marginTop: 4 }}>
+                      <div
+                        style={{
+                          color: '#6B7280',
+                          marginTop: 4,
+                        }}
+                      >
                         Seller #{item.sellerId ?? 'N/A'}
                       </div>
                     </td>
                     <td style={cell}>
-                      <div style={{ fontWeight: 700 }}>{item.reason}</div>
+                      <div
+                        style={{
+                          fontWeight: 700,
+                        }}
+                      >
+                        {item.reason}
+                      </div>
                       {item.description && (
-                        <div style={{ color: '#6B7280', marginTop: 4 }}>{item.description}</div>
+                        <div
+                          style={{
+                            color: '#6B7280',
+                            marginTop: 4,
+                          }}
+                        >
+                          {item.description}
+                        </div>
                       )}
                     </td>
                     <td style={cell}>{item.quantity}</td>

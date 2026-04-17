@@ -1,4 +1,3 @@
-import React from 'react'
 import AdminLoginForm from './AdminLogin'
 const AdminAuth = () => {
   return (
@@ -119,7 +118,13 @@ const AdminAuth = () => {
           </div>
         </div>
 
-        <div style={{ position: 'relative', zIndex: 1, marginTop: 20 }}>
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 1,
+            marginTop: 20,
+          }}
+        >
           <p className="aa-footer">
             (c) 2026 Shopzy India | <a href="/">Back to store</a>
           </p>

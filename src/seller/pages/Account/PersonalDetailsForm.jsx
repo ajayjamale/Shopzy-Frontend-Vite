@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { Field, SaveButton } from './FormPrimitives'
@@ -8,7 +8,11 @@ const PersonalDetailsForm = ({ onClose }) => {
   const { sellers } = useAppSelector((s) => s)
   const dispatch = useAppDispatch()
   const formik = useFormik({
-    initialValues: { sellerName: '', email: '', mobile: '' },
+    initialValues: {
+      sellerName: '',
+      email: '',
+      mobile: '',
+    },
     validationSchema: Yup.object({
       sellerName: Yup.string().required('Seller name is required'),
       email: Yup.string().email('Invalid email').required('Email is required'),
@@ -31,7 +35,11 @@ const PersonalDetailsForm = ({ onClose }) => {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 14,
+      }}
     >
       <Field
         id="sellerName"

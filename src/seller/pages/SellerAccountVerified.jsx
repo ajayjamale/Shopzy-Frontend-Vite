@@ -1,5 +1,4 @@
 import { Alert, Button } from '@mui/material'
-import React from 'react'
 import { useNavigate } from 'react-router-dom'
 const SellerAccountVerified = () => {
   const navigate = useNavigate()

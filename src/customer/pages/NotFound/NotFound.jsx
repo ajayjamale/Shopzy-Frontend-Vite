@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 const NotFound = () => {
   const navigate = useNavigate()
@@ -389,11 +389,26 @@ const NotFound = () => {
           <p className="nf-links-title">You might be looking for:</p>
           <div className="nf-links">
             {[
-              { label: '🛍️ Shop', path: '/' },
-              { label: '🛒 Cart', path: '/cart' },
-              { label: '❤️ Wishlist', path: '/wishlist' },
-              { label: '👤 My Account', path: '/account' },
-              { label: '📦 Orders', path: '/account/orders' },
+              {
+                label: '🛍️ Shop',
+                path: '/',
+              },
+              {
+                label: '🛒 Cart',
+                path: '/cart',
+              },
+              {
+                label: '❤️ Wishlist',
+                path: '/wishlist',
+              },
+              {
+                label: '👤 My Account',
+                path: '/account',
+              },
+              {
+                label: '📦 Orders',
+                path: '/account/orders',
+              },
             ].map(({ label, path }) => (
               <button key={path} className="nf-link-pill" onClick={() => navigate(path)}>
                 {label}

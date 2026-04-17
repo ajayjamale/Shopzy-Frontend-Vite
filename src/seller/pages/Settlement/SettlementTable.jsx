@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   Box,
   Button,
@@ -51,7 +50,11 @@ const SettlementTable = ({ items, loading, error, onRetry }) => {
   return (
     <Box>
       <TableContainer>
-        <Table sx={{ minWidth: 980 }}>
+        <Table
+          sx={{
+            minWidth: 980,
+          }}
+        >
           <TableHead>
             <TableRow>
               <TableCell sx={sellerTableHeadCellSx}>Settlement</TableCell>
@@ -75,39 +78,87 @@ const SettlementTable = ({ items, loading, error, onRetry }) => {
             {items.map((item) => (
               <TableRow key={item.id} hover>
                 <TableCell sx={sellerTableCellSx}>
-                  <Typography sx={{ fontWeight: 800 }}>#{item.id}</Typography>
-                  <Typography sx={{ fontSize: '.8rem', color: '#64748B', mt: 0.4 }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 800,
+                    }}
+                  >
+                    #{item.id}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: '.8rem',
+                      color: '#64748B',
+                      mt: 0.4,
+                    }}
+                  >
                     {item.transactionId || 'No transaction id'}
                   </Typography>
                 </TableCell>
                 <TableCell sx={sellerTableCellSx}>
-                  <Typography sx={{ fontWeight: 800 }}>Order #{item.orderId}</Typography>
-                  <Typography sx={{ fontSize: '.8rem', color: '#64748B', mt: 0.4 }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 800,
+                    }}
+                  >
+                    Order #{item.orderId}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      fontSize: '.8rem',
+                      color: '#64748B',
+                      mt: 0.4,
+                    }}
+                  >
                     {item.orderReference || 'Reference not available'}
                   </Typography>
                 </TableCell>
                 <TableCell sx={sellerTableCellSx} align="right">
-                  <Typography sx={{ fontWeight: 800 }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 800,
+                    }}
+                  >
                     {formatSellerCurrency(item.grossAmount)}
                   </Typography>
                 </TableCell>
                 <TableCell sx={sellerTableCellSx} align="right">
                   <Stack spacing={0.4} alignItems="flex-end">
-                    <Typography sx={{ fontSize: '.82rem', color: '#64748B' }}>
+                    <Typography
+                      sx={{
+                        fontSize: '.82rem',
+                        color: '#64748B',
+                      }}
+                    >
                       Commission {formatSellerCurrency(item.commissionAmount)}
                     </Typography>
-                    <Typography sx={{ fontSize: '.82rem', color: '#64748B' }}>
+                    <Typography
+                      sx={{
+                        fontSize: '.82rem',
+                        color: '#64748B',
+                      }}
+                    >
                       Platform {formatSellerCurrency(item.platformFee)}
                     </Typography>
                     {item.taxAmount !== undefined ? (
-                      <Typography sx={{ fontSize: '.82rem', color: '#64748B' }}>
+                      <Typography
+                        sx={{
+                          fontSize: '.82rem',
+                          color: '#64748B',
+                        }}
+                      >
                         Tax {formatSellerCurrency(item.taxAmount)}
                       </Typography>
                     ) : null}
                   </Stack>
                 </TableCell>
                 <TableCell sx={sellerTableCellSx} align="right">
-                  <Typography sx={{ fontWeight: 900, color: '#0F766E' }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 900,
+                      color: '#0F766E',
+                    }}
+                  >
                     {formatSellerCurrency(item.netSettlementAmount)}
                   </Typography>
                 </TableCell>
@@ -119,14 +170,21 @@ const SettlementTable = ({ items, loading, error, onRetry }) => {
                   />
                 </TableCell>
                 <TableCell sx={sellerTableCellSx} align="right">
-                  <Typography sx={{ fontWeight: 700 }}>
+                  <Typography
+                    sx={{
+                      fontWeight: 700,
+                    }}
+                  >
                     {formatSellerDate(item.settlementDate || item.createdAt)}
                   </Typography>
                   <Button
                     variant="text"
                     size="small"
                     onClick={() => navigate(`/seller/settlements/${item.id}`)}
-                    sx={{ mt: 0.8, fontWeight: 800 }}
+                    sx={{
+                      mt: 0.8,
+                      fontWeight: 800,
+                    }}
                   >
                     View details
                   </Button>

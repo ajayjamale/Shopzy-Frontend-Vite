@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import { Field, SaveButton } from './FormPrimitives'
@@ -8,7 +8,12 @@ const PickupAddressForm = ({ onClose }) => {
   const { sellers } = useAppSelector((s) => s)
   const dispatch = useAppDispatch()
   const formik = useFormik({
-    initialValues: { address: '', city: '', state: '', mobile: '' },
+    initialValues: {
+      address: '',
+      city: '',
+      state: '',
+      mobile: '',
+    },
     validationSchema: Yup.object({
       address: Yup.string().required('Address is required'),
       city: Yup.string().required('City is required'),
@@ -16,7 +21,11 @@ const PickupAddressForm = ({ onClose }) => {
       mobile: Yup.string().required('Mobile is required'),
     }),
     onSubmit: (values) => {
-      dispatch(updateSeller({ pickupAddress: values }))
+      dispatch(
+        updateSeller({
+          pickupAddress: values,
+        }),
+      )
       onClose()
     },
   })
@@ -33,7 +42,11 @@ const PickupAddressForm = ({ onClose }) => {
   return (
     <form
       onSubmit={formik.handleSubmit}
-      style={{ display: 'flex', flexDirection: 'column', gap: 14 }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 14,
+      }}
     >
       <Field
         id="address"
