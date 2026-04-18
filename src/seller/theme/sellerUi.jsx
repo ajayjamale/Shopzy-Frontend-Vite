@@ -180,7 +180,7 @@ export const SellerStatusChip = ({ label, tone = 'default', small = false }) => 
     />
   )
 }
-export const SellerPageIntro = ({ eyebrow, title, description, actions }) => (
+export const SellerPageIntro = ({ eyebrow, title, actions }) => (
   <Stack
     direction={{ xs: 'column', md: 'row' }}
     justifyContent="space-between"
@@ -206,11 +206,6 @@ export const SellerPageIntro = ({ eyebrow, title, description, actions }) => (
       <Typography variant="h4" sx={{ fontSize: { xs: '1.45rem', md: '1.8rem' }, lineHeight: 1.08 }}>
         {title}
       </Typography>
-      {description ? (
-        <Typography sx={{ color: sellerPalette.muted, mt: 0.8, maxWidth: 720 }}>
-          {description}
-        </Typography>
-      ) : null}
     </Box>
 
     {actions ? (
@@ -220,7 +215,7 @@ export const SellerPageIntro = ({ eyebrow, title, description, actions }) => (
     ) : null}
   </Stack>
 )
-export const SellerSection = ({ title, description, action, children, padded = true }) => (
+export const SellerSection = ({ title, action, children, padded = true }) => (
   <Paper
     sx={{
       borderRadius: '14px',
@@ -246,11 +241,6 @@ export const SellerSection = ({ title, description, action, children, padded = t
         <Typography sx={{ fontSize: '1rem', fontWeight: 800, color: sellerPalette.text }}>
           {title}
         </Typography>
-        {description ? (
-          <Typography sx={{ fontSize: '.86rem', color: sellerPalette.muted, mt: 0.4 }}>
-            {description}
-          </Typography>
-        ) : null}
       </Box>
       {action}
     </Stack>
@@ -258,7 +248,7 @@ export const SellerSection = ({ title, description, action, children, padded = t
     <Box sx={{ p: padded ? 2.4 : 0 }}>{children}</Box>
   </Paper>
 )
-export const SellerMetricCard = ({ label, value, helper, tone = 'default', icon }) => {
+export const SellerMetricCard = ({ label, value, tone = 'default', icon }) => {
   const colors = toneMap[tone]
   return (
     <Paper
@@ -286,11 +276,6 @@ export const SellerMetricCard = ({ label, value, helper, tone = 'default', icon 
           <Typography sx={{ fontSize: '1.65rem', fontWeight: 900, color: colors.text, mt: 1 }}>
             {value}
           </Typography>
-          {helper ? (
-            <Typography sx={{ fontSize: '.8rem', color: sellerPalette.muted, mt: 0.8 }}>
-              {helper}
-            </Typography>
-          ) : null}
         </Box>
 
         {icon ? (
@@ -314,7 +299,7 @@ export const SellerMetricCard = ({ label, value, helper, tone = 'default', icon 
     </Paper>
   )
 }
-export const SellerEmptyState = ({ title, description, action }) => (
+export const SellerEmptyState = ({ title, action }) => (
   <Stack
     spacing={1.2}
     alignItems="center"
@@ -329,9 +314,6 @@ export const SellerEmptyState = ({ title, description, action }) => (
     }}
   >
     <Typography sx={{ fontWeight: 800, color: sellerPalette.text }}>{title}</Typography>
-    {description ? (
-      <Typography sx={{ color: sellerPalette.muted, maxWidth: 460 }}>{description}</Typography>
-    ) : null}
     {action}
   </Stack>
 )

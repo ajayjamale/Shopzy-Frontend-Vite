@@ -49,13 +49,21 @@ const TechFeatureRail = ({ data }) => {
   const items = useMemo(() => {
     const source = data?.electronics || []
     if (!source.length) return fallback
-    return source.map((item, index) => ({
+    const mapped = source.map((item, index) => ({
       id: `${item.id || index}`,
       title: (item.title || item.subtitle || 'Tech').split('_').join(' '),
       image: item.imageUrl || fallback[0].image,
       target: item.redirectLink || item.categoryId || 'electronics',
       badge: item.badgeText || 'Trending',
     }))
+    const limited = mapped.slice(0, 5)
+    if (limited.length >= 5) return limited
+    const missing = 5 - limited.length
+    const fill = fallback.slice(0, missing).map((item, index) => ({
+      ...item,
+      id: `fallback-${index}-${item.id}`,
+    }))
+    return [...limited, ...fill]
   }, [data?.electronics])
   if (!items.length) return null
   return (

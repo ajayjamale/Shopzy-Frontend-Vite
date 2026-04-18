@@ -1,24 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { isSellerNavItemActive, sellerMenuGroups } from '../../sellerNavigation'
-const statusTone = (status) => {
-  const value = (status || '').toUpperCase()
-  if (value === 'ACTIVE') {
-    return { bg: '#E8F8F4', color: '#0F766E', border: '#BFE8DE' }
-  }
-  if (value === 'PENDING_VERIFICATION') {
-    return { bg: '#FFF8E8', color: '#92400E', border: '#F2D08A' }
-  }
-  if (['SUSPENDED', 'BANNED', 'DEACTIVATED', 'CLOSED'].includes(value)) {
-    return { bg: '#FFF1F4', color: '#BE123C', border: '#F6CBD6' }
-  }
-  return { bg: '#F4F7FA', color: '#475569', border: '#D8E1E8' }
-}
-const SellerDrawerList = ({ profile }) => {
+import { ShopzyLogo } from '../../../components/ShopzyLogo'
+
+const SellerDrawerList = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const sellerName =
-    profile?.sellerName || profile?.businessDetails?.businessName || 'Seller Workspace'
-  const tone = statusTone(profile?.accountStatus)
   return (
     <aside
       style={{
@@ -35,69 +21,34 @@ const SellerDrawerList = ({ profile }) => {
           padding: '18px 16px',
           borderBottom: '1px solid #E6EFF2',
           display: 'grid',
-          gap: 10,
+          gap: 8,
         }}
       >
-        <div>
-          <p
-            style={{
-              fontSize: 11,
-              textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              color: '#64748B',
-              fontWeight: 700,
-            }}
-          >
-            Seller Console
-          </p>
-          <h2 style={{ fontSize: '1.2rem', marginTop: 4, color: '#0F172A' }}>Shopzy Seller</h2>
-        </div>
-
-        <div
+        <button
+          onClick={() => navigate('/seller')}
           style={{
-            border: '1px solid #E7EFF2',
-            borderRadius: 12,
-            background: '#FFFFFF',
-            padding: '12px 13px',
-            display: 'grid',
-            gap: 6,
+            border: 'none',
+            background: 'transparent',
+            padding: 0,
+            textAlign: 'left',
+            cursor: 'pointer',
+            width: 'fit-content',
           }}
         >
-          <div style={{ fontSize: 14, fontWeight: 800, color: '#0F172A' }}>{sellerName}</div>
-          {profile?.email && (
-            <div
-              style={{
-                fontSize: 12,
-                color: '#64748B',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {profile.email}
-            </div>
-          )}
-          {profile?.accountStatus && (
-            <span
-              style={{
-                justifySelf: 'start',
-                display: 'inline-flex',
-                alignItems: 'center',
-                padding: '5px 9px',
-                borderRadius: 10,
-                background: tone.bg,
-                color: tone.color,
-                border: `1px solid ${tone.border}`,
-                fontSize: 11,
-                fontWeight: 800,
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {profile.accountStatus.replace(/_/g, ' ')}
-            </span>
-          )}
-        </div>
+          <ShopzyLogo size={14} />
+        </button>
+        <p
+          style={{
+            fontSize: 11,
+            textTransform: 'uppercase',
+            letterSpacing: '0.12em',
+            color: '#64748B',
+            fontWeight: 700,
+            margin: 0,
+          }}
+        >
+          Seller Console
+        </p>
       </div>
 
       <nav
@@ -105,19 +56,6 @@ const SellerDrawerList = ({ profile }) => {
       >
         {sellerMenuGroups.map((group) => (
           <div key={group.title} style={{ display: 'grid', gap: 6 }}>
-            <p
-              style={{
-                margin: '2px 6px 0',
-                fontSize: 10,
-                textTransform: 'uppercase',
-                letterSpacing: '0.12em',
-                color: '#94A3B8',
-                fontWeight: 800,
-              }}
-            >
-              {group.title}
-            </p>
-
             {group.items.map((item) => {
               const active = isSellerNavItemActive(location, item)
               return (

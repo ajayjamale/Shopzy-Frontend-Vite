@@ -6,9 +6,8 @@ import PaymentsRoundedIcon from '@mui/icons-material/PaymentsRounded'
 import { Button, Drawer, IconButton, useMediaQuery, useTheme } from '@mui/material'
 import { useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAppSelector } from '../../../context/AppContext'
 import SellerRoutes from '../../../routes/SellerRoutes'
-import SellerDrawerList from '../../components/sidebar/DrawerList'
+import SellerDrawerList from '../../components/SideBar/DrawerList'
 import ChatBot from '../../../customer/pages/ChatBot/ChatBot'
 import { getSellerPageMeta } from '../../sellerNavigation'
 const SellerDashboard = () => {
@@ -18,12 +17,7 @@ const SellerDashboard = () => {
   const [showChatBot, setShowChatBot] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
-  const { sellers } = useAppSelector((store) => store)
   const pageMeta = useMemo(() => getSellerPageMeta(location), [location.pathname, location.search])
-  const sellerName =
-    sellers.profile?.sellerName ||
-    sellers.profile?.businessDetails?.businessName ||
-    'Seller Workspace'
   return (
     <div
       style={{
@@ -33,10 +27,10 @@ const SellerDashboard = () => {
       }}
     >
       {isDesktop ? (
-        <SellerDrawerList profile={sellers.profile} />
+        <SellerDrawerList />
       ) : (
         <Drawer open={drawerOpen} onClose={() => setDrawerOpen(false)}>
-          <SellerDrawerList profile={sellers.profile} />
+          <SellerDrawerList />
         </Drawer>
       )}
 
@@ -44,58 +38,46 @@ const SellerDashboard = () => {
         <header
           style={{
             borderBottom: '1px solid #DCE8EC',
-            background: 'rgba(248,251,252,0.92)',
+            background: 'rgba(248,251,252,0.95)',
             backdropFilter: 'blur(10px)',
-            padding: '14px 16px',
             position: 'sticky',
             top: 0,
-            zIndex: 20,
+            zIndex: 30,
           }}
         >
           <div
             style={{
+              height: 62,
+              padding: '0 12px',
               display: 'flex',
               justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              gap: 16,
+              alignItems: 'center',
+              gap: 10,
               flexWrap: 'wrap',
             }}
           >
-            <div style={{ display: 'grid', gap: 8 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                {!isDesktop && (
-                  <IconButton onClick={() => setDrawerOpen(true)}>
-                    <MenuRoundedIcon />
-                  </IconButton>
-                )}
-                <StorefrontRoundedIcon sx={{ color: '#0F766E' }} />
-                <span style={{ fontWeight: 800, color: '#0F172A' }}>Seller Panel</span>
-                <span
-                  style={{
-                    border: '1px solid #CBE4E2',
-                    background: '#ECF8F6',
-                    color: '#0F766E',
-                    borderRadius: 10,
-                    padding: '5px 10px',
-                    fontSize: 11,
-                    fontWeight: 800,
-                    letterSpacing: '0.07em',
-                    textTransform: 'uppercase',
-                  }}
-                >
-                  {pageMeta.groupTitle}
-                </span>
-              </div>
-
-              <div style={{ fontSize: 26, fontWeight: 900, color: '#0F172A', lineHeight: 1.08 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              {!isDesktop && (
+                <IconButton onClick={() => setDrawerOpen(true)}>
+                  <MenuRoundedIcon />
+                </IconButton>
+              )}
+              <StorefrontRoundedIcon sx={{ color: '#0F766E' }} />
+              <span
+                style={{
+                  fontSize: 15,
+                  fontWeight: 800,
+                  color: '#0F172A',
+                  letterSpacing: '0.02em',
+                }}
+              >
                 {pageMeta.title}
-              </div>
-
-              <div style={{ fontSize: 13, color: '#64748B', lineHeight: 1.6 }}>{sellerName}</div>
+              </span>
             </div>
 
             <div
               style={{
+                marginLeft: 'auto',
                 display: 'flex',
                 alignItems: 'center',
                 gap: 8,
@@ -109,18 +91,19 @@ const SellerDashboard = () => {
                   border: '1px solid #DCE8EC',
                   background: '#FFFFFF',
                   color: '#0F172A',
-                  borderRadius: 12,
-                  padding: '9px 13px',
+                  borderRadius: 999,
+                  padding: '8px 12px',
                   fontSize: 12,
-                  fontWeight: 800,
+                  fontWeight: 700,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 7,
+                  whiteSpace: 'nowrap',
                 }}
               >
                 <AddBoxRoundedIcon sx={{ fontSize: 16 }} />
-                Add product
+                Add Product
               </button>
 
               <button
@@ -129,14 +112,15 @@ const SellerDashboard = () => {
                   border: '1px solid #DCE8EC',
                   background: '#FFFFFF',
                   color: '#0F172A',
-                  borderRadius: 12,
-                  padding: '9px 13px',
+                  borderRadius: 999,
+                  padding: '8px 12px',
                   fontSize: 12,
-                  fontWeight: 800,
+                  fontWeight: 700,
                   cursor: 'pointer',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: 7,
+                  whiteSpace: 'nowrap',
                 }}
               >
                 <PaymentsRoundedIcon sx={{ fontSize: 16 }} />
