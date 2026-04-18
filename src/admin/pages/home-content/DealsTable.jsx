@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import {
-  Alert,
   Box,
   Button,
   Chip,
@@ -12,7 +11,6 @@ import {
   IconButton,
   Modal,
   Paper,
-  Snackbar,
   Table,
   TableBody,
   TableCell,
@@ -30,6 +28,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { deleteDailyDiscount, updateDailyDiscountStatus } from '../../../store/admin/DealSlice'
 import { fetchHomePageData } from '../../../store/customer/home/AsyncThunk'
+import FormFeedbackToast from '../../../components/forms/FormFeedbackToast'
 import UpdateDealForm from './UpdateDealForm'
 const DealsTable = () => {
   const { deal } = useAppSelector((store) => store)
@@ -101,10 +100,7 @@ const DealsTable = () => {
       <TableContainer
         component={Paper}
         sx={{
-          border: '1px solid #DDE9ED',
-          borderRadius: '10px',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
-          overflow: 'hidden',
+          overflowX: 'auto',
         }}
       >
         <Table
@@ -113,24 +109,10 @@ const DealsTable = () => {
           }}
         >
           <TableHead>
-            <TableRow
-              sx={{
-                backgroundColor: '#1E293B',
-              }}
-            >
+            <TableRow>
               {['Preview', 'Title', 'Discount', 'Window', 'Flags', 'Status', 'Actions'].map(
                 (head) => (
-                  <TableCell
-                    key={head}
-                    sx={{
-                      color: '#fff',
-                      fontWeight: 800,
-                      fontSize: 12,
-                      textTransform: 'uppercase',
-                      letterSpacing: '.06em',
-                      borderBottom: '3px solid #0F766E',
-                    }}
-                  >
+                  <TableCell key={head}>
                     {head}
                   </TableCell>
                 ),
@@ -407,33 +389,20 @@ const DealsTable = () => {
         </DialogActions>
       </Dialog>
 
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+      <FormFeedbackToast
+        feedback={{
+          open: snackbar.open,
+          severity: snackbar.severity,
+          message: snackbar.message,
+          autoHideDuration: 4200,
         }}
-        open={snackbar.open}
-        autoHideDuration={4200}
         onClose={() =>
           setSnackbar((prev) => ({
             ...prev,
             open: false,
           }))
         }
-      >
-        <Alert
-          onClose={() =>
-            setSnackbar((prev) => ({
-              ...prev,
-              open: false,
-            }))
-          }
-          severity={snackbar.severity}
-          variant="filled"
-        >
-          {snackbar.message}
-        </Alert>
-      </Snackbar>
+      />
     </>
   )
 }

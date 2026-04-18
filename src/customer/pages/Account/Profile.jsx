@@ -1,4 +1,3 @@
-import { Alert, Snackbar } from '@mui/material'
 import ShoppingBagRoundedIcon from '@mui/icons-material/ShoppingBagRounded'
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
 import CreditCardRoundedIcon from '@mui/icons-material/CreditCardRounded'
@@ -8,6 +7,7 @@ import { useEffect, useState } from 'react'
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { performLogout } from '../../../store/customer/AuthSlice'
+import FormFeedbackToast from '../../../components/forms/FormFeedbackToast'
 import UserDetails from './UserDetails'
 import Order from './Order'
 import SavedCards from './SavedCards'
@@ -117,26 +117,25 @@ const Profile = () => {
         </div>
       </div>
 
-      <Snackbar
-        open={openToast}
-        autoHideDuration={3500}
-        onClose={() => setOpenToast(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setOpenToast(false)}
-          severity={error ? 'error' : 'success'}
-          variant="filled"
-        >
-          {error
+      <FormFeedbackToast
+        feedback={{
+          open: openToast,
+          severity: error ? 'error' : 'success',
+          message: error
             ? typeof error === 'string'
               ? error
               : 'Something went wrong'
             : orderCanceled
               ? 'Order cancelled'
-              : 'Profile updated'}
-        </Alert>
-      </Snackbar>
+              : 'Profile updated',
+          autoHideDuration: 3500,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'center',
+          },
+        }}
+        onClose={() => setOpenToast(false)}
+      />
     </div>
   )
 }

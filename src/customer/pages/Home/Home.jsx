@@ -45,7 +45,7 @@ const Home = () => {
   }
   return (
     <div
-      className="pb-14"
+      className="home-page-root pb-14"
       style={{
         background:
           'radial-gradient(circle at 14% -6%, rgba(15,118,110,.12), transparent 36%), radial-gradient(circle at 92% -8%, rgba(15,23,42,.12), transparent 40%), #F2F7F8',
@@ -125,10 +125,10 @@ const Home = () => {
       </section>
 
       {showHeroSpotlights && <HeroSpotlights />}
-      {showShopByCategory && <ShopCategoryMosaic data={data} />}
       {showElectronics && <TechFeatureRail data={data} />}
       {showTopBrands && <BrandShowcasePanel data={data} />}
       {showDailyDiscounts && <DailyDiscountSection data={data} />}
+      {showShopByCategory && <ShopCategoryMosaic data={data} />}
 
       <section className="fixed right-5 bottom-5 sm:right-8 sm:bottom-8 z-[1200]">
         {showChatBot ? (

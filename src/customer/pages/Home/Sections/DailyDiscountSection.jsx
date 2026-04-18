@@ -51,18 +51,9 @@ const DailyDiscountSection = ({ data }) => {
       .slice(0, 8)
   }, [data?.dailyDiscounts])
   if (!items.length) return null
-  const lead = items[0]
-  const grid = items.slice(1, 7)
+  const grid = items.slice(0, 8)
   return (
     <section className="app-container" style={{ marginTop: 34 }}>
-      <style>
-        {`
-          @keyframes pulseDiscount {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: .78; transform: scale(1.03); }
-          }
-        `}
-      </style>
       <div
         className="surface"
         style={{
@@ -95,144 +86,75 @@ const DailyDiscountSection = ({ data }) => {
           </button>
         </div>
 
-        <div
-          style={{
-            marginTop: 16,
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0,1.2fr) minmax(0,1fr)',
-            gap: 14,
-          }}
-          className="max-[930px]:grid-cols-1"
-        >
-          <button
-            onClick={() => navigate(resolveTarget(lead.target))}
-            style={{
-              borderRadius: 18,
-              border: '1px solid #F3C99D',
-              background: '#7C2D12',
-              overflow: 'hidden',
-              textAlign: 'left',
-              padding: 0,
-              cursor: 'pointer',
-              position: 'relative',
-              minHeight: 280,
-            }}
-          >
-            <img
-              src={lead.image}
-              alt={lead.title}
+        <div style={{ marginTop: 16, display: 'grid', gridTemplateColumns: 'repeat(4,minmax(0,1fr))', gap: 12 }}>
+          {grid.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => navigate(resolveTarget(item.target))}
               style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                opacity: 0.5,
+                borderRadius: 14,
+                border: '1px solid #F4D8BA',
+                background: '#fff',
+                overflow: 'hidden',
+                textAlign: 'left',
+                padding: 0,
+                cursor: 'pointer',
               }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(130deg, rgba(124,45,18,.74), rgba(194,65,12,.32))',
-              }}
-            />
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 1,
-                padding: 22,
-                minHeight: 280,
-                display: 'grid',
-                alignContent: 'space-between',
-              }}
+              className="max-[1024px]:col-span-2 max-[640px]:col-span-4"
             >
-              <span
+              <div
                 style={{
-                  width: 'fit-content',
-                  padding: '7px 12px',
-                  borderRadius: 999,
-                  background: '#FEF3C7',
-                  border: '1px solid #FCD34D',
-                  color: '#7C2D12',
-                  fontSize: 11,
-                  fontWeight: 900,
-                  letterSpacing: '.1em',
-                  textTransform: 'uppercase',
-                  animation: 'pulseDiscount 1.05s ease-in-out infinite',
+                  aspectRatio: '4/3',
+                  overflow: 'hidden',
+                  background: 'linear-gradient(165deg,#FFF8F1 0%,#FFF1E5 100%)',
+                  padding: 8,
                 }}
               >
-                {lead.discountText}
-              </span>
-              <div>
-                <h3
+                <img
+                  src={item.image}
+                  alt={item.title}
                   style={{
-                    color: '#fff',
-                    fontSize: 'clamp(1.3rem,2.3vw,1.9rem)',
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    borderRadius: 9,
+                    background: '#fff',
+                  }}
+                />
+              </div>
+              <div style={{ padding: '10px 11px 12px', display: 'grid', gap: 6 }}>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    width: 'fit-content',
+                    alignItems: 'center',
+                    borderRadius: 999,
+                    border: '1px solid #FDBA74',
+                    background: 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)',
+                    color: '#FFFFFF',
+                    padding: '4px 10px',
+                    fontSize: 11,
+                    fontWeight: 900,
+                    letterSpacing: '.08em',
+                    textTransform: 'uppercase',
+                    boxShadow: '0 8px 16px rgba(234,88,12,.25)',
+                  }}
+                >
+                  {item.discountText}
+                </span>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: '#0F172A',
+                    fontWeight: 700,
                     textTransform: 'capitalize',
                   }}
                 >
-                  {lead.title}
-                </h3>
-                <p style={{ color: '#FDE6DA', marginTop: 6 }}>{lead.subtitle}</p>
+                  {item.title}
+                </p>
               </div>
-            </div>
-          </button>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: 12 }}>
-            {grid.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => navigate(resolveTarget(item.target))}
-                style={{
-                  borderRadius: 14,
-                  border: '1px solid #F4D8BA',
-                  background: '#fff',
-                  overflow: 'hidden',
-                  textAlign: 'left',
-                  padding: 0,
-                  cursor: 'pointer',
-                }}
-              >
-                <div
-                  style={{
-                    aspectRatio: '4/3',
-                    overflow: 'hidden',
-                    background: 'linear-gradient(165deg,#FFF8F1 0%,#FFF1E5 100%)',
-                    padding: 8,
-                  }}
-                >
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
-                      borderRadius: 9,
-                      background: '#fff',
-                    }}
-                  />
-                </div>
-                <div style={{ padding: '10px 11px 12px' }}>
-                  <p style={{ fontSize: 13, fontWeight: 800, color: '#9A3412' }}>
-                    {item.discountText}
-                  </p>
-                  <p
-                    style={{
-                      marginTop: 2,
-                      fontSize: 13,
-                      color: '#0F172A',
-                      fontWeight: 700,
-                      textTransform: 'capitalize',
-                    }}
-                  >
-                    {item.title}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
+            </button>
+          ))}
         </div>
       </div>
     </section>

@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
-  Alert,
   Box,
   Button,
   Chip,
@@ -9,7 +8,6 @@ import {
   Modal,
   MenuItem,
   Paper,
-  Snackbar,
   Stack,
   Switch,
   Table,
@@ -21,30 +19,30 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import AddRoundedIcon from '@mui/icons-material/AddRounded'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import DeleteOutlineRoundedIcon from '@mui/icons-material/DeleteOutlineRounded'
 import ArrowUpwardRoundedIcon from '@mui/icons-material/ArrowUpwardRounded'
 import ArrowDownwardRoundedIcon from '@mui/icons-material/ArrowDownwardRounded'
-import RefreshRoundedIcon from '@mui/icons-material/RefreshRounded'
+import { useSearchParams } from 'react-router-dom'
 import { adminApiPath, api } from '../../../config/Api'
 import { getAdminToken } from '../../../utils/authToken'
+import FormFeedbackToast from '../../../components/forms/FormFeedbackToast'
 const sectionOptions = [
-  { key: 'HERO', label: 'Hero', description: 'Primary carousel banners on top of homepage' },
+  {
+    key: 'HERO',
+    label: 'Hero Spotlights',
+  },
   {
     key: 'SHOP_BY_CATEGORY',
-    label: 'Category Highlights',
-    description: 'Curated category cards for homepage browsing',
+    label: 'Shop By Category',
   },
   {
     key: 'ELECTRONICS',
-    label: 'Tech Categories',
-    description: 'Electronics and gadgets category cards',
+    label: 'Tech Feature Rail',
   },
   {
     key: 'TOP_BRAND',
-    label: 'Brand Stories',
-    description: 'Premium brand cards and featured showcases',
+    label: 'Premium Brand Showcase',
   },
 ]
 const emptyItem = {
@@ -64,22 +62,20 @@ const emptyItem = {
 const HOME_CONTENT_ITEMS_PATH = adminApiPath('/home-content/items')
 const HOME_CONTENT_SECTIONS_PATH = adminApiPath('/home-content/sections')
 const HomeContentManager = () => {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [items, setItems] = useState([])
   const [sections, setSections] = useState([])
   const [selectedSection, setSelectedSection] = useState('HERO')
   const [editing, setEditing] = useState(null)
-  const [sectionDraft, setSectionDraft] = useState(null)
   const [modalOpen, setModalOpen] = useState(false)
-  const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
   const [notice, setNotice] = useState({
     open: false,
     text: '',
     severity: 'success',
   })
-  const authHeader = { Authorization: `Bearer ${getAdminToken()}` }
-  const fetchData = async () => {
-    setLoading(true)
+  const authHeader = useMemo(() => ({ Authorization: `Bearer ${getAdminToken()}` }), [])
+  const fetchData = useCallback(async () => {
     try {
       const [itemsRes, sectionRes] = await Promise.all([
         api.get(HOME_CONTENT_ITEMS_PATH, {
@@ -93,27 +89,14 @@ const HomeContentManager = () => {
       setSections(sectionRes.data)
     } catch {
       setNotice({ open: true, text: 'Failed to load home content', severity: 'error' })
-    } finally {
-      setLoading(false)
     }
-  }
+  }, [authHeader])
   useEffect(() => {
     fetchData()
-  }, [])
+  }, [fetchData])
   const availableSectionOptions = useMemo(() => {
-    const defaults = new Map(sectionOptions.map((option) => [option.key, option]))
-    const optionMap = new Map(defaults)
-    for (const section of sections) {
-      if (!optionMap.has(section.sectionKey)) {
-        optionMap.set(section.sectionKey, {
-          key: section.sectionKey,
-          label: section.sectionTitle || section.sectionKey.split('_').join(' '),
-          description: 'Manage this homepage section from this single control center.',
-        })
-      }
-    }
     const fallbackOrder = new Map(sectionOptions.map((option, index) => [option.key, index + 1]))
-    return Array.from(optionMap.values()).sort((a, b) => {
+    return [...sectionOptions].sort((a, b) => {
       const sectionA = sections.find((section) => section.sectionKey === a.key)
       const sectionB = sections.find((section) => section.sectionKey === b.key)
       const orderA = sectionA?.displayOrder ?? fallbackOrder.get(a.key) ?? 999
@@ -136,15 +119,6 @@ const HomeContentManager = () => {
         .sort((a, b) => (a.displayOrder ?? 0) - (b.displayOrder ?? 0)),
     [items, selectedSection],
   )
-  const selectedConfig = useMemo(
-    () => sections.find((section) => section.sectionKey === selectedSection) ?? null,
-    [sections, selectedSection],
-  )
-  useEffect(() => {
-    if (selectedConfig) {
-      setSectionDraft({ ...selectedConfig })
-    }
-  }, [selectedConfig])
   const countBySection = useMemo(() => {
     const counts = {}
     for (const option of availableSectionOptions) {
@@ -152,22 +126,36 @@ const HomeContentManager = () => {
     }
     return counts
   }, [availableSectionOptions, items])
-  const openModal = (item) => {
-    if (item) {
-      setEditing({ ...item })
-    } else {
-      setEditing({
-        ...emptyItem,
-        sectionKey: selectedSection,
-        displayOrder: selectedItems.length,
-      })
-    }
-    setModalOpen(true)
-  }
+  const openModal = useCallback(
+    (item) => {
+      if (item) {
+        setEditing({ ...item })
+      } else {
+        setEditing({
+          ...emptyItem,
+          sectionKey: selectedSection,
+          displayOrder: selectedItems.length,
+        })
+      }
+      setModalOpen(true)
+    },
+    [selectedItems.length, selectedSection],
+  )
   const closeModal = () => {
     setModalOpen(false)
     setEditing(null)
+    if (searchParams.get('action') === 'create') {
+      const nextParams = new URLSearchParams(searchParams)
+      nextParams.delete('action')
+      setSearchParams(nextParams, { replace: true })
+    }
   }
+  const actionFromQuery = searchParams.get('action')
+  useEffect(() => {
+    if (actionFromQuery === 'create' && !modalOpen) {
+      openModal()
+    }
+  }, [actionFromQuery, modalOpen, openModal])
   const saveItem = async () => {
     if (!editing?.sectionKey) return
     if (!editing?.imageUrl) {
@@ -233,63 +221,9 @@ const HomeContentManager = () => {
       setNotice({ open: true, text: 'Failed to update order', severity: 'error' })
     }
   }
-  const saveSectionConfig = async () => {
-    if (!sectionDraft) return
-    try {
-      await api.put(`${HOME_CONTENT_SECTIONS_PATH}/${sectionDraft.sectionKey}`, sectionDraft, {
-        headers: authHeader,
-      })
-      setNotice({ open: true, text: 'Section settings updated', severity: 'success' })
-      fetchData()
-    } catch {
-      setNotice({ open: true, text: 'Failed to save section settings', severity: 'error' })
-    }
-  }
   return (
     <Box sx={{ display: 'grid', gap: 2 }}>
-      <Paper
-        sx={{
-          p: { xs: 2, md: 2.5 },
-          borderRadius: 3,
-          border: '1px solid #DCE8EC',
-          background: 'linear-gradient(165deg, #FFFFFF 0%, #F6FCFC 100%)',
-        }}
-      >
-        <Stack
-          direction={{ xs: 'column', md: 'row' }}
-          spacing={2}
-          alignItems={{ xs: 'flex-start', md: 'center' }}
-        >
-          <Box>
-            <Typography sx={{ fontSize: 22, fontWeight: 800, color: '#0F172A' }}>
-              Homepage Content Studio
-            </Typography>
-            <Typography sx={{ color: '#64748B', mt: 0.5 }}>
-              Manage every homepage section from one minimalist dashboard.
-            </Typography>
-            <Typography sx={{ color: '#0F766E', mt: 0.7, fontSize: 13, fontWeight: 700 }}>
-              Category cards are centralized here. No separate home-grid, electronics, or
-              shop-by-category modules needed.
-            </Typography>
-          </Box>
-
-          <Stack direction="row" spacing={1} sx={{ ml: { md: 'auto' } }}>
-            <Button
-              variant="outlined"
-              startIcon={<RefreshRoundedIcon />}
-              onClick={fetchData}
-              disabled={loading}
-            >
-              Refresh
-            </Button>
-            <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => openModal()}>
-              Add Item
-            </Button>
-          </Stack>
-        </Stack>
-      </Paper>
-
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1.5fr 1fr' }, gap: 2 }}>
+      <Box sx={{ display: 'grid', gap: 2 }}>
         <Paper sx={{ p: 2, borderRadius: 3, border: '1px solid #DCE8EC' }}>
           <Typography sx={{ fontWeight: 800, color: '#0F172A', mb: 1.5 }}>Sections</Typography>
 
@@ -329,9 +263,6 @@ const HomeContentManager = () => {
                       variant={visible ? 'filled' : 'outlined'}
                     />
                   </div>
-                  <p style={{ margin: '8px 0 0', color: '#64748B', fontSize: 12 }}>
-                    {option.description}
-                  </p>
                   <p
                     style={{ margin: '10px 0 0', color: '#0F766E', fontSize: 12, fontWeight: 700 }}
                   >
@@ -341,45 +272,6 @@ const HomeContentManager = () => {
               )
             })}
           </Box>
-        </Paper>
-
-        <Paper
-          sx={{ p: 2, borderRadius: 3, border: '1px solid #DCE8EC', display: 'grid', gap: 1.5 }}
-        >
-          <Typography sx={{ fontWeight: 800, color: '#0F172A' }}>Section Settings</Typography>
-          <TextField
-            label="Section Title"
-            size="small"
-            value={sectionDraft?.sectionTitle || ''}
-            onChange={(e) =>
-              setSectionDraft((prev) => (prev ? { ...prev, sectionTitle: e.target.value } : prev))
-            }
-          />
-          <TextField
-            label="Display Order"
-            size="small"
-            type="number"
-            value={sectionDraft?.displayOrder ?? 0}
-            onChange={(e) =>
-              setSectionDraft((prev) =>
-                prev ? { ...prev, displayOrder: Number(e.target.value) } : prev,
-              )
-            }
-          />
-          <FormControlLabel
-            control={
-              <Switch
-                checked={sectionDraft?.visible ?? true}
-                onChange={(e) =>
-                  setSectionDraft((prev) => (prev ? { ...prev, visible: e.target.checked } : prev))
-                }
-              />
-            }
-            label="Section Visible"
-          />
-          <Button variant="contained" onClick={saveSectionConfig}>
-            Save Section Settings
-          </Button>
         </Paper>
       </Box>
 
@@ -669,20 +561,19 @@ const HomeContentManager = () => {
         </Box>
       </Modal>
 
-      <Snackbar
-        open={notice.open}
-        autoHideDuration={3500}
+      <FormFeedbackToast
+        feedback={{
+          open: notice.open,
+          severity: notice.severity,
+          message: notice.text,
+          autoHideDuration: 3500,
+          anchorOrigin: {
+            vertical: 'top',
+            horizontal: 'right',
+          },
+        }}
         onClose={() => setNotice((prev) => ({ ...prev, open: false }))}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      >
-        <Alert
-          severity={notice.severity}
-          variant="filled"
-          onClose={() => setNotice((prev) => ({ ...prev, open: false }))}
-        >
-          {notice.text}
-        </Alert>
-      </Snackbar>
+      />
     </Box>
   )
 }

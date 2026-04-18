@@ -17,31 +17,14 @@ import FormFeedbackToast, {
   getAsyncActionError,
   useFormFeedback,
 } from '../../../components/forms/FormFeedbackToast'
-
-const modernTextField = {
-  '& label.Mui-focused': {
-    color: '#1E293B',
-  },
-  '& .MuiOutlinedInput-root': {
-    fontFamily: '"Manrope", Arial, sans-serif',
-    fontSize: 13,
-    '&:hover fieldset': {
-      borderColor: '#0F766E',
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: '#0F766E',
-      borderWidth: 2,
-    },
-  },
-  '& label': {
-    fontFamily: '"Manrope", Arial, sans-serif',
-    fontSize: 13,
-  },
-  '& .MuiFormHelperText-root': {
-    fontFamily: '"Manrope", Arial, sans-serif',
-    fontSize: 11,
-  },
-}
+import {
+  formCardSx,
+  formHeaderIconSx,
+  formHeaderSx,
+  formHeaderTitleSx,
+  formPrimaryButtonSx,
+  formTextFieldSx,
+} from '../../../components/forms/muiFormTheme'
 
 const CreateDealForm = ({ onSuccess }) => {
   const { deal } = useAppSelector((store) => store)
@@ -105,40 +88,14 @@ const CreateDealForm = ({ onSuccess }) => {
     <>
       <Box
         sx={{
+          ...formCardSx,
           width: 560,
           maxWidth: '94vw',
-          backgroundColor: '#fff',
-          border: '1px solid #ddd',
-          borderRadius: '6px',
-          overflow: 'hidden',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
         }}
       >
-        <Box
-          sx={{
-            backgroundColor: '#1E293B',
-            px: 3,
-            py: 2,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 1.5,
-            borderBottom: '3px solid #0F766E',
-          }}
-        >
-          <LocalOfferIcon
-            sx={{
-              color: '#0F766E',
-              fontSize: 20,
-            }}
-          />
-          <Typography
-            sx={{
-              color: '#fff',
-              fontFamily: '"Manrope", Arial, sans-serif',
-              fontWeight: 700,
-              fontSize: 15,
-            }}
-          >
+        <Box sx={formHeaderSx}>
+          <LocalOfferIcon sx={formHeaderIconSx} />
+          <Typography sx={formHeaderTitleSx}>
             Create Daily Discount
           </Typography>
         </Box>
@@ -162,7 +119,7 @@ const CreateDealForm = ({ onSuccess }) => {
             onBlur={formik.handleBlur}
             error={formik.touched.title && Boolean(formik.errors.title)}
             helperText={formik.touched.title && formik.errors.title}
-            sx={modernTextField}
+            sx={formTextFieldSx}
           />
 
           <TextField
@@ -173,7 +130,7 @@ const CreateDealForm = ({ onSuccess }) => {
             value={formik.values.subtitle}
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            sx={modernTextField}
+            sx={formTextFieldSx}
           />
 
           <TextField
@@ -186,7 +143,7 @@ const CreateDealForm = ({ onSuccess }) => {
             onBlur={formik.handleBlur}
             error={formik.touched.imageUrl && Boolean(formik.errors.imageUrl)}
             helperText={formik.touched.imageUrl && formik.errors.imageUrl}
-            sx={modernTextField}
+            sx={formTextFieldSx}
           />
 
           <TextField
@@ -199,7 +156,7 @@ const CreateDealForm = ({ onSuccess }) => {
             onBlur={formik.handleBlur}
             error={formik.touched.redirectLink && Boolean(formik.errors.redirectLink)}
             helperText={formik.touched.redirectLink && formik.errors.redirectLink}
-            sx={modernTextField}
+            sx={formTextFieldSx}
           />
 
           <Box
@@ -227,7 +184,7 @@ const CreateDealForm = ({ onSuccess }) => {
                 min: 1,
                 max: 95,
               }}
-              sx={modernTextField}
+              sx={formTextFieldSx}
             />
             <TextField
               fullWidth
@@ -238,7 +195,7 @@ const CreateDealForm = ({ onSuccess }) => {
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               placeholder="e.g. 30% OFF"
-              sx={modernTextField}
+              sx={formTextFieldSx}
             />
           </Box>
 
@@ -266,7 +223,7 @@ const CreateDealForm = ({ onSuccess }) => {
               onBlur={formik.handleBlur}
               error={formik.touched.startDate && Boolean(formik.errors.startDate)}
               helperText={formik.touched.startDate && formik.errors.startDate}
-              sx={modernTextField}
+              sx={formTextFieldSx}
             />
             <TextField
               fullWidth
@@ -282,7 +239,7 @@ const CreateDealForm = ({ onSuccess }) => {
               onBlur={formik.handleBlur}
               error={formik.touched.endDate && Boolean(formik.errors.endDate)}
               helperText={formik.touched.endDate && formik.errors.endDate}
-              sx={modernTextField}
+              sx={formTextFieldSx}
             />
             <TextField
               fullWidth
@@ -296,7 +253,7 @@ const CreateDealForm = ({ onSuccess }) => {
               inputProps={{
                 min: 0,
               }}
-              sx={modernTextField}
+              sx={formTextFieldSx}
             />
           </Box>
 
@@ -332,24 +289,7 @@ const CreateDealForm = ({ onSuccess }) => {
             type="submit"
             fullWidth
             disabled={deal.loading}
-            sx={{
-              backgroundColor: '#0F766E',
-              color: '#0F172A',
-              fontFamily: '"Manrope", Arial, sans-serif',
-              fontWeight: 700,
-              fontSize: 14,
-              textTransform: 'none',
-              borderRadius: '20px',
-              py: 1.2,
-              border: '1px solid #0b5f59',
-              '&:hover': {
-                backgroundColor: '#0b5f59',
-              },
-              '&.Mui-disabled': {
-                backgroundColor: '#d1e4e2',
-                color: '#64748B',
-              },
-            }}
+            sx={formPrimaryButtonSx}
           >
             {deal.loading ? (
               <CircularProgress

@@ -85,22 +85,28 @@ const AdminLoginForm = () => {
         .alf-wrap { width: 100%; }
 
         .alf-field { display: flex; flex-direction: column; gap: 5px; margin-bottom: 4px; }
-        .alf-label { font-size: 12px; font-weight: 600; color: #555; letter-spacing: 0.1px; }
+        .alf-label {
+          font-size: 12px;
+          font-weight: 700;
+          color: #475569;
+          letter-spacing: 0.05em;
+          text-transform: uppercase;
+        }
         .alf-input-wrap {
-          border: 1.5px solid #e0e0e0;
-          border-radius: 8px;
-          background: #fafafa;
+          border: 1px solid #d5e3e8;
+          border-radius: 12px;
+          background: #fff;
           transition: border-color 0.18s, box-shadow 0.18s, background 0.18s;
         }
         .alf-input-wrap:focus-within {
-          border-color: #0F172A;
+          border-color: #0F766E;
           background: #fff;
-          box-shadow: 0 0 0 3px rgba(19,25,33,0.08);
+          box-shadow: 0 0 0 3px rgba(15,118,110,0.14);
         }
-        .alf-input-wrap.error { border-color: #e53935; background: #fff9f9; }
+        .alf-input-wrap.error { border-color: #be123c; background: #fff9fb; }
         .alf-input {
           width: 100%;
-          padding: 10px 13px;
+          padding: 11px 13px;
           border: none;
           background: transparent;
           font-size: 14px;
@@ -109,29 +115,29 @@ const AdminLoginForm = () => {
           border-radius: 8px;
           box-sizing: border-box;
         }
-        .alf-input::placeholder { color: #bbb; }
-        .alf-error-msg { font-size: 11px; color: #e53935; margin: 2px 0 0 2px; }
+        .alf-input::placeholder { color: #94a3b8; }
+        .alf-error-msg { font-size: 11px; color: #be123c; margin: 2px 0 0 2px; }
         .alf-error-banner {
           margin-top: 12px;
           font-size: 12px;
           font-weight: 600;
-          color: #b3261e;
-          background: #fdecea;
-          border: 1px solid #f7c6c2;
-          border-radius: 8px;
+          color: #be123c;
+          background: #fff1f2;
+          border: 1px solid #fecdd3;
+          border-radius: 12px;
           padding: 8px 10px;
         }
 
         .alf-otp-section {
-          background: #f8fffe;
-          border: 1px solid #c8e6e8;
-          border-radius: 8px;
+          background: #f0faf8;
+          border: 1px solid #cbe7e2;
+          border-radius: 12px;
           padding: 16px;
           margin-top: 16px;
         }
         .alf-otp-hint {
           font-size: 12px;
-          color: #555;
+          color: #475569;
           margin: 0 0 12px;
           line-height: 1.5;
         }
@@ -141,26 +147,26 @@ const AdminLoginForm = () => {
           align-items: center;
           gap: 4px;
           font-size: 12px;
-          color: #888;
+          color: #64748b;
           margin-top: 10px;
         }
         .alf-resend-btn {
           background: none;
           border: none;
-          color: #0E7490;
+          color: #0F766E;
           font-size: 12px;
           font-weight: 600;
           cursor: pointer;
           padding: 0;
           text-decoration: underline;
         }
-        .alf-resend-btn:hover { color: #005f6b; }
-        .alf-timer { color: #0E7490; font-weight: 600; }
+        .alf-resend-btn:hover { color: #0b5f59; }
+        .alf-timer { color: #0F766E; font-weight: 700; }
 
         .alf-btn {
           width: 100%;
-          padding: 11px;
-          border-radius: 8px;
+          padding: 11px 14px;
+          border-radius: 999px;
           font-size: 14px;
           font-weight: 700;
           cursor: pointer;
@@ -175,30 +181,36 @@ const AdminLoginForm = () => {
         .alf-btn:hover:not(:disabled) { transform: translateY(-1px); }
 
         .alf-btn-primary {
-          background: #0F172A;
-          border: 1px solid #0F172A;
-          color: #0F766E;
+          background: linear-gradient(130deg, #0F766E, #14B8A6);
+          border: 1px solid #0b5f59;
+          color: #fff;
+          box-shadow: 0 10px 18px rgba(15,118,110,0.22);
         }
-        .alf-btn-primary:hover:not(:disabled) { background: #1f2937; }
+        .alf-btn-primary:hover:not(:disabled) {
+          background: linear-gradient(130deg, #0b5f59, #0F766E);
+        }
 
         .alf-btn-otp {
-          background: linear-gradient(to bottom, #FFD814, #F8B200);
-          border: 1px solid #C7980A;
-          color: #111;
+          background: linear-gradient(130deg, #0F766E, #14B8A6);
+          border: 1px solid #0b5f59;
+          color: #fff;
+          box-shadow: 0 10px 18px rgba(15,118,110,0.22);
         }
-        .alf-btn-otp:hover:not(:disabled) { background: linear-gradient(to bottom, #f7ca00, #e5a800); }
+        .alf-btn-otp:hover:not(:disabled) {
+          background: linear-gradient(130deg, #0b5f59, #0F766E);
+        }
 
         .alf-spin {
           width: 18px;
           height: 18px;
           border: 2px solid rgba(255,255,255,0.3);
-          border-top-color: #0F766E;
+          border-top-color: #fff;
           border-radius: 50%;
           animation: alf-spin 0.7s linear infinite;
         }
         .alf-spin-dark {
-          border-color: rgba(0,0,0,0.15);
-          border-top-color: #333;
+          border-color: rgba(255,255,255,0.35);
+          border-top-color: #fff;
         }
         @keyframes alf-spin { to { transform: rotate(360deg); } }
 
@@ -206,22 +218,23 @@ const AdminLoginForm = () => {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          background: #f5f5f5;
-          border-radius: 6px;
+          background: #f7fcfd;
+          border: 1px solid #d9e6ea;
+          border-radius: 10px;
           padding: 8px 12px;
           margin-bottom: 12px;
         }
         .alf-edit-email { font-size: 13px; font-weight: 600; color: #0F172A; }
         .alf-edit-btn {
           font-size: 12px;
-          color: #0E7490;
+          color: #0F766E;
           background: none;
           border: none;
           cursor: pointer;
           font-weight: 600;
           text-decoration: underline;
         }
-        .alf-edit-btn:hover { color: #005f6b; }
+        .alf-edit-btn:hover { color: #0b5f59; }
       `}</style>
 
       <div className="alf-wrap">

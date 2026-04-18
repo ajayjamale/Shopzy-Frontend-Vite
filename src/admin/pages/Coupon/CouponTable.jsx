@@ -5,7 +5,6 @@ import {
   IconButton,
   MenuItem,
   Select,
-  styled,
   Typography,
   Tooltip,
   Skeleton,
@@ -21,7 +20,6 @@ import {
   TableRow,
   TableBody,
   TableCell,
-  tableCellClasses,
   Paper,
   Fade,
 } from '@mui/material'
@@ -33,34 +31,6 @@ import FilterListIcon from '@mui/icons-material/FilterList'
 import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 import WarningAmberIcon from '@mui/icons-material/WarningAmber'
-const StyledTableCell = styled(TableCell)(() => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: '#1E293B',
-    color: '#ffffff',
-    fontFamily: '"Manrope", "Arial", sans-serif',
-    fontWeight: 700,
-    fontSize: 12,
-    letterSpacing: '0.6px',
-    textTransform: 'uppercase',
-    borderBottom: '3px solid #0F766E',
-    padding: '14px 18px',
-    whiteSpace: 'nowrap',
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 13,
-    fontFamily: '"Manrope", "Arial", sans-serif',
-    color: '#0F172A',
-    padding: '12px 18px',
-    borderBottom: '1px solid #f0f0f0',
-  },
-}))
-const StyledTableRow = styled(TableRow)(() => ({
-  transition: 'background-color 0.15s ease',
-  '&:nth-of-type(odd)': { backgroundColor: '#fafafa' },
-  '&:nth-of-type(even)': { backgroundColor: '#ffffff' },
-  '&:hover': { backgroundColor: '#fff8e7' },
-  '&:last-child td': { border: 0 },
-}))
 const filterOptions = [
   { value: 'ALL', label: 'All Coupons' },
   { value: 'ACTIVE', label: 'Active Only' },
@@ -236,39 +206,39 @@ export default function CouponTable() {
         <Table sx={{ minWidth: 700 }} aria-label="coupon table">
           <TableHead>
             <TableRow>
-              <StyledTableCell>
+              <TableCell>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.8 }}>
                   <LocalOfferIcon sx={{ fontSize: 13 }} /> Coupon Code
                 </Box>
-              </StyledTableCell>
-              <StyledTableCell>Start Date</StyledTableCell>
-              <StyledTableCell>End Date</StyledTableCell>
-              <StyledTableCell>Min. Order</StyledTableCell>
-              <StyledTableCell>Discount</StyledTableCell>
-              <StyledTableCell align="center">Status</StyledTableCell>
-              <StyledTableCell align="center">Delete</StyledTableCell>
+              </TableCell>
+              <TableCell>Start Date</TableCell>
+              <TableCell>End Date</TableCell>
+              <TableCell>Min. Order</TableCell>
+              <TableCell>Discount</TableCell>
+              <TableCell align="center">Status</TableCell>
+              <TableCell align="center">Delete</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {adminCoupon?.loading
               ? Array.from({ length: 4 }).map((_, i) => (
-                  <StyledTableRow key={i}>
+                  <TableRow key={i}>
                     {Array.from({ length: 7 }).map((_, j) => (
-                      <StyledTableCell key={j}>
+                      <TableCell key={j}>
                         <Skeleton height={22} />
-                      </StyledTableCell>
+                      </TableCell>
                     ))}
-                  </StyledTableRow>
+                  </TableRow>
                 ))
               : filteredCoupons.map((c) => {
                   const expired = isExpired(c.validityEndDate)
                   const isDeleting = deletingId === c.id
                   return (
                     <Fade in key={c.id}>
-                      <StyledTableRow
+                      <TableRow
                         sx={{ opacity: isDeleting ? 0.4 : 1, transition: 'opacity 0.3s' }}
                       >
-                        <StyledTableCell>
+                        <TableCell>
                           <Box
                             sx={{
                               display: 'inline-flex',
@@ -288,11 +258,11 @@ export default function CouponTable() {
                             <LocalOfferIcon sx={{ fontSize: 12 }} />
                             {c.code}
                           </Box>
-                        </StyledTableCell>
-                        <StyledTableCell sx={{ color: '#555', fontSize: 12 }}>
+                        </TableCell>
+                        <TableCell sx={{ color: '#555', fontSize: 12 }}>
                           {formatDate(c.validityStartDate)}
-                        </StyledTableCell>
-                        <StyledTableCell>
+                        </TableCell>
+                        <TableCell>
                           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                             <Typography
                               sx={{
@@ -309,8 +279,8 @@ export default function CouponTable() {
                               </Tooltip>
                             )}
                           </Box>
-                        </StyledTableCell>
-                        <StyledTableCell>
+                        </TableCell>
+                        <TableCell>
                           <Typography
                             sx={{
                               fontWeight: 700,
@@ -320,8 +290,8 @@ export default function CouponTable() {
                           >
                             ${Number(c.minimumOrderValue).toFixed(2)}
                           </Typography>
-                        </StyledTableCell>
-                        <StyledTableCell>
+                        </TableCell>
+                        <TableCell>
                           <Box
                             sx={{
                               display: 'inline-block',
@@ -338,8 +308,8 @@ export default function CouponTable() {
                           >
                             {c.discountPercentage}% OFF
                           </Box>
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
+                        </TableCell>
+                        <TableCell align="center">
                           <Chip
                             icon={
                               c.active && !expired ? (
@@ -366,8 +336,8 @@ export default function CouponTable() {
                               },
                             }}
                           />
-                        </StyledTableCell>
-                        <StyledTableCell align="center">
+                        </TableCell>
+                        <TableCell align="center">
                           <Tooltip title="Delete coupon" arrow>
                             <span>
                               <IconButton
@@ -388,8 +358,8 @@ export default function CouponTable() {
                               </IconButton>
                             </span>
                           </Tooltip>
-                        </StyledTableCell>
-                      </StyledTableRow>
+                        </TableCell>
+                      </TableRow>
                     </Fade>
                   )
                 })}

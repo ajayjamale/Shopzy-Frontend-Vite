@@ -13,6 +13,11 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
+      '/ai': {
+        target: backendTarget,
+        changeOrigin: true,
+        configure: configureProxyRequest,
+      },
       '/products': {
         target: backendTarget,
         changeOrigin: true,

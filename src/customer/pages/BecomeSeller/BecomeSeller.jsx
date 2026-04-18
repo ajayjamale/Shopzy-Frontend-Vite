@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { resetSellerAuthState } from '../../../store/seller/sellerAuthenticationSlice'
+import FormFeedbackToast, { useFormFeedback } from '../../../components/forms/FormFeedbackToast'
 import SellerAccountForm from './SellerAccountForm'
 import SellerLoginForm from './SellerLoginForm'
 const C = {
@@ -14,48 +15,6 @@ const C = {
   tealSoft: '#DDF3EF',
   promoA: '#0A223D',
   promoB: '#113C6B',
-  success: '#157347',
-  successBg: '#E9F8EF',
-  error: '#B42318',
-  errorBg: '#FEF0EE',
-}
-function Toast({ msg, type, onClose }) {
-  const fg = type === 'error' ? C.error : C.success
-  const bg = type === 'error' ? C.errorBg : C.successBg
-  return (
-    <div
-      style={{
-        background: bg,
-        border: `1px solid ${fg}33`,
-        color: fg,
-        borderRadius: 12,
-        padding: '10px 12px',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 8,
-        boxShadow: '0 8px 22px rgba(15,23,42,0.14)',
-        fontSize: 13,
-        fontWeight: 600,
-        minWidth: 250,
-      }}
-    >
-      <span style={{ flex: 1, lineHeight: 1.45 }}>{msg}</span>
-      <button
-        onClick={onClose}
-        style={{
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-          color: fg,
-          fontSize: 16,
-          lineHeight: 1,
-          padding: 0,
-        }}
-      >
-        x
-      </button>
-    </div>
-  )
 }
 const promoItems = [
   {
@@ -80,34 +39,29 @@ const BecomeSeller = () => {
   const dispatch = useAppDispatch()
   const { sellerAuth } = useAppSelector((store) => store)
   const [isLoginPage, setIsLoginPage] = useState(false)
-  const [toasts, setToasts] = useState([])
+  const { feedback, closeFeedback, showError, showSuccess } = useFormFeedback()
   const lastError = useRef('')
   const lastSuccess = useRef('')
   const lastOtp = useRef(false)
-  const addToast = (msg, type) => {
-    const id = Date.now() + Math.floor(Math.random() * 1000)
-    setToasts((current) => [...current, { id, msg, type }])
-  }
-  const removeToast = (id) => setToasts((current) => current.filter((t) => t.id !== id))
   useEffect(() => {
     if (sellerAuth.error && sellerAuth.error !== lastError.current) {
       lastError.current = sellerAuth.error
-      addToast(sellerAuth.error, 'error')
+      showError(sellerAuth.error)
     }
-  }, [sellerAuth.error])
+  }, [sellerAuth.error, showError])
   useEffect(() => {
     const msg = sellerAuth.sellerCreated || ''
     if (msg && msg !== lastSuccess.current) {
       lastSuccess.current = msg
-      addToast(msg, 'success')
+      showSuccess(msg)
     }
-  }, [sellerAuth.sellerCreated])
+  }, [sellerAuth.sellerCreated, showSuccess])
   useEffect(() => {
     if (sellerAuth.otpSent && !lastOtp.current) {
-      addToast('OTP sent to your email.', 'success')
+      showSuccess('OTP sent to your email.')
     }
     lastOtp.current = sellerAuth.otpSent
-  }, [sellerAuth.otpSent])
+  }, [sellerAuth.otpSent, showSuccess])
   const switchMode = (nextIsLogin) => {
     setIsLoginPage(nextIsLogin)
     dispatch(resetSellerAuthState())
@@ -334,16 +288,7 @@ const BecomeSeller = () => {
         }
       `}</style>
 
-      <div style={{ position: 'fixed', top: 16, right: 16, zIndex: 9999, display: 'grid', gap: 8 }}>
-        {toasts.map((toast) => (
-          <Toast
-            key={toast.id}
-            msg={toast.msg}
-            type={toast.type}
-            onClose={() => removeToast(toast.id)}
-          />
-        ))}
-      </div>
+      <FormFeedbackToast feedback={feedback} onClose={closeFeedback} />
 
       <div className="seller-auth-page">
         <div className="seller-auth-wrap">

@@ -7,6 +7,7 @@ import {
   updateSettlementStatus,
 } from '../../../store/seller/settlementSlice'
 import { getAdminToken } from '../../../utils/authToken'
+
 const C = {
   text: '#0F172A',
   mid: '#4B5563',
@@ -14,8 +15,8 @@ const C = {
   border: '#E5E7EB',
   card: '#FFFFFF',
   bg: '#F5F6F8',
-  accent: '#0F766E',
 }
+
 const statusOptions = [
   'ALL',
   'PENDING',
@@ -26,10 +27,75 @@ const statusOptions = [
   'FAILED',
   'CANCELLED',
 ]
-const formatCurrency = (v) =>
-  `₹${(v ?? 0).toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
-  })}`
+
+const numberFormat = new Intl.NumberFormat('en-IN')
+const currencyFormat = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})
+
+const formatCurrency = (value) => currencyFormat.format(Number(value ?? 0))
+
+const formatStatusLabel = (status) =>
+  (status || 'UNKNOWN')
+    .toLowerCase()
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+
+const formatDate = (value) => {
+  if (!value) return '�'
+  const parsed = new Date(value)
+  if (Number.isNaN(parsed.getTime())) return value
+  return parsed.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+}
+
+const getStatusTone = (status) => {
+  const key = (status || '').toUpperCase()
+  if (key === 'COMPLETED') {
+    return { bg: '#E8F8F4', color: '#0F766E', border: '#BFE8DE' }
+  }
+  if (['FAILED', 'CANCELLED'].includes(key)) {
+    return { bg: '#FFF1F4', color: '#BE123C', border: '#F8C8D4' }
+  }
+  if (['PROCESSING', 'ELIGIBLE'].includes(key)) {
+    return { bg: '#E8F0FF', color: '#1D4ED8', border: '#C8D8FF' }
+  }
+  if (key === 'ON_HOLD') {
+    return { bg: '#FFF4D6', color: '#B45309', border: '#F6D38D' }
+  }
+  return { bg: '#F1F5F9', color: '#334155', border: '#D5DEE6' }
+}
+
+const StatusChip = ({ status }) => {
+  const tone = getStatusTone(status)
+  return (
+    <span
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        borderRadius: 999,
+        padding: '4px 10px',
+        border: `1px solid ${tone.border}`,
+        background: tone.bg,
+        color: tone.color,
+        fontSize: 11,
+        fontWeight: 800,
+        letterSpacing: '0.03em',
+        textTransform: 'uppercase',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      {formatStatusLabel(status)}
+    </span>
+  )
+}
+
 const StatusSelect = ({ current, onChange }) => (
   <select
     value={current}
@@ -39,24 +105,29 @@ const StatusSelect = ({ current, onChange }) => (
       borderRadius: 8,
       border: `1px solid ${C.border}`,
       fontSize: 12,
+      minWidth: 130,
     }}
   >
     {statusOptions
-      .filter((s) => s !== 'ALL')
-      .map((s) => (
-        <option key={s} value={s}>
-          {s.toLowerCase()}
+      .filter((status) => status !== 'ALL')
+      .map((status) => (
+        <option key={status} value={status}>
+          {formatStatusLabel(status)}
         </option>
       ))}
   </select>
 )
+
 const AdminSettlementList = () => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const { settlement } = useAppSelector((s) => s)
+  const { settlement } = useAppSelector((state) => state)
   const jwt = useMemo(() => getAdminToken(), [])
+
   const [status, setStatus] = useState('ALL')
   const [sellerId, setSellerId] = useState('')
+  const [searchQuery, setSearchQuery] = useState('')
+
   const load = () => {
     if (!jwt) return
     const query = {
@@ -78,10 +149,12 @@ const AdminSettlementList = () => {
       }),
     )
   }
+
   useEffect(() => {
     load()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status, sellerId])
+
   const handleStatus = (id, next) => {
     dispatch(
       updateSettlementStatus({
@@ -91,7 +164,33 @@ const AdminSettlementList = () => {
       }),
     )
   }
+
+  const resetFilters = () => {
+    setStatus('ALL')
+    setSellerId('')
+    setSearchQuery('')
+  }
+
+  const filteredItems = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase()
+    if (!normalizedQuery) return settlement.items
+    return settlement.items.filter((item) =>
+      [
+        item.id,
+        item.sellerId,
+        item.orderId,
+        item.transactionId,
+        item.settlementStatus,
+        item.settlementDate,
+        item.createdAt,
+      ]
+        .map((value) => String(value ?? '').toLowerCase())
+        .some((value) => value.includes(normalizedQuery)),
+    )
+  }, [searchQuery, settlement.items])
+
   const summary = settlement.summary
+
   return (
     <div
       style={{
@@ -102,78 +201,18 @@ const AdminSettlementList = () => {
     >
       <div
         style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          gap: 12,
-          flexWrap: 'wrap',
-        }}
-      >
-        <div>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 24,
-              fontWeight: 800,
-              color: C.text,
-            }}
-          >
-            Settlement Console
-          </h1>
-          <p
-            style={{
-              margin: '4px 0 0',
-              color: C.mid,
-            }}
-          >
-            Monitor payouts across all sellers
-          </p>
-        </div>
-        <button
-          onClick={load}
-          style={{
-            border: 'none',
-            background: C.accent,
-            color: '#111',
-            padding: '9px 14px',
-            borderRadius: 10,
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          Refresh
-        </button>
-      </div>
-
-      <div
-        style={{
-          marginTop: 16,
           padding: 14,
           borderRadius: 12,
           background: C.card,
           border: `1px solid ${C.border}`,
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: 12,
           alignItems: 'end',
         }}
       >
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 6,
-          }}
-        >
-          <label
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: C.dim,
-            }}
-          >
-            Status
-          </label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim }}>Status</label>
           <select
             value={status}
             onChange={(e) => setStatus(e.target.value)}
@@ -183,30 +222,16 @@ const AdminSettlementList = () => {
               border: `1px solid ${C.border}`,
             }}
           >
-            {statusOptions.map((s) => (
-              <option key={s} value={s}>
-                {s === 'ALL' ? 'All statuses' : s.toLowerCase()}
+            {statusOptions.map((statusOption) => (
+              <option key={statusOption} value={statusOption}>
+                {statusOption === 'ALL' ? 'All statuses' : formatStatusLabel(statusOption)}
               </option>
             ))}
           </select>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 6,
-          }}
-        >
-          <label
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              color: C.dim,
-            }}
-          >
-            Seller ID
-          </label>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim }}>Seller ID</label>
           <input
             placeholder="Filter by seller"
             value={sellerId}
@@ -218,6 +243,36 @@ const AdminSettlementList = () => {
             }}
           />
         </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim }}>Search</label>
+          <input
+            placeholder="Order / txn / settlement id"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{
+              padding: '9px 10px',
+              borderRadius: 10,
+              border: `1px solid ${C.border}`,
+            }}
+          />
+        </div>
+
+        <button
+          onClick={resetFilters}
+          style={{
+            padding: '9px 12px',
+            borderRadius: 10,
+            border: `1px solid ${C.border}`,
+            background: '#FFFFFF',
+            color: C.text,
+            fontWeight: 700,
+            cursor: 'pointer',
+            alignSelf: 'end',
+          }}
+        >
+          Clear Filters
+        </button>
       </div>
 
       <div
@@ -236,25 +291,12 @@ const AdminSettlementList = () => {
             padding: 14,
           }}
         >
-          <div
-            style={{
-              fontSize: 12,
-              color: C.dim,
-              letterSpacing: '0.08em',
-            }}
-          >
-            NET PAYABLE
-          </div>
-          <div
-            style={{
-              fontSize: 26,
-              fontWeight: 800,
-              marginTop: 4,
-            }}
-          >
+          <div style={{ fontSize: 12, color: C.dim, letterSpacing: '0.08em' }}>NET PAYABLE</div>
+          <div style={{ fontSize: 26, fontWeight: 800, marginTop: 4 }}>
             {formatCurrency(summary?.totalNetAmount)}
           </div>
         </div>
+
         <div
           style={{
             background: C.card,
@@ -263,25 +305,10 @@ const AdminSettlementList = () => {
             padding: 14,
           }}
         >
-          <div
-            style={{
-              fontSize: 12,
-              color: C.dim,
-              letterSpacing: '0.08em',
-            }}
-          >
-            PENDING
-          </div>
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 800,
-              marginTop: 4,
-            }}
-          >
-            {summary?.pendingCount ?? 0}
-          </div>
+          <div style={{ fontSize: 12, color: C.dim, letterSpacing: '0.08em' }}>PENDING</div>
+          <div style={{ fontSize: 22, fontWeight: 800, marginTop: 4 }}>{summary?.pendingCount ?? 0}</div>
         </div>
+
         <div
           style={{
             background: C.card,
@@ -290,70 +317,51 @@ const AdminSettlementList = () => {
             padding: 14,
           }}
         >
-          <div
-            style={{
-              fontSize: 12,
-              color: C.dim,
-              letterSpacing: '0.08em',
-            }}
-          >
+          <div style={{ fontSize: 12, color: C.dim, letterSpacing: '0.08em' }}>
             FAILED/CANCELLED
           </div>
-          <div
-            style={{
-              fontSize: 22,
-              fontWeight: 800,
-              marginTop: 4,
-            }}
-          >
+          <div style={{ fontSize: 22, fontWeight: 800, marginTop: 4 }}>
             {(summary?.failedCount ?? 0) + (summary?.cancelledCount ?? 0)}
           </div>
         </div>
       </div>
 
-      <div
-        style={{
-          marginTop: 18,
-          border: `1px solid ${C.border}`,
-          borderRadius: 12,
-          overflow: 'hidden',
-          background: C.card,
-        }}
-      >
+      <div className="app-data-table-shell" style={{ marginTop: 18 }}>
         <div
           style={{
-            overflowX: 'auto',
+            padding: '10px 14px',
+            borderBottom: `1px solid ${C.border}`,
+            background: '#F8FBFC',
+            fontSize: 12,
+            color: C.mid,
+            fontWeight: 700,
           }}
         >
-          <table
-            style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              minWidth: 960,
-            }}
-          >
+          Showing {numberFormat.format(filteredItems.length)} settlement
+          {filteredItems.length === 1 ? '' : 's'}
+        </div>
+
+        <div className="app-data-table-scroll">
+          <table className="app-data-table" style={{ minWidth: 960 }}>
             <thead>
-              <tr
-                style={{
-                  background: '#1E293B',
-                  color: '#fff',
-                }}
-              >
-                {['ID', 'Seller', 'Order', 'Net Amount', 'Status', 'Date', 'Action'].map((h, i) => (
-                  <th
-                    key={h}
-                    style={{
-                      padding: '11px 14px',
-                      fontSize: 12,
-                      fontWeight: 700,
-                      letterSpacing: '0.04em',
-                      textAlign: i >= 3 ? 'right' : 'left',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {h}
-                  </th>
-                ))}
+              <tr>
+                {['ID', 'Seller', 'Order', 'Net Amount', 'Status', 'Date', 'Action'].map(
+                  (header, index) => (
+                    <th
+                      key={header}
+                      style={{
+                        padding: '11px 14px',
+                        fontSize: 12,
+                        fontWeight: 700,
+                        letterSpacing: '0.04em',
+                        textAlign: index >= 3 ? 'right' : 'left',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {header}
+                    </th>
+                  ),
+                )}
               </tr>
             </thead>
             <tbody>
@@ -367,10 +375,10 @@ const AdminSettlementList = () => {
                       color: C.mid,
                     }}
                   >
-                    Loading settlements…
+                    Loading settlements...
                   </td>
                 </tr>
-              ) : settlement.items.length === 0 ? (
+              ) : filteredItems.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
@@ -380,91 +388,34 @@ const AdminSettlementList = () => {
                       color: C.mid,
                     }}
                   >
-                    No settlements found.
+                    No settlements match current filters.
                   </td>
                 </tr>
               ) : (
-                settlement.items.map((item, idx) => (
-                  <tr
-                    key={item.id}
-                    style={{
-                      background: idx % 2 ? '#F9FAFB' : C.card,
-                      borderBottom: `1px solid ${C.border}`,
-                    }}
-                  >
-                    <td
-                      style={{
-                        padding: '12px 14px',
-                        fontWeight: 700,
-                        color: '#2563EB',
-                      }}
-                    >
-                      #{item.id}
+                filteredItems.map((item) => (
+                  <tr key={item.id}>
+                    <td style={{ padding: '12px 14px', fontWeight: 700, color: '#2563EB' }}>#{item.id}</td>
+                    <td style={{ padding: '12px 14px', color: C.text }}>
+                      <div style={{ fontWeight: 600 }}>Seller #{item.sellerId}</div>
+                      <div style={{ fontSize: 12, color: C.dim }}>{item.transactionId ?? '�'}</div>
                     </td>
-                    <td
-                      style={{
-                        padding: '12px 14px',
-                        color: C.text,
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontWeight: 600,
-                        }}
-                      >
-                        Seller #{item.sellerId}
-                      </div>
-                      <div
-                        style={{
-                          fontSize: 12,
-                          color: C.dim,
-                        }}
-                      >
-                        {item.transactionId ?? '—'}
-                      </div>
-                    </td>
-                    <td
-                      style={{
-                        padding: '12px 14px',
-                        color: C.mid,
-                      }}
-                    >
-                      Order #{item.orderId}
-                    </td>
-                    <td
-                      style={{
-                        padding: '12px 14px',
-                        textAlign: 'right',
-                        fontWeight: 700,
-                      }}
-                    >
+                    <td style={{ padding: '12px 14px', color: C.mid }}>Order #{item.orderId}</td>
+                    <td style={{ padding: '12px 14px', textAlign: 'right', fontWeight: 700 }}>
                       {formatCurrency(item.netSettlementAmount)}
                     </td>
-                    <td
-                      style={{
-                        padding: '12px 14px',
-                      }}
-                    >
-                      <StatusSelect
-                        current={item.settlementStatus}
-                        onChange={(v) => handleStatus(item.id, v)}
-                      />
+                    <td style={{ padding: '12px 14px' }}>
+                      <div style={{ display: 'grid', gap: 7, justifyItems: 'start' }}>
+                        <StatusChip status={item.settlementStatus} />
+                        <StatusSelect
+                          current={item.settlementStatus}
+                          onChange={(nextStatus) => handleStatus(item.id, nextStatus)}
+                        />
+                      </div>
                     </td>
-                    <td
-                      style={{
-                        padding: '12px 14px',
-                        color: C.dim,
-                        textAlign: 'right',
-                      }}
-                    >
-                      {item.settlementDate?.split('T')[0] ?? item.createdAt?.split('T')[0] ?? '—'}
+                    <td style={{ padding: '12px 14px', color: C.dim, textAlign: 'right' }}>
+                      {formatDate(item.settlementDate || item.createdAt)}
                     </td>
-                    <td
-                      style={{
-                        padding: '12px 14px',
-                        textAlign: 'right',
-                      }}
-                    >
+                    <td style={{ padding: '12px 14px', textAlign: 'right' }}>
                       <button
                         onClick={() => navigate(`/admin/settlements/${item.id}`)}
                         style={{
@@ -473,6 +424,7 @@ const AdminSettlementList = () => {
                           border: `1px solid ${C.border}`,
                           background: C.card,
                           cursor: 'pointer',
+                          fontWeight: 700,
                         }}
                       >
                         View
@@ -488,4 +440,5 @@ const AdminSettlementList = () => {
     </div>
   )
 }
+
 export default AdminSettlementList

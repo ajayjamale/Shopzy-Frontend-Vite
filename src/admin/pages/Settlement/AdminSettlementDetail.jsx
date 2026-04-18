@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { fetchSettlementById, updateSettlementStatus } from '../../../store/seller/settlementSlice'
 import { getAdminToken } from '../../../utils/authToken'
@@ -17,7 +17,6 @@ const formatCurrency = (v) =>
   })}`
 const AdminSettlementDetail = () => {
   const { id } = useParams()
-  const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const { settlement } = useAppSelector((s) => s)
   const jwt = getAdminToken()
@@ -49,49 +48,6 @@ const AdminSettlementDetail = () => {
         minHeight: '100vh',
       }}
     >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 14,
-        }}
-      >
-        <div>
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 22,
-              fontWeight: 800,
-              color: C.text,
-            }}
-          >
-            Settlement #{id}
-          </h1>
-          <p
-            style={{
-              margin: '4px 0 0',
-              color: C.mid,
-            }}
-          >
-            Admin view
-          </p>
-        </div>
-        <button
-          onClick={() => navigate(-1)}
-          style={{
-            border: `1px solid ${C.border}`,
-            background: C.card,
-            padding: '8px 14px',
-            borderRadius: 10,
-            cursor: 'pointer',
-            fontWeight: 600,
-          }}
-        >
-          Back
-        </button>
-      </div>
-
       {!data ? (
         <div
           style={{

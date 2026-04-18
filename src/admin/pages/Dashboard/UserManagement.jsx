@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   Box,
   Paper,
-  Tab,
-  Tabs,
   Table,
   TableBody,
   TableCell,
@@ -18,10 +16,9 @@ import { adminApiPath, api } from '../../../config/Api'
 import { getAdminToken } from '../../../utils/authToken'
 import { useSearchParams } from 'react-router-dom'
 import SellersTable from '../sellers/SellersTable'
-const DEFAULT_SELLER_STATUS = 'PENDING_VERIFICATION'
 const UserManagement = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-  const [tab, setTab] = useState(searchParams.get('tab') === 'sellers' ? 'sellers' : 'customers')
+  const tab = searchParams.get('tab') === 'sellers' ? 'sellers' : 'customers'
   const [customers, setCustomers] = useState([])
   const [query, setQuery] = useState('')
   const fetchCustomers = async () => {
@@ -43,7 +40,6 @@ const UserManagement = () => {
   useEffect(() => {
     const incoming = searchParams.get('tab')
     if (incoming === 'customers' || incoming === 'sellers') {
-      setTab(incoming)
       return
     }
     const nextParams = new URLSearchParams(searchParams)
@@ -72,44 +68,17 @@ const UserManagement = () => {
         gap: 2,
       }}
     >
-      <Typography variant="h5" fontWeight={700}>
-        User & Seller Management
-      </Typography>
-
-      <Paper
-        sx={{
-          p: 1.5,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-        }}
-      >
-        <Tabs
-          value={tab}
-          onChange={(_, v) => {
-            setTab(v)
-            const nextParams = new URLSearchParams(searchParams)
-            nextParams.set('tab', v)
-            if (v === 'sellers') {
-              if (!nextParams.get('status')) {
-                nextParams.set('status', DEFAULT_SELLER_STATUS)
-              }
-            } else {
-              nextParams.delete('status')
-            }
-            setSearchParams(nextParams, {
-              replace: true,
-            })
+      {tab === 'customers' && (
+        <Paper
+          sx={{
+            p: 1.5,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1,
           }}
         >
-          <Tab label="Customers" value="customers" />
-          <Tab label="Seller Management" value="sellers" />
-        </Tabs>
-
-        {tab === 'customers' && (
           <Box
             sx={{
-              ml: 'auto',
               display: 'flex',
               alignItems: 'center',
               gap: 1,
@@ -125,8 +94,8 @@ const UserManagement = () => {
               onChange={(e) => setQuery(e.target.value)}
             />
           </Box>
-        )}
-      </Paper>
+        </Paper>
+      )}
 
       {tab === 'customers' ? (
         <TableContainer component={Paper}>

@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { adminMenuGroups, isAdminNavItemActive } from '../adminNavigation'
+import { ShopzyLogo } from '../../components/ShopzyLogo'
 const AdminDrawerList = ({ pendingSellersCount = 0 }) => {
   const navigate = useNavigate()
   const location = useLocation()
@@ -19,60 +20,35 @@ const AdminDrawerList = ({ pendingSellersCount = 0 }) => {
           padding: '18px 16px',
           borderBottom: '1px solid #E7EFF2',
           display: 'grid',
-          gap: 10,
+          gap: 8,
         }}
       >
-        <div>
-          <p
-            style={{
-              fontSize: 11,
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              color: '#64748B',
-              fontWeight: 700,
-            }}
-          >
-            Admin Console
-          </p>
-          <h2 style={{ fontSize: '1.25rem', marginTop: 4, color: '#0F172A' }}>Shopzy Admin</h2>
-        </div>
+        <button
+          onClick={() => navigate('/admin')}
+          style={{
+            border: 'none',
+            background: 'transparent',
+            padding: 0,
+            textAlign: 'left',
+            cursor: 'pointer',
+            width: 'fit-content',
+          }}
+        >
+          <ShopzyLogo size={14} />
+        </button>
+        <p
+          style={{
+            fontSize: 11,
+            letterSpacing: '0.12em',
+            textTransform: 'uppercase',
+            color: '#64748B',
+            fontWeight: 700,
+            margin: 0,
+          }}
+        >
+          Admin Console
+        </p>
 
-        {pendingSellersCount > 0 && (
-          <button
-            onClick={() => navigate('/admin/users?tab=sellers&status=PENDING_VERIFICATION')}
-            style={{
-              border: '1px solid #F6D38D',
-              borderRadius: 14,
-              background: '#FFF8E8',
-              padding: '10px 12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 12,
-              cursor: 'pointer',
-            }}
-          >
-            <span style={{ fontSize: 12, fontWeight: 800, color: '#92400E' }}>Pending sellers</span>
-            <span
-              style={{
-                minWidth: 28,
-                height: 28,
-                padding: '0 8px',
-                borderRadius: 999,
-                background: '#FFFFFF',
-                border: '1px solid #F2D08A',
-                color: '#B45309',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 12,
-                fontWeight: 900,
-              }}
-            >
-              {pendingSellersCount > 99 ? '99+' : pendingSellersCount}
-            </span>
-          </button>
-        )}
       </div>
 
       <nav
@@ -80,19 +56,6 @@ const AdminDrawerList = ({ pendingSellersCount = 0 }) => {
       >
         {adminMenuGroups.map((group) => (
           <div key={group.title} style={{ display: 'grid', gap: 6 }}>
-            <p
-              style={{
-                margin: '2px 6px 0',
-                fontSize: 10,
-                letterSpacing: '0.12em',
-                textTransform: 'uppercase',
-                color: '#94A3B8',
-                fontWeight: 800,
-              }}
-            >
-              {group.title}
-            </p>
-
             {group.items.map((item) => {
               const active = isAdminNavItemActive(location, item)
               const badgeValue = item.badgeKey === 'pendingSellers' ? pendingSellersCount : 0

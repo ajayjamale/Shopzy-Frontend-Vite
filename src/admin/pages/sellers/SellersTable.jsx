@@ -62,24 +62,36 @@ const SellersTable = () => {
   const closeMenu = (sellerId) => {
     setAnchorEl((prev) => ({ ...prev, [sellerId]: null }))
   }
+  const getSellerMenuKey = (seller) =>
+    String(seller.id ?? seller.email ?? seller.mobile ?? seller.sellerName ?? 'seller')
   return (
     <Box className="grid gap-4">
       <Box className="surface p-4" sx={{ borderRadius: 4 }}>
-        <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
-          Seller Management
-        </Typography>
-        <FormControl size="small" sx={{ minWidth: 220 }}>
-          <Select
-            value={accountStatus}
-            onChange={(event) => handleStatusFilterChange(event.target.value)}
-          >
-            {accountStatuses.map((status) => (
-              <MenuItem key={status.status} value={status.status}>
-                {status.title}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between',
+            gap: 2,
+            flexWrap: 'wrap',
+          }}
+        >
+          <Typography variant="h6" fontWeight={700}>
+            Seller Management
+          </Typography>
+          <FormControl size="small" sx={{ minWidth: 220 }}>
+            <Select
+              value={accountStatus}
+              onChange={(event) => handleStatusFilterChange(event.target.value)}
+            >
+              {accountStatuses.map((status) => (
+                <MenuItem key={status.status} value={status.status}>
+                  {status.title}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
       </Box>
 
       <TableContainer component={Paper}>
@@ -96,43 +108,58 @@ const SellersTable = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {sellers.sellers?.map((seller) => (
-              <TableRow key={seller.id} hover>
-                <TableCell>{seller.sellerName}</TableCell>
-                <TableCell>{seller.email}</TableCell>
-                <TableCell>{seller.mobile}</TableCell>
-                <TableCell>{seller.gstin}</TableCell>
-                <TableCell>{seller.businessDetails?.businessName}</TableCell>
-                <TableCell>{seller.accountStatus}</TableCell>
-                <TableCell align="right">
-                  <Button size="small" onClick={(event) => openMenu(event, seller.id || 1)}>
-                    Change status
-                  </Button>
-                  <Menu
-                    anchorEl={anchorEl[seller.id || 1]}
-                    open={Boolean(anchorEl[seller.id || 1])}
-                    onClose={() => closeMenu(seller.id || 1)}
-                  >
-                    {accountStatuses.map((status) => (
-                      <MenuItem
-                        key={status.status}
-                        onClick={() => {
-                          dispatch(
-                            updateSellerAccountStatus({
-                              id: seller.id || 1,
-                              status: status.status,
-                            }),
-                          ).finally(() => dispatch(fetchSellers(accountStatus)))
-                          closeMenu(seller.id || 1)
-                        }}
-                      >
-                        {status.title}
-                      </MenuItem>
-                    ))}
-                  </Menu>
-                </TableCell>
-              </TableRow>
-            ))}
+            {sellers.sellers?.map((seller) => {
+              const sellerMenuKey = getSellerMenuKey(seller)
+              const isMenuOpen = Boolean(anchorEl[sellerMenuKey])
+              const canUpdateStatus = Boolean(seller.id)
+              return (
+                <TableRow key={sellerMenuKey} hover>
+                  <TableCell>{seller.sellerName}</TableCell>
+                  <TableCell>{seller.email}</TableCell>
+                  <TableCell>{seller.mobile}</TableCell>
+                  <TableCell>{seller.gstin}</TableCell>
+                  <TableCell>{seller.businessDetails?.businessName}</TableCell>
+                  <TableCell>{seller.accountStatus}</TableCell>
+                  <TableCell align="right">
+                    <Button
+                      size="small"
+                      disabled={!canUpdateStatus}
+                      onClick={(event) => openMenu(event, sellerMenuKey)}
+                    >
+                      Change status
+                    </Button>
+                    <Menu
+                      anchorEl={anchorEl[sellerMenuKey]}
+                      open={isMenuOpen}
+                      onClose={() => closeMenu(sellerMenuKey)}
+                      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                      transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                    >
+                      {accountStatuses.map((status) => (
+                        <MenuItem
+                          key={status.status}
+                          onClick={() => {
+                            if (!seller.id) {
+                              closeMenu(sellerMenuKey)
+                              return
+                            }
+                            dispatch(
+                              updateSellerAccountStatus({
+                                id: seller.id,
+                                status: status.status,
+                              }),
+                            ).finally(() => dispatch(fetchSellers(accountStatus)))
+                            closeMenu(sellerMenuKey)
+                          }}
+                        >
+                          {status.title}
+                        </MenuItem>
+                      ))}
+                    </Menu>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </TableContainer>

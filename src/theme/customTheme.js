@@ -159,7 +159,7 @@ const customTheme = createTheme({
     MuiTableHead: {
       styleOverrides: {
         root: {
-          background: 'linear-gradient(180deg, #F6FAFB 0%, #EDF4F6 100%)',
+          background: 'linear-gradient(135deg, #0F172A 0%, #0F766E 100%)',
         },
       },
     },
@@ -180,9 +180,9 @@ const customTheme = createTheme({
       styleOverrides: {
         head: {
           fontWeight: 700,
-          color: '#0F172A',
+          color: '#FFFFFF',
           backgroundColor: 'transparent',
-          borderBottom: '1px solid #DCE5E8',
+          borderBottom: '2px solid #14B8A6',
           fontSize: '0.74rem',
           textTransform: 'uppercase',
           letterSpacing: '0.08em',

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@mui/material'
 import ArrowOutwardRoundedIcon from '@mui/icons-material/ArrowOutwardRounded'
 import NavigateBeforeRoundedIcon from '@mui/icons-material/NavigateBeforeRounded'
@@ -32,6 +32,9 @@ const fallbackSlides = [
     categoryId: 'home_furniture',
   },
 ]
+
+const MAIN_AUTOPLAY_MS = 1000
+
 const MainCarousel = () => {
   const navigate = useNavigate()
   const { homePage } = useAppSelector((store) => store)
@@ -53,215 +56,126 @@ const MainCarousel = () => {
       link: slide.categoryId,
     }))
   }, [homePage.homePageData?.heroSlides])
+
   const [index, setIndex] = useState(0)
-  const active = slides[index]
+  const [paused, setPaused] = useState(false)
+
+  useEffect(() => {
+    setIndex((prev) => (prev >= slides.length ? 0 : prev))
+  }, [slides.length])
+
+  useEffect(() => {
+    if (paused || slides.length <= 1) return undefined
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % slides.length)
+    }, MAIN_AUTOPLAY_MS)
+    return () => clearInterval(timer)
+  }, [paused, slides.length])
+
   const move = (direction) => {
-    setIndex((prev) => {
-      const next = prev + direction
-      if (next < 0) return slides.length - 1
-      if (next >= slides.length) return 0
-      return next
-    })
+    setIndex((prev) => (prev + direction + slides.length) % slides.length)
   }
-  const handleCta = () => {
-    navigate(toCatalogPath(active.link || '/'))
+
+  const handleCta = (link) => {
+    navigate(toCatalogPath(link || '/'))
   }
+
   return (
-    <section className="app-container" style={{ paddingTop: 26 }}>
+    <section className="app-container main-carousel-section">
       <div
-        className="surface"
-        style={{
-          borderRadius: 26,
-          overflow: 'hidden',
-          minHeight: 'min(74vh, 560px)',
-          position: 'relative',
-          background: '#0B1320',
-        }}
+        className="surface main-carousel-shell"
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
       >
-        <img
-          src={active.imageUrl}
-          alt={active.title}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: 'center',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            background:
-              'linear-gradient(108deg, rgba(2,6,23,.82) 0%, rgba(2,6,23,.35) 42%, rgba(2,6,23,.62) 100%)',
-          }}
-        />
+        <div className="main-carousel-track" style={{ transform: `translateX(-${index * 100}%)` }}>
+          {slides.map((slide, slideIndex) => (
+            <article className="main-carousel-slide" key={`${slide.title}-${slideIndex}`}>
+              <img src={slide.imageUrl} alt={slide.title} className="main-carousel-image" />
+              <span className="main-carousel-overlay" />
 
-        <div
-          onClick={handleCta}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              handleCta()
-            }
-          }}
-          style={{
-            position: 'relative',
-            minHeight: 'min(74vh, 560px)',
-            cursor: 'pointer',
-          }}
-        >
-          <div
-            style={{
-              position: 'absolute',
-              left: 'clamp(18px, 5vw, 54px)',
-              right: 'clamp(18px, 5vw, 54px)',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              maxWidth: 720,
-              borderRadius: 22,
-              border: '1px solid rgba(255,255,255,.26)',
-              background: 'linear-gradient(140deg, rgba(2,6,23,.72) 0%, rgba(15,118,110,.36) 100%)',
-              backdropFilter: 'blur(7px)',
-              padding: 'clamp(18px, 4vw, 36px)',
-              display: 'grid',
-              gap: 12,
-            }}
-          >
-            <span
-              style={{
-                display: 'inline-flex',
-                width: 'fit-content',
-                borderRadius: 999,
-                border: '1px solid rgba(94,234,212,.38)',
-                background: 'rgba(8,47,73,.5)',
-                color: '#99F6E4',
-                padding: '6px 12px',
-                fontSize: 11,
-                fontWeight: 800,
-                letterSpacing: '.12em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {active.subtitle}
-            </span>
-
-            <h1
-              style={{ color: '#F8FAFC', fontSize: 'clamp(1.85rem,4vw,3.5rem)', lineHeight: 1.02 }}
-            >
-              {active.title}
-            </h1>
-
-            <p style={{ color: '#D6E3E9', maxWidth: 620, lineHeight: 1.7 }}>{active.description}</p>
-
-            <div className="flex items-center gap-3 flex-wrap pt-2">
-              <Button
-                variant="contained"
-                onClick={(event) => {
-                  event.stopPropagation()
-                  handleCta()
+              <div
+                onClick={() => handleCta(slide.link)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    handleCta(slide.link)
+                  }
                 }}
-                endIcon={<ArrowOutwardRoundedIcon />}
-                sx={{
-                  bgcolor: '#0F766E',
-                  px: 3,
-                  py: 1.2,
-                  borderRadius: 999,
-                  '&:hover': { bgcolor: '#0B5F59' },
-                }}
+                className="main-carousel-hit"
               >
-                {active.buttonText}
-              </Button>
-              <span style={{ color: '#C6D7DF', fontSize: '0.9rem', fontWeight: 700 }}>
-                {String(index + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
-              </span>
-            </div>
-          </div>
+                <div className="main-carousel-panel">
+                  <span className="main-carousel-badge">{slide.subtitle}</span>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              move(-1)
-            }}
-            style={{
-              position: 'absolute',
-              bottom: 18,
-              right: 66,
-              border: '1px solid rgba(255,255,255,0.42)',
-              background: 'rgba(2,6,23,0.34)',
-              color: '#fff',
-              width: 38,
-              height: 38,
-              borderRadius: '50%',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-            }}
-            aria-label="previous slide"
-          >
-            <NavigateBeforeRoundedIcon />
-          </button>
+                  <h1 className="main-carousel-title">{slide.title}</h1>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              move(1)
-            }}
-            style={{
-              position: 'absolute',
-              bottom: 18,
-              right: 18,
-              border: '1px solid rgba(255,255,255,0.42)',
-              background: 'rgba(2,6,23,0.34)',
-              color: '#fff',
-              width: 38,
-              height: 38,
-              borderRadius: '50%',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-            }}
-            aria-label="next slide"
-          >
-            <NavigateNextRoundedIcon />
-          </button>
+                  <p className="main-carousel-description">{slide.description}</p>
 
-          <div
-            style={{
-              position: 'absolute',
-              bottom: 18,
-              left: 18,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-            }}
-          >
-            {slides.map((_, dotIndex) => (
-              <button
-                key={`dot-${dotIndex}`}
-                onClick={(event) => {
-                  event.stopPropagation()
-                  setIndex(dotIndex)
-                }}
-                aria-label={`slide ${dotIndex + 1}`}
-                style={{
-                  width: dotIndex === index ? 24 : 8,
-                  height: 8,
-                  borderRadius: 999,
-                  border: 'none',
-                  background: dotIndex === index ? '#5EEAD4' : 'rgba(255,255,255,.45)',
-                  cursor: 'pointer',
-                  transition: 'all .2s ease',
-                }}
-              />
-            ))}
-          </div>
+                  <div className="main-carousel-meta-row">
+                    <Button
+                      variant="contained"
+                      onClick={(event) => {
+                        event.stopPropagation()
+                        handleCta(slide.link)
+                      }}
+                      endIcon={<ArrowOutwardRoundedIcon />}
+                      sx={{
+                        bgcolor: '#0F766E',
+                        px: 3,
+                        py: 1.2,
+                        borderRadius: 999,
+                        '&:hover': { bgcolor: '#0B5F59' },
+                      }}
+                    >
+                      {slide.buttonText}
+                    </Button>
+                    <span className="main-carousel-counter">
+                      {String(slideIndex + 1).padStart(2, '0')} / {String(slides.length).padStart(2, '0')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            move(-1)
+          }}
+          className="main-carousel-nav main-carousel-prev"
+          aria-label="previous slide"
+          disabled={slides.length <= 1}
+        >
+          <NavigateBeforeRoundedIcon />
+        </button>
+
+        <button
+          onClick={(e) => {
+            e.stopPropagation()
+            move(1)
+          }}
+          className="main-carousel-nav main-carousel-next"
+          aria-label="next slide"
+          disabled={slides.length <= 1}
+        >
+          <NavigateNextRoundedIcon />
+        </button>
+
+        <div className="main-carousel-dots">
+          {slides.map((_, dotIndex) => (
+            <button
+              key={`dot-${dotIndex}`}
+              onClick={(event) => {
+                event.stopPropagation()
+                setIndex(dotIndex)
+              }}
+              aria-label={`slide ${dotIndex + 1}`}
+              className={`main-carousel-dot${dotIndex === index ? ' main-carousel-dot-active' : ''}`}
+            />
+          ))}
         </div>
       </div>
     </section>

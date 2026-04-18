@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Alert, Box, Button, Drawer, Snackbar, Stack, Typography } from '@mui/material'
+import { Box, Button, Drawer, Stack, Typography } from '@mui/material'
 import EditRoundedIcon from '@mui/icons-material/EditRounded'
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
 import BusinessRoundedIcon from '@mui/icons-material/BusinessRounded'
@@ -11,6 +11,7 @@ import PersonalDetailsForm from './PersonalDetailsForm'
 import BusinessDetailsForm from './BusinessDetailsForm'
 import PickupAddressForm from './PickupAddressForm'
 import BankDetailsForm from './BankDetailsForm'
+import FormFeedbackToast from '../../../components/forms/FormFeedbackToast'
 import {
   SellerMetricCard,
   SellerPageIntro,
@@ -243,23 +244,15 @@ const Profile = () => {
         </Box>
       </Drawer>
 
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+      <FormFeedbackToast
+        feedback={{
+          open: toastOpen,
+          severity: sellers.error ? 'error' : 'success',
+          message: sellers.error || 'Profile updated successfully',
+          autoHideDuration: 5000,
         }}
-        open={toastOpen}
-        autoHideDuration={5000}
         onClose={() => setToastOpen(false)}
-      >
-        <Alert
-          onClose={() => setToastOpen(false)}
-          severity={sellers.error ? 'error' : 'success'}
-          variant="filled"
-        >
-          {sellers.error || 'Profile updated successfully'}
-        </Alert>
-      </Snackbar>
+      />
     </Box>
   )
 }

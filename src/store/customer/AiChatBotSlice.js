@@ -111,15 +111,13 @@ export const chatBot = createAsyncThunk(
         try {
           return await requestChat('/ai/chat', baseParams, guestHeaders)
         } catch {
-          // Keep flowing to existing fallback paths.
+          // Keep flowing to unified error handling.
         }
       }
-      if (error?.response?.status === 500 || error?.response?.status === 404) {
-        try {
-          return await requestChat('/api/ai/chat', baseParams)
-        } catch (retryError) {
-          return rejectWithValue(normalizeChatError(retryError.response?.data || retryError))
-        }
+      if (error?.response?.status === 404) {
+        return rejectWithValue(
+          'Chat endpoint not found. Restart the Vite dev server so /ai proxy changes are applied.',
+        )
       }
       return rejectWithValue(normalizeChatError(error.response?.data || error))
     }

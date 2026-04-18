@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import {
-  Alert,
   Box,
   Button,
   CircularProgress,
@@ -10,7 +9,6 @@ import {
   MenuItem,
   Paper,
   Select,
-  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -36,6 +34,7 @@ import { womenLevelThree } from '../../../data/category/level-three/womenLevelTh
 import { furnitureLevelThree } from '../../../data/category/level-three/furnitureLevelThree'
 import { electronicsLevelThree } from '../../../data/category/level-three/electronicsLevelThree'
 import { colors } from '../../../data/filters/color'
+import FormFeedbackToast from '../../../components/forms/FormFeedbackToast'
 const categoryLevelTwo = {
   men: menLevelTwo,
   women: womenLevelTwo,
@@ -750,23 +749,15 @@ const ProductForm = () => {
         </Stack>
       </Box>
 
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+      <FormFeedbackToast
+        feedback={{
+          open: snackbarOpen,
+          severity: sellerProduct.error ? 'error' : 'success',
+          message: sellerProduct.error || 'Product created successfully',
+          autoHideDuration: 4000,
         }}
-        open={snackbarOpen}
-        autoHideDuration={4000}
         onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity={sellerProduct.error ? 'error' : 'success'}
-          variant="filled"
-        >
-          {sellerProduct.error || 'Product created successfully'}
-        </Alert>
-      </Snackbar>
+      />
     </Box>
   )
 }

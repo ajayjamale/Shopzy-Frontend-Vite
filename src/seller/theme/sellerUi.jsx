@@ -107,18 +107,21 @@ export const sellerInputSx = {
   },
 }
 export const sellerTableCellSx = {
-  color: sellerPalette.text,
+  color: '#1E293B',
   fontWeight: 600,
-  borderBottom: `1px solid ${sellerPalette.border}`,
+  fontSize: '0.83rem',
+  borderBottom: '1px solid #E8EFF2',
+  py: 1.75,
 }
 export const sellerTableHeadCellSx = {
-  color: sellerPalette.muted,
-  fontWeight: 800,
-  fontSize: '.72rem',
-  letterSpacing: '.08em',
+  color: '#0F172A',
+  fontWeight: 700,
+  fontSize: '0.74rem',
+  letterSpacing: '0.08em',
   textTransform: 'uppercase',
-  borderBottom: `1px solid ${sellerPalette.border}`,
-  backgroundColor: alpha(sellerPalette.info, 0.04),
+  borderBottom: '1px solid #DCE5E8',
+  backgroundColor: 'transparent',
+  py: 1.75,
 }
 export const humanizeSellerValue = (value) => {
   if (!value) return 'Not provided'

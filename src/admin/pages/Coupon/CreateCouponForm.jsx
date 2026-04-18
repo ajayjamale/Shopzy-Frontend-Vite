@@ -6,8 +6,6 @@ import {
   Button,
   Box,
   Grid,
-  Alert,
-  Snackbar,
   CircularProgress,
   Typography,
   InputAdornment,
@@ -20,30 +18,17 @@ import { createCoupon } from '../../../store/admin/AdminCouponSlice'
 import LocalOfferIcon from '@mui/icons-material/LocalOffer'
 import PercentIcon from '@mui/icons-material/Percent'
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'
-const modernTextField = {
-  '& label.Mui-focused': {
-    color: '#1E293B',
-  },
-  '& .MuiOutlinedInput-root': {
-    fontFamily: '"Manrope", Arial, sans-serif',
-    fontSize: 13,
-    '&:hover fieldset': {
-      borderColor: '#0F766E',
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: '#0F766E',
-      borderWidth: 2,
-    },
-  },
-  '& label': {
-    fontFamily: '"Manrope", Arial, sans-serif',
-    fontSize: 13,
-  },
-  '& .MuiFormHelperText-root': {
-    fontFamily: '"Manrope", Arial, sans-serif',
-    fontSize: 11,
-  },
-}
+import {
+  formCardSx,
+  formHeaderIconSx,
+  formHeaderSx,
+  formHeaderTitleSx,
+  formPrimaryButtonSx,
+  formSectionNoteSx,
+  formSectionNoteTextSx,
+  formTextFieldSx,
+} from '../../../components/forms/muiFormTheme'
+import FormFeedbackToast from '../../../components/forms/FormFeedbackToast'
 const CreateCouponForm = () => {
   const dispatch = useAppDispatch()
   // ✅ CORRECT key: matches store registration `adminCoupon: AdminCouponSlice`
@@ -106,42 +91,11 @@ const CreateCouponForm = () => {
     }
   }, [adminCoupon.couponCreated, adminCoupon.error])
   return (
-    <Box
-      sx={{
-        maxWidth: 680,
-        backgroundColor: '#fff',
-        border: '1px solid #DDD',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-      }}
-    >
+    <Box sx={formCardSx}>
       {/* Header */}
-      <Box
-        sx={{
-          backgroundColor: '#1E293B',
-          px: 3,
-          py: 2,
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1.5,
-          borderBottom: '3px solid #0F766E',
-        }}
-      >
-        <LocalOfferIcon
-          sx={{
-            color: '#0F766E',
-            fontSize: 20,
-          }}
-        />
-        <Typography
-          sx={{
-            color: '#fff',
-            fontFamily: '"Manrope", Arial, sans-serif',
-            fontWeight: 700,
-            fontSize: 15,
-          }}
-        >
+      <Box sx={formHeaderSx}>
+        <LocalOfferIcon sx={formHeaderIconSx} />
+        <Typography sx={formHeaderTitleSx}>
           Create New Coupon
         </Typography>
       </Box>
@@ -190,7 +144,7 @@ const CreateCouponForm = () => {
                       letterSpacing: '1px',
                     },
                   }}
-                  sx={modernTextField}
+                  sx={formTextFieldSx}
                 />
               </Grid>
 
@@ -230,7 +184,7 @@ const CreateCouponForm = () => {
                       max: 100,
                     },
                   }}
-                  sx={modernTextField}
+                  sx={formTextFieldSx}
                 />
               </Grid>
 
@@ -255,7 +209,7 @@ const CreateCouponForm = () => {
                       helperText:
                         formik.touched.validityStartDate && formik.errors.validityStartDate,
                       sx: {
-                        ...modernTextField,
+                        ...formTextFieldSx,
                         '& .MuiInputBase-root': {
                           fontSize: 13,
                           fontFamily: '"Manrope", Arial, sans-serif',
@@ -285,7 +239,7 @@ const CreateCouponForm = () => {
                         formik.touched.validityEndDate && Boolean(formik.errors.validityEndDate),
                       helperText: formik.touched.validityEndDate && formik.errors.validityEndDate,
                       sx: {
-                        ...modernTextField,
+                        ...formTextFieldSx,
                         '& .MuiInputBase-root': {
                           fontSize: 13,
                           fontFamily: '"Manrope", Arial, sans-serif',
@@ -330,7 +284,7 @@ const CreateCouponForm = () => {
                       min: 1,
                     },
                   }}
-                  sx={modernTextField}
+                  sx={formTextFieldSx}
                 />
               </Grid>
 
@@ -340,22 +294,8 @@ const CreateCouponForm = () => {
                   xs: 12,
                 }}
               >
-                <Box
-                  sx={{
-                    backgroundColor: '#FFF3CD',
-                    border: '1px solid #FFEAA7',
-                    borderRadius: '3px',
-                    px: 2,
-                    py: 1,
-                  }}
-                >
-                  <Typography
-                    sx={{
-                      fontSize: 12,
-                      color: '#856404',
-                      fontFamily: '"Manrope", Arial, sans-serif',
-                    }}
-                  >
+                <Box sx={formSectionNoteSx}>
+                  <Typography sx={formSectionNoteTextSx}>
                     <strong>Note:</strong> Coupons will be available to all eligible customers once
                     activated. Ensure the validity period and discount are correct before
                     submitting.
@@ -374,29 +314,7 @@ const CreateCouponForm = () => {
                   type="submit"
                   fullWidth
                   disabled={adminCoupon.loading}
-                  sx={{
-                    backgroundColor: '#0F766E',
-                    color: '#0F172A',
-                    fontFamily: '"Manrope", Arial, sans-serif',
-                    fontWeight: 700,
-                    fontSize: 14,
-                    textTransform: 'none',
-                    borderRadius: '20px',
-                    py: 1.2,
-                    border: '1px solid #0b5f59',
-                    boxShadow: '0 1px 0 rgba(255,255,255,.4) inset, 0 -1px 0 rgba(0,0,0,.15) inset',
-                    '&:hover': {
-                      backgroundColor: '#0b5f59',
-                      boxShadow: 'none',
-                    },
-                    '&:active': {
-                      backgroundColor: '#115e59',
-                    },
-                    '&.Mui-disabled': {
-                      backgroundColor: '#f7ca7d',
-                      color: '#9d9d9d',
-                    },
-                  }}
+                  sx={formPrimaryButtonSx}
                 >
                   {adminCoupon.loading ? (
                     <CircularProgress
@@ -415,28 +333,15 @@ const CreateCouponForm = () => {
         </LocalizationProvider>
       </Box>
 
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+      <FormFeedbackToast
+        feedback={{
+          open: snackbarOpen,
+          severity: adminCoupon.error ? 'error' : 'success',
+          message: adminCoupon.error || 'Coupon created successfully',
+          autoHideDuration: 6000,
         }}
-        open={snackbarOpen}
-        autoHideDuration={6000}
         onClose={handleCloseSnackbar}
-      >
-        <Alert
-          onClose={handleCloseSnackbar}
-          severity={adminCoupon.error ? 'error' : 'success'}
-          variant="filled"
-          sx={{
-            width: '100%',
-            fontFamily: '"Manrope", Arial, sans-serif',
-            backgroundColor: adminCoupon.error ? '#CC0C39' : '#067D62',
-          }}
-        >
-          {adminCoupon.error ? adminCoupon.error : 'Coupon created successfully'}
-        </Alert>
-      </Snackbar>
+      />
     </Box>
   )
 }

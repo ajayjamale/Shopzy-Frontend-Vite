@@ -60,8 +60,8 @@ const ShopCategoryMosaic = ({ data }) => {
 
   if (!cards.length) return null
 
-  const [hero, ...restCards] = cards
-  const miniCards = restCards.slice(0, 6)
+  const visualCards = cards.slice(0, 4)
+  const quickCards = cards.slice(4, 12)
 
   return (
     <section className="app-container shop-category-section">
@@ -84,39 +84,47 @@ const ShopCategoryMosaic = ({ data }) => {
         </header>
 
         <div className="shop-category-layout">
-          <button
-            type="button"
-            className="shop-category-featured"
-            onClick={() => navigate(resolveTarget(hero.target))}
-          >
-            <img src={hero.image} alt={hero.name} className="shop-category-featured-image" />
-            <span className="shop-category-featured-overlay" />
-
-            <div className="shop-category-featured-content">
-              <p className="shop-category-featured-tag">Featured Category</p>
-              <h3 className="shop-category-featured-title">{hero.name}</h3>
-              <p className="shop-category-featured-subtitle">{hero.subtitle}</p>
-            </div>
-          </button>
-
-          <div className="shop-category-grid">
-            {miniCards.map((item) => (
+          <div className="shop-category-rail">
+            {visualCards.map((item) => (
               <button
                 key={item.id}
                 type="button"
-                className="shop-category-card"
+                className="shop-category-rail-card"
                 onClick={() => navigate(resolveTarget(item.target))}
               >
-                <div className="shop-category-card-image-shell">
-                  <img src={item.image} alt={item.name} className="shop-category-card-image" />
-                </div>
-                <div className="shop-category-card-content">
-                  <p className="shop-category-card-title">{item.name}</p>
-                  <p className="shop-category-card-subtitle">{item.subtitle}</p>
+                <img src={item.image} alt={item.name} className="shop-category-rail-image" />
+                <span className="shop-category-rail-overlay" />
+
+                <div className="shop-category-rail-content">
+                  <p className="shop-category-rail-tag">Category</p>
+                  <p className="shop-category-rail-title">{item.name}</p>
+                  <p className="shop-category-rail-subtitle">{item.subtitle}</p>
                 </div>
               </button>
             ))}
           </div>
+
+          {quickCards.length > 0 && (
+            <div className="shop-category-quick-grid">
+              {quickCards.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className="shop-category-quick-card"
+                  onClick={() => navigate(resolveTarget(item.target))}
+                >
+                  <div className="shop-category-quick-image-shell">
+                    <img src={item.image} alt={item.name} className="shop-category-quick-image" />
+                  </div>
+                  <div className="shop-category-quick-content">
+                    <p className="shop-category-quick-title">{item.name}</p>
+                    <p className="shop-category-quick-subtitle">{item.subtitle}</p>
+                  </div>
+                  <span className="shop-category-quick-cta">Browse</span>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>

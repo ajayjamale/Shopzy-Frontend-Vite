@@ -6,6 +6,16 @@ import {
 } from '../../../store/customer/ReturnSlice'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { getAdminToken } from '../../../utils/authToken'
+
+const C = {
+  text: '#0F172A',
+  mid: '#4B5563',
+  dim: '#6B7280',
+  border: '#E5E7EB',
+  card: '#FFFFFF',
+  bg: '#F5F6F8',
+}
+
 const ALL_STATUSES = [
   'REQUESTED',
   'APPROVED',
@@ -15,6 +25,15 @@ const ALL_STATUSES = [
   'REFUND_INITIATED',
   'REFUNDED',
 ]
+
+const numberFormat = new Intl.NumberFormat('en-IN')
+
+const formatStatusLabel = (status) =>
+  (status || 'UNKNOWN')
+    .toLowerCase()
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+
 const formatDateTime = (value) => {
   if (!value) return 'N/A'
   const date = new Date(value)
@@ -27,6 +46,37 @@ const formatDateTime = (value) => {
     minute: '2-digit',
   })
 }
+
+const statusStyle = (status) => {
+  const key = (status || '').toUpperCase()
+  if (['APPROVED', 'RECEIVED', 'REFUNDED'].includes(key)) {
+    return {
+      background: '#DCFCE7',
+      color: '#166534',
+      border: '1px solid #BBF7D0',
+    }
+  }
+  if (key === 'REJECTED') {
+    return {
+      background: '#FEE2E2',
+      color: '#991B1B',
+      border: '1px solid #FECACA',
+    }
+  }
+  if (['PICKUP_SCHEDULED', 'REFUND_INITIATED'].includes(key)) {
+    return {
+      background: '#E8F0FF',
+      color: '#1D4ED8',
+      border: '1px solid #C8D8FF',
+    }
+  }
+  return {
+    background: '#FEF3C7',
+    color: '#92400E',
+    border: '1px solid #FDE68A',
+  }
+}
+
 const cell = {
   padding: '10px 12px',
   borderBottom: '1px solid #E5E7EB',
@@ -34,23 +84,16 @@ const cell = {
   color: '#111827',
   verticalAlign: 'top',
 }
-const statusStyle = (status) => ({
-  display: 'inline-block',
-  borderRadius: 999,
-  padding: '4px 10px',
-  fontWeight: 700,
-  fontSize: 11,
-  letterSpacing: '0.02em',
-  background: status === 'REFUNDED' ? '#DCFCE7' : status === 'REJECTED' ? '#FEE2E2' : '#FEF3C7',
-  color: status === 'REFUNDED' ? '#166534' : status === 'REJECTED' ? '#991B1B' : '#92400E',
-})
+
 const AdminReturns = () => {
   const dispatch = useAppDispatch()
-  const { returns } = useAppSelector((s) => s)
+  const { returns } = useAppSelector((store) => store)
   const jwt = useMemo(() => getAdminToken(), [])
+
   const [statusFilter, setStatusFilter] = useState('ALL')
   const [query, setQuery] = useState('')
   const [comments, setComments] = useState({})
+
   useEffect(() => {
     if (!jwt) return
     dispatch(
@@ -62,11 +105,14 @@ const AdminReturns = () => {
       dispatch(clearReturnError())
     }
   }, [dispatch, jwt])
+
+  const requests = useMemo(() => (Array.isArray(returns.requests) ? returns.requests : []), [returns.requests])
+
   const rows = useMemo(() => {
-    return returns.requests.filter((item) => {
+    return requests.filter((item) => {
       if (statusFilter !== 'ALL' && item.status !== statusFilter) return false
       if (!query.trim()) return true
-      const q = query.trim().toLowerCase()
+      const normalizedQuery = query.trim().toLowerCase()
       return [
         item.id,
         item.orderId,
@@ -78,10 +124,29 @@ const AdminReturns = () => {
         item.adminComment,
         item.status,
       ]
-        .map((v) => String(v ?? '').toLowerCase())
-        .some((v) => v.includes(q))
+        .map((value) => String(value ?? '').toLowerCase())
+        .some((value) => value.includes(normalizedQuery))
     })
-  }, [returns.requests, statusFilter, query])
+  }, [requests, statusFilter, query])
+
+  const summary = useMemo(() => {
+    const openCount = requests.filter(
+      (item) => !['REJECTED', 'REFUNDED'].includes((item.status || '').toUpperCase()),
+    ).length
+    const refundedCount = requests.filter(
+      (item) => (item.status || '').toUpperCase() === 'REFUNDED',
+    ).length
+    const rejectedCount = requests.filter(
+      (item) => (item.status || '').toUpperCase() === 'REJECTED',
+    ).length
+    return {
+      total: requests.length,
+      open: openCount,
+      refunded: refundedCount,
+      rejected: rejectedCount,
+    }
+  }, [requests])
+
   const handleStatusUpdate = (item, status) => {
     if (!item.id || !jwt || item.status === status) return
     dispatch(
@@ -93,6 +158,12 @@ const AdminReturns = () => {
       }),
     )
   }
+
+  const resetFilters = () => {
+    setStatusFilter('ALL')
+    setQuery('')
+  }
+
   if (!jwt) {
     return (
       <div
@@ -104,101 +175,109 @@ const AdminReturns = () => {
       </div>
     )
   }
+
   return (
     <div
       style={{
         padding: 16,
+        background: C.bg,
+        minHeight: '100vh',
       }}
     >
       <div
         style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 12,
-          flexWrap: 'wrap',
-        }}
-      >
-        <div>
-          <h2
-            style={{
-              margin: 0,
-              fontSize: 24,
-            }}
-          >
-            Return Management
-          </h2>
-          <p
-            style={{
-              margin: '6px 0 0',
-              color: '#4B5563',
-              fontSize: 13,
-            }}
-          >
-            Review customer return requests and update lifecycle states.
-          </p>
-        </div>
-        <button
-          onClick={() =>
-            dispatch(
-              fetchReturnRequests({
-                jwt,
-              }),
-            )
-          }
-          style={{
-            border: 'none',
-            background: '#111827',
-            color: '#fff',
-            borderRadius: 10,
-            padding: '10px 14px',
-            fontWeight: 700,
-            cursor: 'pointer',
-          }}
-        >
-          Refresh
-        </button>
-      </div>
-
-      <div
-        style={{
-          marginTop: 14,
           background: '#fff',
           border: '1px solid #E5E7EB',
           borderRadius: 12,
           padding: 12,
           display: 'grid',
-          gridTemplateColumns: '220px 1fr',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
           gap: 12,
+          alignItems: 'end',
         }}
       >
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+        <div style={{ display: 'grid', gap: 6 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim }}>Status</label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            style={{
+              border: '1px solid #D1D5DB',
+              borderRadius: 10,
+              padding: '10px 12px',
+            }}
+          >
+            <option value="ALL">All statuses</option>
+            {ALL_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {formatStatusLabel(status)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div style={{ display: 'grid', gap: 6 }}>
+          <label style={{ fontSize: 12, fontWeight: 700, color: C.dim }}>Search</label>
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by return/order/user/seller/reason"
+            style={{
+              border: '1px solid #D1D5DB',
+              borderRadius: 10,
+              padding: '10px 12px',
+            }}
+          />
+        </div>
+
+        <button
+          onClick={resetFilters}
           style={{
-            border: '1px solid #D1D5DB',
+            padding: '9px 12px',
             borderRadius: 10,
-            padding: '10px 12px',
+            border: `1px solid ${C.border}`,
+            background: '#FFFFFF',
+            color: C.text,
+            fontWeight: 700,
+            cursor: 'pointer',
+            alignSelf: 'end',
           }}
         >
-          <option value="ALL">All statuses</option>
-          {ALL_STATUSES.map((status) => (
-            <option key={status} value={status}>
-              {status}
-            </option>
-          ))}
-        </select>
+          Clear Filters
+        </button>
+      </div>
 
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search by return/order/user/seller/reason"
-          style={{
-            border: '1px solid #D1D5DB',
-            borderRadius: 10,
-            padding: '10px 12px',
-          }}
-        />
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: 12,
+          marginTop: 14,
+        }}
+      >
+        {[
+          { label: 'Total Requests', value: summary.total },
+          { label: 'Open Requests', value: summary.open },
+          { label: 'Refunded', value: summary.refunded },
+          { label: 'Rejected', value: summary.rejected },
+        ].map((item) => (
+          <div
+            key={item.label}
+            style={{
+              background: '#fff',
+              border: '1px solid #E5E7EB',
+              borderRadius: 12,
+              padding: 12,
+            }}
+          >
+            <div style={{ color: C.dim, fontSize: 11, fontWeight: 700, letterSpacing: '0.08em' }}>
+              {item.label.toUpperCase()}
+            </div>
+            <div style={{ marginTop: 6, fontSize: 24, fontWeight: 800, color: C.text }}>
+              {numberFormat.format(item.value)}
+            </div>
+          </div>
+        ))}
       </div>
 
       {returns.error && (
@@ -218,34 +297,24 @@ const AdminReturns = () => {
         </div>
       )}
 
-      <div
-        style={{
-          marginTop: 14,
-          border: '1px solid #E5E7EB',
-          borderRadius: 12,
-          overflow: 'hidden',
-          background: '#fff',
-        }}
-      >
+      <div className="app-data-table-shell" style={{ marginTop: 14 }}>
         <div
           style={{
-            overflowX: 'auto',
+            padding: '10px 14px',
+            borderBottom: `1px solid ${C.border}`,
+            background: '#F8FBFC',
+            fontSize: 12,
+            color: C.mid,
+            fontWeight: 700,
           }}
         >
-          <table
-            style={{
-              width: '100%',
-              borderCollapse: 'collapse',
-              minWidth: 1320,
-            }}
-          >
+          Showing {numberFormat.format(rows.length)} return request{rows.length === 1 ? '' : 's'}
+        </div>
+
+        <div className="app-data-table-scroll">
+          <table className="app-data-table" style={{ minWidth: 1320 }}>
             <thead>
-              <tr
-                style={{
-                  background: '#111827',
-                  color: '#fff',
-                }}
-              >
+              <tr>
                 {[
                   'Return',
                   'Order',
@@ -256,9 +325,9 @@ const AdminReturns = () => {
                   'Admin Comment',
                   'Created',
                   'Action',
-                ].map((h) => (
+                ].map((header) => (
                   <th
-                    key={h}
+                    key={header}
                     style={{
                       padding: '11px 12px',
                       textAlign: 'left',
@@ -266,7 +335,7 @@ const AdminReturns = () => {
                       letterSpacing: '0.03em',
                     }}
                   >
-                    {h}
+                    {header}
                   </th>
                 ))}
               </tr>
@@ -327,13 +396,7 @@ const AdminReturns = () => {
                       </div>
                     </td>
                     <td style={cell}>
-                      <div
-                        style={{
-                          fontWeight: 700,
-                        }}
-                      >
-                        {item.reason}
-                      </div>
+                      <div style={{ fontWeight: 700 }}>{item.reason}</div>
                       {item.description && (
                         <div
                           style={{
@@ -347,7 +410,19 @@ const AdminReturns = () => {
                     </td>
                     <td style={cell}>{item.quantity}</td>
                     <td style={cell}>
-                      <span style={statusStyle(item.status)}>{item.status ?? 'N/A'}</span>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          borderRadius: 999,
+                          padding: '4px 10px',
+                          fontWeight: 700,
+                          fontSize: 11,
+                          letterSpacing: '0.02em',
+                          ...statusStyle(item.status),
+                        }}
+                      >
+                        {formatStatusLabel(item.status ?? 'N/A')}
+                      </span>
                     </td>
                     <td style={cell}>
                       <textarea
@@ -384,7 +459,7 @@ const AdminReturns = () => {
                       >
                         {ALL_STATUSES.map((status) => (
                           <option key={status} value={status}>
-                            {status}
+                            {formatStatusLabel(status)}
                           </option>
                         ))}
                       </select>
@@ -399,4 +474,5 @@ const AdminReturns = () => {
     </div>
   )
 }
+
 export default AdminReturns

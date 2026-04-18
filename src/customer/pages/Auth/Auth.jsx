@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { Alert, Snackbar } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 import { useAppSelector } from '../../../context/AppContext'
 import { ShopzyLogo } from '../../../components/ShopzyLogo'
@@ -9,18 +8,10 @@ import './Auth.css'
 const Auth = () => {
   const navigate = useNavigate()
   const [isLogin, setIsLogin] = useState(true)
-  const [openToast, setOpenToast] = useState(false)
   const jwt = useAppSelector((state) => state.auth.jwt)
-  const otpSent = useAppSelector((state) => state.auth.otpSent)
-  const error = useAppSelector((state) => state.auth.error)
   useEffect(() => {
     if (jwt) navigate('/')
   }, [jwt, navigate])
-  useEffect(() => {
-    if (otpSent || error) {
-      setOpenToast(true)
-    }
-  }, [otpSent, error])
   return (
     <div className="auth-page">
       <div className="auth-shell">
@@ -62,21 +53,6 @@ const Auth = () => {
           </p>
         </section>
       </div>
-
-      <Snackbar
-        open={openToast}
-        autoHideDuration={3500}
-        onClose={() => setOpenToast(false)}
-        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
-      >
-        <Alert
-          onClose={() => setOpenToast(false)}
-          severity={error ? 'error' : 'success'}
-          variant="filled"
-        >
-          {error || 'OTP sent successfully'}
-        </Alert>
-      </Snackbar>
     </div>
   )
 }

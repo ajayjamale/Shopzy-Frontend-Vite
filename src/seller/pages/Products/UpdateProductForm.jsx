@@ -2,12 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { useFormik } from 'formik'
 import * as Yup from 'yup'
 import {
-  Alert,
   Box,
   Button,
   CircularProgress,
   MenuItem,
-  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -24,6 +22,7 @@ import { updateProduct } from '../../../store/seller/sellerProductSlice'
 import { uploadToCloudinary } from '../../../utils/uploadToCloudinary'
 import { useParams, useNavigate } from 'react-router-dom'
 import { fetchProductById } from '../../../store/customer/ProductSlice'
+import FormFeedbackToast from '../../../components/forms/FormFeedbackToast'
 import {
   SellerMetricCard,
   SellerPageIntro,
@@ -590,23 +589,15 @@ const UpdateProductForm = () => {
         </Stack>
       </Box>
 
-      <Snackbar
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right',
+      <FormFeedbackToast
+        feedback={{
+          open: snackbarOpen,
+          severity: sellerProduct.error ? 'error' : 'success',
+          message: sellerProduct.error || 'Product updated successfully',
+          autoHideDuration: 5000,
         }}
-        open={snackbarOpen}
-        autoHideDuration={5000}
         onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity={sellerProduct.error ? 'error' : 'success'}
-          variant="filled"
-        >
-          {sellerProduct.error || 'Product updated successfully'}
-        </Alert>
-      </Snackbar>
+      />
     </Box>
   )
 }

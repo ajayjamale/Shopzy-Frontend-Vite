@@ -1,4 +1,4 @@
-import { Alert, Button, Snackbar, TextField } from '@mui/material'
+import { Button, TextField } from '@mui/material'
 import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
 import ShoppingBagRoundedIcon from '@mui/icons-material/ShoppingBagRounded'
 import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded'
@@ -8,6 +8,7 @@ import { useNavigate } from 'react-router-dom'
 import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { applyCoupon } from '../../../store/customer/CouponSlice'
 import { clearCart, fetchUserCart } from '../../../store/customer/CartSlice'
+import FormFeedbackToast from '../../../components/forms/FormFeedbackToast'
 import CartItemCard from './CartItemCard'
 import PricingCard from './PricingCard'
 const Cart = () => {
@@ -143,20 +144,15 @@ const Cart = () => {
         </aside>
       </div>
 
-      <Snackbar
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-        open={snackbarOpen}
-        autoHideDuration={3000}
+      <FormFeedbackToast
+        feedback={{
+          open: snackbarOpen,
+          severity: coupone.error ? 'error' : 'success',
+          message: coupone.error || 'Coupon applied successfully',
+          autoHideDuration: 3000,
+        }}
         onClose={() => setSnackbarOpen(false)}
-      >
-        <Alert
-          onClose={() => setSnackbarOpen(false)}
-          severity={coupone.error ? 'error' : 'success'}
-          variant="filled"
-        >
-          {coupone.error || 'Coupon applied successfully'}
-        </Alert>
-      </Snackbar>
+      />
     </div>
   )
 }

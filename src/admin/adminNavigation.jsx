@@ -1,8 +1,6 @@
 import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded'
-import StorefrontRoundedIcon from '@mui/icons-material/StorefrontRounded'
 import GroupRoundedIcon from '@mui/icons-material/GroupRounded'
 import ConfirmationNumberRoundedIcon from '@mui/icons-material/ConfirmationNumberRounded'
-import DashboardCustomizeRoundedIcon from '@mui/icons-material/DashboardCustomizeRounded'
 import HomeRepairServiceRoundedIcon from '@mui/icons-material/HomeRepairServiceRounded'
 import LocalOfferRoundedIcon from '@mui/icons-material/LocalOfferRounded'
 import AccountBalanceWalletRoundedIcon from '@mui/icons-material/AccountBalanceWalletRounded'
@@ -27,20 +25,12 @@ export const adminMenuGroups = [
     description: 'Manage marketplace participants, offers, and customer-facing promotions.',
     items: [
       {
-        label: 'Users & Sellers',
-        shortLabel: 'Sellers',
-        path: '/admin/users?tab=sellers',
-        icon: <StorefrontRoundedIcon sx={{ fontSize: 16 }} />,
-        description:
-          'Review seller onboarding, seller status, and marketplace participant activity.',
-        badgeKey: 'pendingSellers',
-      },
-      {
-        label: 'Customers',
-        shortLabel: 'Customers',
-        path: '/admin/users?tab=customers',
+        label: 'Users',
+        shortLabel: 'Users',
+        path: '/admin/users',
         icon: <GroupRoundedIcon sx={{ fontSize: 16 }} />,
-        description: 'Browse customer accounts and keep marketplace users organized.',
+        description: 'Manage both customer and seller accounts in one place.',
+        badgeKey: 'pendingSellers',
       },
       {
         label: 'Coupons',
@@ -48,13 +38,6 @@ export const adminMenuGroups = [
         path: '/admin/coupon',
         icon: <ConfirmationNumberRoundedIcon sx={{ fontSize: 16 }} />,
         description: 'Monitor coupon inventory, live codes, and reusable discount campaigns.',
-      },
-      {
-        label: 'Create Coupon',
-        shortLabel: 'New Coupon',
-        path: '/admin/add-coupon',
-        icon: <DashboardCustomizeRoundedIcon sx={{ fontSize: 16 }} />,
-        description: 'Launch a new coupon campaign with eligibility, timing, and discount rules.',
       },
     ],
   },

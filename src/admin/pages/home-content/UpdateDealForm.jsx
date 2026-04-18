@@ -13,30 +13,10 @@ import { useAppDispatch, useAppSelector } from '../../../context/AppContext'
 import { getAllDailyDiscounts, updateDailyDiscount } from '../../../store/admin/DealSlice'
 import { fetchHomePageData } from '../../../store/customer/home/AsyncThunk'
 import { getAsyncActionError } from '../../../components/forms/FormFeedbackToast'
-const modernTextField = {
-  '& label.Mui-focused': {
-    color: '#1E293B',
-  },
-  '& .MuiOutlinedInput-root': {
-    fontFamily: '"Manrope", Arial, sans-serif',
-    fontSize: 13,
-    '&:hover fieldset': {
-      borderColor: '#0F766E',
-    },
-    '&.Mui-focused fieldset': {
-      borderColor: '#0F766E',
-      borderWidth: 2,
-    },
-  },
-  '& label': {
-    fontFamily: '"Manrope", Arial, sans-serif',
-    fontSize: 13,
-  },
-  '& .MuiFormHelperText-root': {
-    fontFamily: '"Manrope", Arial, sans-serif',
-    fontSize: 11,
-  },
-}
+import {
+  formPrimaryButtonSx,
+  formTextFieldSx,
+} from '../../../components/forms/muiFormTheme'
 const UpdateDealForm = ({ id, onSuccess, onError }) => {
   const { deal } = useAppSelector((store) => store)
   const dispatch = useAppDispatch()
@@ -115,7 +95,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
         onBlur={formik.handleBlur}
         error={formik.touched.title && Boolean(formik.errors.title)}
         helperText={formik.touched.title && formik.errors.title}
-        sx={modernTextField}
+        sx={formTextFieldSx}
       />
 
       <TextField
@@ -126,7 +106,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
         value={formik.values.subtitle}
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
-        sx={modernTextField}
+        sx={formTextFieldSx}
       />
 
       <TextField
@@ -139,7 +119,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
         onBlur={formik.handleBlur}
         error={formik.touched.imageUrl && Boolean(formik.errors.imageUrl)}
         helperText={formik.touched.imageUrl && formik.errors.imageUrl}
-        sx={modernTextField}
+        sx={formTextFieldSx}
       />
 
       <TextField
@@ -152,7 +132,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
         onBlur={formik.handleBlur}
         error={formik.touched.redirectLink && Boolean(formik.errors.redirectLink)}
         helperText={formik.touched.redirectLink && formik.errors.redirectLink}
-        sx={modernTextField}
+        sx={formTextFieldSx}
       />
 
       <Box
@@ -180,7 +160,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
             min: 1,
             max: 95,
           }}
-          sx={modernTextField}
+          sx={formTextFieldSx}
         />
         <TextField
           fullWidth
@@ -190,7 +170,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
           value={formik.values.discountLabel}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          sx={modernTextField}
+          sx={formTextFieldSx}
         />
       </Box>
 
@@ -218,7 +198,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
           onBlur={formik.handleBlur}
           error={formik.touched.startDate && Boolean(formik.errors.startDate)}
           helperText={formik.touched.startDate && formik.errors.startDate}
-          sx={modernTextField}
+          sx={formTextFieldSx}
         />
         <TextField
           fullWidth
@@ -234,7 +214,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
           onBlur={formik.handleBlur}
           error={formik.touched.endDate && Boolean(formik.errors.endDate)}
           helperText={formik.touched.endDate && formik.errors.endDate}
-          sx={modernTextField}
+          sx={formTextFieldSx}
         />
         <TextField
           fullWidth
@@ -248,7 +228,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
           inputProps={{
             min: 0,
           }}
-          sx={modernTextField}
+          sx={formTextFieldSx}
         />
       </Box>
 
@@ -294,24 +274,7 @@ const UpdateDealForm = ({ id, onSuccess, onError }) => {
         type="submit"
         fullWidth
         disabled={deal.loading}
-        sx={{
-          backgroundColor: '#0F766E',
-          color: '#0F172A',
-          fontFamily: '"Manrope", Arial, sans-serif',
-          fontWeight: 700,
-          fontSize: 14,
-          textTransform: 'none',
-          borderRadius: '20px',
-          py: 1.2,
-          border: '1px solid #0b5f59',
-          '&:hover': {
-            backgroundColor: '#0b5f59',
-          },
-          '&.Mui-disabled': {
-            backgroundColor: '#d1e4e2',
-            color: '#64748B',
-          },
-        }}
+        sx={formPrimaryButtonSx}
       >
         {deal.loading ? (
           <CircularProgress

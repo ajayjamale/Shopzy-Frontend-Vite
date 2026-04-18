@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { toCatalogPath } from '../../../../utils/catalogRoute'
+
 const fallback = [
   {
     id: 'ethnicplus',
@@ -25,9 +26,12 @@ const fallback = [
     target: 'home_decor',
   },
 ]
+
 const resolveTarget = (target) => toCatalogPath(target)
+
 const BrandShowcasePanel = ({ data }) => {
   const navigate = useNavigate()
+
   const brands = useMemo(() => {
     const source = data?.topBrands || []
     if (!source.length) return fallback
@@ -39,137 +43,55 @@ const BrandShowcasePanel = ({ data }) => {
       target: item.redirectLink || item.categoryId || 'products',
     }))
   }, [data?.topBrands])
+
   if (!brands.length) return null
-  const lead = brands[0]
-  const side = brands.slice(1, 5)
+
+  const cards = brands.slice(0, 12)
+
   return (
-    <section className="app-container" style={{ marginTop: 34 }}>
-      <div className="surface" style={{ padding: 'clamp(18px,2.8vw,30px)' }}>
-        <p className="section-kicker" style={{ marginBottom: 8 }}>
-          Brand Stories
-        </p>
-        <h2 className="section-title" style={{ fontSize: 'clamp(1.35rem,2.8vw,2rem)' }}>
-          Premium Brand Showcase
-        </h2>
-
-        <div
-          style={{
-            marginTop: 16,
-            display: 'grid',
-            gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr)',
-            gap: 14,
-          }}
-          className="max-[980px]:grid-cols-1"
-        >
-          <button
-            onClick={() => navigate(resolveTarget(lead.target))}
-            style={{
-              borderRadius: 18,
-              border: '1px solid #DBE7EB',
-              background: '#0F172A',
-              overflow: 'hidden',
-              position: 'relative',
-              minHeight: 280,
-              textAlign: 'left',
-              cursor: 'pointer',
-              padding: 0,
-            }}
-          >
-            <img
-              src={lead.image}
-              alt={lead.name}
-              style={{
-                position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-            />
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background: 'linear-gradient(160deg, rgba(2,6,23,.76), rgba(2,132,199,.35))',
-              }}
-            />
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 1,
-                padding: 22,
-                display: 'grid',
-                alignContent: 'end',
-                minHeight: 280,
-              }}
-            >
-              <p
-                style={{
-                  color: '#C7F9F0',
-                  fontSize: 11,
-                  textTransform: 'uppercase',
-                  letterSpacing: '.1em',
-                  fontWeight: 800,
-                }}
-              >
-                Brand Focus
-              </p>
-              <h3 style={{ color: '#fff', fontSize: 'clamp(1.3rem,2.2vw,1.8rem)', marginTop: 8 }}>
-                {lead.name}
-              </h3>
-              <p style={{ marginTop: 6, color: '#D6E8EE' }}>{lead.subtitle}</p>
-            </div>
-          </button>
-
-          <div style={{ display: 'grid', gap: 12 }}>
-            {side.map((brand) => (
-              <button
-                key={brand.id}
-                onClick={() => navigate(resolveTarget(brand.target))}
-                style={{
-                  borderRadius: 14,
-                  border: '1px solid #DBE7EB',
-                  background: '#fff',
-                  overflow: 'hidden',
-                  padding: 0,
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  display: 'grid',
-                  gridTemplateColumns: '120px 1fr',
-                  alignItems: 'stretch',
-                }}
-              >
-                <div
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    minHeight: 110,
-                    background: 'linear-gradient(160deg,#F7FBFC 0%,#EEF4F6 100%)',
-                    padding: 8,
-                  }}
-                >
-                  <img
-                    src={brand.image}
-                    alt={brand.name}
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: 'contain',
-                      borderRadius: 8,
-                      background: '#fff',
-                    }}
-                  />
-                </div>
-                <div style={{ padding: '12px 14px', display: 'grid', alignContent: 'center' }}>
-                  <p style={{ fontSize: 14, fontWeight: 800, color: '#0F172A' }}>{brand.name}</p>
-                  <p style={{ marginTop: 4, fontSize: 12, color: '#64748B' }}>{brand.subtitle}</p>
-                </div>
-              </button>
-            ))}
+    <section className="app-container brand-showcase-section">
+      <div className="surface brand-showcase-surface">
+        <header className="brand-showcase-header">
+          <div>
+            <p className="section-kicker">Brand Stories</p>
+            <h2 className="section-title brand-showcase-title">Premium Brand Showcase</h2>
+            <p className="brand-showcase-description">
+              Discover standout labels with curated edits for fashion, home, beauty, and tech.
+            </p>
           </div>
+          <button
+            type="button"
+            className="btn-secondary brand-showcase-view-all"
+            onClick={() => navigate(toCatalogPath())}
+          >
+            View All Brands
+          </button>
+        </header>
+
+        <div className="brand-showcase-carousel">
+          {cards.map((brand) => (
+            <button
+              key={brand.id}
+              type="button"
+              className="brand-showcase-carousel-card"
+              onClick={() => navigate(resolveTarget(brand.target))}
+            >
+              <div className="brand-showcase-carousel-image-shell">
+                <img src={brand.image} alt={brand.name} className="brand-showcase-carousel-image" />
+              </div>
+
+              <div className="brand-showcase-carousel-content">
+                <p className="brand-showcase-carousel-tag">Premium Label</p>
+                <h3 className="brand-showcase-carousel-title">{brand.name}</h3>
+                <p className="brand-showcase-carousel-subtitle">{brand.subtitle}</p>
+                <span className="brand-showcase-carousel-cta">Explore Collection</span>
+              </div>
+            </button>
+          ))}
         </div>
       </div>
     </section>
   )
 }
+
 export default BrandShowcasePanel

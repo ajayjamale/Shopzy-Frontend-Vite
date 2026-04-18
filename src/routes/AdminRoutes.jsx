@@ -1,6 +1,5 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import Coupon from '../admin/pages/Coupon/Coupon'
-import CouponForm from '../admin/pages/Coupon/CreateCouponForm'
 import AdminAnalyticsDashboard from '../admin/pages/Dashboard/AdminAnalyticsDashboard'
 import Deal from '../admin/pages/home-content/Deal'
 import AdminSettlementList from '../admin/pages/Settlement/AdminSettlementList'
@@ -13,7 +12,7 @@ const AdminRoutes = () => {
     <Routes>
       <Route index element={<AdminAnalyticsDashboard />} />
       <Route path="coupon" element={<Coupon />} />
-      <Route path="add-coupon" element={<CouponForm />} />
+      <Route path="add-coupon" element={<Navigate to="/admin/coupon?view=create" replace />} />
       <Route path="home-content" element={<HomeContentManager />} />
       <Route path="home-grid" element={<Navigate to="/admin/home-content" replace />} />
       <Route path="electronics-category" element={<Navigate to="/admin/home-content" replace />} />
