@@ -9,11 +9,16 @@ const SellerDrawerList = () => {
     <aside
       style={{
         width: 264,
-        minHeight: '100%',
+        height: '100vh',
+        maxHeight: '100vh',
         background: '#ffffff',
         borderRight: '1px solid #DCE8EC',
         display: 'grid',
         gridTemplateRows: 'auto 1fr auto',
+        position: 'sticky',
+        top: 0,
+        overflow: 'hidden',
+        alignSelf: 'start',
       }}
     >
       <div

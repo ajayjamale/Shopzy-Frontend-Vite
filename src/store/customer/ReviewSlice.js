@@ -9,11 +9,8 @@ const parseErrorMessage = (error, fallback) => {
   return fallback
 }
 const REVIEW_ENDPOINTS = {
-  byProduct: (productId) => [
-    `/products/${productId}/reviews`,
-    `/api/products/${productId}/reviews`,
-  ],
-  byReviewId: (reviewId) => [`/reviews/${reviewId}`, `/api/reviews/${reviewId}`],
+  byProduct: (productId) => [`/api/products/${productId}/reviews`],
+  byReviewId: (reviewId) => [`/api/reviews/${reviewId}`],
 }
 const isRetriableEndpointError = (status) =>
   status === 401 || status === 403 || status === 404 || status === 405

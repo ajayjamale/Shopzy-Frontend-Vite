@@ -8,11 +8,16 @@ const AdminDrawerList = ({ pendingSellersCount = 0 }) => {
     <aside
       style={{
         width: 258,
-        minHeight: '100%',
+        height: '100vh',
+        maxHeight: '100vh',
         background: '#FFFFFF',
         borderRight: '1px solid #DCE8EC',
         display: 'grid',
         gridTemplateRows: 'auto 1fr auto',
+        position: 'sticky',
+        top: 0,
+        overflow: 'hidden',
+        alignSelf: 'start',
       }}
     >
       <div
